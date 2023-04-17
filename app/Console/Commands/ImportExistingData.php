@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Classes\Settings;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Schema;
 
 class ImportExistingData extends Command
@@ -31,7 +31,10 @@ class ImportExistingData extends Command
     public function handle(Settings $settings)
     {
         ini_set('memory_limit', '-1');
+
         Schema::disableForeignKeyConstraints();
+
+        /*
 
         $stores = DB::connection('mysql2')->table('store')->get()->first();
 
@@ -42,7 +45,7 @@ class ImportExistingData extends Command
         $settings->put($stores);
 
 
-/*
+
 
         $classifications = DB::connection('mysql2')->table('classifications')->get();
 
@@ -184,7 +187,7 @@ class ImportExistingData extends Command
             }
 
         });
-
+*/
 
         $stock_batch =  DB::connection('mysql2')->table('stock_batch')->select(
             'id',
@@ -207,13 +210,13 @@ class ImportExistingData extends Command
 
         DB::transaction(function() use($stock_batch) {
 
-            foreach ($stock_batch->chunk(1000) as $chunk) {
+            foreach ($stock_batch->chunk(3500) as $chunk) {
 
                 DB::table('stockbatches')->insert(json_decode($chunk->toJson(), true));
             }
 
         });
-
+/*
         DB::statement(
             "UPDATE stocks INNER JOIN (SELECT stock_id, SUM(wholesales) as wholesum, SUM(bulksales) as bulksum, SUM(retail) as retailsum, SUM(quantity) as quantitysum from stockbatches GROUP BY stock_id)  b ON stocks.id = b.stock_id SET stocks.wholesales = b.wholesum, stocks.bulksales=b.bulksum, stocks.retail = b.retailsum, stocks.quantity =b.quantitysum");
 
