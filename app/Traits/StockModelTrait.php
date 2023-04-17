@@ -236,7 +236,7 @@ trait StockModelTrait
 
         $bincards = [];
 
-        $stocktransfer->stocktransferitems->each(function ($items) use(&$bincards){
+        $stocktransfer->stocktransferitems->each(function ($items) use(&$bincards, &$stocktransfer){
              $bincards[] = [
                  'bin_card_type'=>'APP//TRANSFER',
                  'bin_card_date'=>todaysDate(),
@@ -246,7 +246,7 @@ trait StockModelTrait
                  'stockbatch_id'=>NULL,
                  'from_department'=>$items->stocktransfer->from,
                  'to_department'=>$items->stocktransfer->to,
-                 'transfer_id'=>$items->stocktransfer_id,
+                 'stocktransfer_id'=>$stocktransfer->id,
                  'comment'=>"Stock Transfer Transfer ID : ".$items->stocktransfer_id." by ".Auth::user()->name,
                  'balance'=>$items->stock->totalBalance(),
                  'department_balance'=>$items->stock->getCurrentlevel($items->stocktransfer->from)
@@ -261,7 +261,7 @@ trait StockModelTrait
                 'stockbatch_id'=>NULL,
                 'from_department'=>$items->stocktransfer->from,
                 'to_department'=>$items->stocktransfer->to,
-                'transfer_id'=>$items->stocktransfer_id,
+                'stocktransfer_id'=>$stocktransfer->id,
                 'comment'=>"Stock Received Transfer ID : ".$items->stocktransfer_id." by ".Auth::user()->name,
                 'balance'=>$items->stock->totalBalance(),
                 'department_balance'=>$items->stock->getCurrentlevel($items->stocktransfer->to)
