@@ -23,7 +23,7 @@ class PermitTask
 
         $myAccess =  accessGroup($group_id);
 
-        if (!$myAccess) abort('403');
+        //if (!$myAccess) abort('403');
 
         $validTask = userCanView(Route::currentRouteName());
 
