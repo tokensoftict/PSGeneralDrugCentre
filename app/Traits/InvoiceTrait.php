@@ -36,7 +36,7 @@ trait InvoiceTrait
         $pdf->getMpdf()->SetWatermarkText(strtoupper(status_name($invoice->status_id)));
         $pdf->getMpdf()->showWatermarkText = true;
 
-        if($invoice->in_department !="retail" && $invoice->status !="COMPLETE") {
+        if($invoice->in_department !="retail" && $invoice->status_id !=status('Complete')) {
             if($invoice->online_order_status == "1"){
                 $departments = [
                     "bulksales",
@@ -56,7 +56,7 @@ trait InvoiceTrait
             }
 
         }
-        if($invoice->in_department =="retail" && Auth::user()->department =="retail"){
+        if($invoice->in_department =="retail" && Auth::user()->department_id ==department_by_quantity_column('retail')->id){
             $pdf->getMpdf()->AddPage('P', '', '', '', '', 0, 0, 0, 0, 0, 0);
             $pdf->getMpdf()->WriteHTML(view('print.pos', $data));
         }
