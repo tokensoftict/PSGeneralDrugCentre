@@ -45,7 +45,7 @@ trait InvoiceTrait
                 ];
                 foreach($departments as $dept){
                     $data['department'] = $dept;
-                    if($invoice->invoiceitembatches->where('department',$dept)->count() > 0) {
+                    if($invoice->invoiceitembatches()->where('department',$dept)->count() > 0) {
                         $pdf->getMpdf()->AddPage('P', '', '', '', '', 0, 0, 0, 0, 0, 0);
                         $pdf->getMpdf()->WriteHTML(view('print.pos_picker_online', $data));
                     }
