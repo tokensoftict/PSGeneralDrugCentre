@@ -103,12 +103,13 @@
             </td>
         </tr>
         <tbody id="appender"> 
-        @foreach($invoice->invoiceitembatches()
+        @foreach($invoice->invoiceitembatches
 		->select('stock_id',DB::raw( 'SUM(quantity) as total_qty'))
 		->where('department',$department)
 		->groupBy('stock_id')
 		->get() as $item)
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td align="left" class="text-left">{{ $item->stock->name }}</td>
                 <td align="center" class="text-center">{{ $item->stock->location }}</td>
 				<td align="left" class="text-left">{{ \App\Classes\Settings::$department[$department] }}</td>
