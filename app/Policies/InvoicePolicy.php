@@ -73,6 +73,7 @@ class InvoicePolicy
 
         if(in_array($invoice->status_id, [
             status('Dispatched'),
+            status('Complete'),
             status('Paid'),
             status('Deleted'),
             status('Discount'),
