@@ -504,7 +504,13 @@
                 @if( $this->department != "4")
                 @this.set('invoiceData.customer_id',this.customer_id.id, true);
                 @else
-                @this.set('invoiceData.customer_id',"1", true);
+                    if(this.customer_id.firstname !== "")
+                {
+                    @this.set('invoiceData.customer_id',this.customer_id.id, true);
+                }else{
+                    @this.set('invoiceData.customer_id',"1", true);
+                }
+
                 @endif
                 @this.set('invoiceData.status_id', status_id, true);
                 @this.set('invoiceData.invoiceitems', JSON.stringify(this.invoiceitems), true);
