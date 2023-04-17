@@ -19,6 +19,10 @@ class InvoiceitemDatatable extends DataTableComponent
 
     protected $model = Invoiceitem::class;
 
+    public bool $perPageAll = true;
+
+    public array $perPageAccepted = [100, 200, 500, 100000000];
+
     public function builder(): Builder
     {
         return Invoiceitem::query()->select('*')->filterdata($this->filters);
@@ -39,18 +43,28 @@ class InvoiceitemDatatable extends DataTableComponent
                 ->sortable()->searchable(),
             Column::make("Selling Price", "selling_price")
                 ->format(fn($value, $row, Column $column)=> money($row->selling_price))
+                ->footer(function($rows){
+                    return money($rows->sum('selling_price'));
+                })
                 ->sortable(),
             Column::make("Cost Price", "cost_price")
                 ->format(fn($value, $row, Column $column)=> money($row->cost_price))
+                ->footer(function($rows){
+                    return money($rows->sum('cost_price'));
+                })
                 ->sortable(),
             Column::make("Quantity", "quantity")
                 ->format(fn($value, $row, Column $column)=> money($row->quantity))
                 ->sortable(),
             Column::make("Discount", "discount_amount")
                 ->format(fn($value, $row, Column $column)=> money($row->discount_amount))
+                ->footer(function($rows){
+                    return money($rows->sum('discount_amount'));
+                })
                 ->sortable(),
             Column::make("Total",)
                 ->label(fn($row, Column $column)=> money($row->quantity *  ($row->selling_price-$row->discount_amount)))
+
                 ->sortable(),
             Column::make("Date", "invoice.invoice_date")
                 ->format(fn($value, $row, Column $column)=> eng_str_date($value))

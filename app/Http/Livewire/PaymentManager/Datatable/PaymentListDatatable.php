@@ -24,6 +24,10 @@ class PaymentListDatatable extends DataTableComponent
 
     public array $additionalSelect = [];
 
+    public bool $perPageAll = true;
+
+    public array $perPageAccepted = [100, 200, 500, 100000000];
+
     protected $model = Payment::class;
 
     public static array $invoiceType = [
@@ -60,6 +64,9 @@ class PaymentListDatatable extends DataTableComponent
                 ->sortable(),
             Column::make("Total Paid", "total_paid")
                 ->format(fn($value, $row, Column $column)=> money($row->total_paid))
+                ->footer(function($rows){
+                    return money($rows->sum('total_paid'));
+                })
                 ->sortable(),
             Column::make("Payment Date", "payment_date")
                 ->format(fn($value, $row, Column $column) => eng_str_date($row->payment_date))

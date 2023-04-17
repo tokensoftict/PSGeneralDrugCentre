@@ -17,6 +17,10 @@ class PaymentMethodItemsDatatable extends DataTableComponent
 
     protected $model = Paymentmethoditem::class;
 
+    public bool $perPageAll = true;
+
+    public array $perPageAccepted = [100, 200, 500, 100000000];
+
     public array $filters;
 
 

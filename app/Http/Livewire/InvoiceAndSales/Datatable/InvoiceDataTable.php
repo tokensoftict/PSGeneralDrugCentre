@@ -19,6 +19,11 @@ class InvoiceDataTable extends DataTableComponent
 
     public array $filters = [];
 
+    public bool $perPageAll = true;
+
+    public array $perPageAccepted = [100, 200, 500, 100000000];
+
+
     public function builder(): Builder
     {
 
@@ -40,16 +45,29 @@ class InvoiceDataTable extends DataTableComponent
                 ->sortable()->searchable(),
             Column::make("Sub total", "sub_total")
                 ->format(fn($value, $row, Column $column)=> money($row->sub_total))
-                ->sortable()->searchable(),
+                ->sortable()
+                ->footer(function($rows){
+                    return money($rows->sum('sub_total'));
+                })
+                ->searchable(),
             Column::make("Status", "status.name")
                 ->format(fn($value, $row, Column $column) => showStatus($value))->html()
                 ->sortable()->searchable(),
             Column::make("Discount", "discount_amount")
                 ->format(fn($value, $row, Column $column)=> money($row->discount_amount))
-                ->sortable()->searchable(),
+                ->sortable()
+                ->footer(function($rows){
+                    return money($rows->sum('discount_amount'));
+                })
+                ->searchable(),
             Column::make("Total paid", "total_amount_paid")
                 ->format(fn($value, $row, Column $column)=> money($row->total_amount_paid))
-                ->sortable()->searchable(),
+                ->sortable()
+                ->searchable()
+                ->footer(function($rows){
+                    return money($rows->sum('total_amount_paid'));
+                })
+            ,
             Column::make("Date", "invoice_date")
                 ->format(fn($value, $row, Column $column)=> eng_str_date($row->invoice_date))
                 ->sortable()->searchable(),

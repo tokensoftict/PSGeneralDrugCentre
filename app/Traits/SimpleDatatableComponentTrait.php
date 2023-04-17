@@ -17,6 +17,7 @@ trait SimpleDatatableComponentTrait
     public int $index;
 
 
+
     public function boot(): void
     {
 
@@ -30,6 +31,7 @@ trait SimpleDatatableComponentTrait
         $this->setPrimaryKey('id');
         $this->setOfflineIndicatorDisabled();
         $this->setQueryStringDisabled();
+
         //$this->setAdditionalSelects([\DB::raw('SUM(purchaseitems.cost_price) as purchaseitems.total_cost_price')]);
 
         //$this->setEagerLoadAllRelationsEnabled();
