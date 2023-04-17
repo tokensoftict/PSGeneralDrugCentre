@@ -7,9 +7,11 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Production;
 use App\Models\Purchase;
+use App\Models\Stocktransfer;
 use App\Policies\InvoicePolicy;
 use App\Policies\PaymentPolicy;
 use App\Policies\PurchaseOrderPolicy;
+use App\Policies\StockTransferPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -22,7 +24,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Invoice::class => InvoicePolicy::class,
         Purchase:: class=> PurchaseOrderPolicy::class,
-        Payment::class => PaymentPolicy::class
+        Payment::class => PaymentPolicy::class,
+        Stocktransfer::class => StockTransferPolicy::class
     ];
 
     /**
