@@ -103,7 +103,7 @@
             </td>
         </tr>
         <tbody id="appender"> 
-        @foreach($invoice->invoiceitembatches
+        @foreach($invoice->invoiceitembatches()
 		->select('stock_id',DB::raw( 'SUM(quantity) as total_qty'))
 		->where('department',$department)
 		->groupBy('stock_id')
