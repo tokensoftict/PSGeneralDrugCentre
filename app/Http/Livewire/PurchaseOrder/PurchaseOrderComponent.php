@@ -38,7 +38,7 @@ class PurchaseOrderComponent extends Component
 
         $this->depertments = departments(true)->filter(function($item){
             if(in_array(auth()->user()->department_id, [1,2,3,5])){
-                return $item->id === 1;
+                return $item->id === 1 || $item->id == 4;
             }
             return auth()->user()->department_id === 4;
         });
