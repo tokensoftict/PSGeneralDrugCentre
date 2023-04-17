@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers\StockTransferReport;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+
+class StockTransferReportController extends Controller
+{
+    public function index(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Transfer Report By Date',
+            'subtitle' => 'View Stock Transfer By Date Range',
+            'filters' => [
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'filters' => [
+                    'between.transfer_date' => monthlyDateRange()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.transfer_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+        }
+        return setPageContent('reports.stocktransfer.index', $data);
+    }
+
+
+    public function by_system_user(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Transfer Report By System User',
+            'subtitle' => 'View Stock Transfer By Date Range and System User',
+            'filters' => [
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'user_id' => 1,
+                'filters' => [
+                    'between.transfer_date' => monthlyDateRange(),
+                    'user_id' => 1
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.transfer_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['user_id'] = $data['filters']['user_id'];
+
+        }
+
+        return setPageContent('reports.stocktransfer.index', $data);
+    }
+
+    public function by_status(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Transfer Report By Date',
+            'subtitle' => 'View Stock Transfer Report By Date Range and System Status',
+            'filters' => [
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'status_id' => 1,
+                'filters' => [
+                    'between.transfer_date' => monthlyDateRange(),
+                    'status_id' => 1
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.transfer_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
+
+        }
+        return setPageContent('reports.stocktransfer.index', $data);
+    }
+}

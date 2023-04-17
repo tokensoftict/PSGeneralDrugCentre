@@ -1,0 +1,481 @@
+<?php
+
+namespace App\Repositories;
+
+//use App\Jobs\AddLogToCustomerLedger;
+//use App\Jobs\AddLogToProductBinCard;
+use App\Http\Livewire\InvoiceAndSales\InvoiceFormComponent;
+use App\Jobs\AddLogToCustomerLedger;
+use App\Jobs\AddLogToProductBinCard;
+use App\Jobs\PushStockUpdateToServer;
+use App\Models\Invoice;
+use App\Models\Invoiceitem;
+use App\Models\Invoiceitembatch;
+use App\Models\Onlineordertotal;
+use App\Models\Stock;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+
+class InvoiceRepository
+{
+    public function __construct()
+    {
+        //
+    }
+
+    public static function invoice(Invoice $invoice, InvoiceFormComponent $component)
+    {
+        if(isset($invoice->id))
+        {
+            return [
+                'invoice_number' => $invoice->invoice_number,
+                'customer_id' => $invoice->customer->toArray(),
+                'payment_id' => $invoice->payment_id,
+                'department' => $invoice->department,
+                'in_department' => $invoice->in_department,
+                'discount_amount' => $invoice->discount_amount,
+                'discount_type' => $invoice->discount_type,
+                'discount_value' => $invoice->discount_value,
+                'status_id' => $invoice->status_id,
+                'sub_total' => $invoice->sub_total,
+                'total_amount_paid' => $invoice->total_amount_paid,
+                'total_profit' => $invoice->total_profit,
+                'total_cost' => $invoice->total_cost,
+                'vat' => $invoice->vat,
+                'vat_amount' => $invoice->vat_amount,
+                'created_by' => $invoice->created_by,
+                'last_updated_by' => $invoice->last_updated_by,
+                'voided_by' => $invoice->voided_by,
+                'invoice_date' => mysql_str_date($invoice->invoice_date),
+                'sales_time' => $invoice->sales_time,
+                'void_reason' => $invoice->void_reason,
+                'date_voided' =>  $invoice->date_voided,
+                'void_time' =>  $invoice->void_time,
+                'picked_by' =>  $invoice->picked_by,
+                'packed_by' =>   $invoice->packed_by,
+                'checked_by' =>  $invoice->checked_by,
+                'carton_no' =>  $invoice->carton_no,
+                'online_order_status' =>  $invoice->online_order_status,
+                'online_order_debit' =>  $invoice->online_order_debit,
+                'onliner_order_id'=>  $invoice->onliner_order_id,
+                'invoiceitems' => $invoice->invoiceitems->map->only(array_keys(self::invoiceitems(new Invoiceitem())))->toJson()
+            ];
+        }else {
+
+            return [
+                'invoice_number' => time(),
+                'customer_id' => ['firstname'=>""],
+                'department' => NULL,
+                'in_department' => department_by_id(auth()->user()->department_id)->quantity_column,
+                'discount_amount' => 0,
+                'discount_type' => 'Fixed',
+                'discount_value' => 0,
+                'status_id' => status('Draft'),
+                'sub_total' => 0,
+                'total_amount_paid' => 0,
+                'total_profit' => 0,
+                'total_cost' => 0,
+                'vat' => 0,
+                'vat_amount' => 0,
+                'created_by' => auth()->id(),
+                'last_updated_by' => auth()->id(),
+                'invoice_date' => todaysDate(),
+                'sales_time' => Carbon::now()->toDateTimeLocalString(),
+                'invoiceitems' =>  collect([])->toJson()
+            ];
+        }
+
+    }
+
+
+    public static function invoiceitems(Invoiceitem $invoiceitem)
+    {
+        if(isset($invoiceitem->id)) {
+            return [
+                'invoice_id' => $invoiceitem->invoice_id,
+                'stock_id' => $invoiceitem->stock_id,
+                'quantity' => $invoiceitem->quantity,
+                'customer_id' => $invoiceitem->customer_id,
+                'added_by' => $invoiceitem->added_by,
+                'discount_added_by' => $invoiceitem->discount_added_by,
+                'cost_price' => $invoiceitem->cost_price,
+                'selling_price' => $invoiceitem->selling_price,
+                'profit' => $invoiceitem->profit,
+                'discount_value' => $invoiceitem->discount_value,
+                'discount_amount' => $invoiceitem->discount_amount,
+                'discount_type' =>$invoiceitem->discount_type,
+                'box' => $invoiceitem->box,
+                'carton' => $invoiceitem->carton,
+                'name' => $invoiceitem->name,
+                'av_qty' => $invoiceitem->av_qty
+            ];
+        }
+        else {
+            return [
+                'invoice_id' => NULL,
+                'stock_id' => NULL,
+                'quantity' => NULL,
+                'customer_id' => NULL,
+                'added_by' => auth()->id(),
+                'discount_added_by' =>NULL,
+                'cost_price' => NULL,
+                'selling_price' => NULL,
+                'profit' => NULL,
+                'discount_value' => NULL,
+                'discount_amount' => NULL,
+                'discount_type' => 'Fixed',
+                'box' => NULL,
+                'carton' =>NULL,
+                'name' => NULL,
+                'av_qty' =>NULL,
+            ];
+
+        }
+    }
+
+
+    public function validateInvoiceItems(array $items, string $from)
+    {
+        $items = collect($items);
+
+        $stocks = [];
+
+        $errors = [];
+
+        $items->each(function($item, $key) use(&$stocks){
+            $stocks[$item['stock_id']]['item'] = $item;
+        });
+
+        $products = Stock::with(['activeBatches'])->whereIn('id', array_keys($stocks))->get();
+
+        $products->each(function($product, $key) use(&$stocks, &$errors, &$from){
+            //$stocks[$product->id]['product'] = $product;
+            $batch = $product->pingSaleableBatches($from, $stocks[$product->id]['item']['quantity'],  $product->activeBatches);
+
+            $total_cost_batch = collect($batch)->sum('cost_price');
+
+            if($batch === false) {
+                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", Available quantity is ". $product->{$from};
+            } else {
+                if($from == "retail") {
+                    $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column(4)};
+                }else{
+                    $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column()};
+                }
+                $stocks[$product->id]['item']['cost_price'] = abs($total_cost_batch / count($batch));
+                $stocks[$product->id]['batches'] = $batch;
+            }
+        });
+
+        if(count($errors) > 0) return ['status'=> false , 'errors'=>$errors];
+
+        return ['status' => true, 'results'=> $stocks];
+
+    }
+
+
+    public function calculateInvoiceTotal(array &$invoiceData, array $items)
+    {
+        $items = collect($items);
+
+        $invoiceData['sub_total'] = $items->sum(function($item){
+            return $item['quantity'] * $item['selling_price'];
+        });
+        $invoiceData['total_cost'] =  $items->sum(function($item){
+            return $item['quantity'] * $item['cost_price'];
+        });
+
+        $invoiceData['total_profit'] =  $invoiceData['sub_total'] -  $invoiceData['total_cost'];
+
+    }
+
+
+
+
+    public function createInvoice(array $invoiceData, $validate = true) : Invoice|array
+    {
+        $items = json_decode($invoiceData['invoiceitems'],true);
+
+        Arr::forget($invoiceData, ['invoiceitems']);
+
+        $results =  $this->validateInvoiceItems($items, $invoiceData['department']);
+
+        if($results['status'] === false) return $results['errors'];
+
+        $this->calculateInvoiceTotal($invoiceData, array_column($results['results'], 'item'));
+
+        $invoice = Invoice::create($invoiceData);
+
+        $invoiceItems = array_column($results['results'], 'item');
+
+        $invoiceItems = collect($invoiceItems);
+        $removeQuantity = [];
+
+        $columns = [];
+
+        $invoiceItems->each(function($item, $key) use(&$invoice, $results, &$removeQuantity, &$columns){
+            Arr::forget($item, ['name','box','carton','av_qty','total_incentives']);
+            Arr::set($item,'customer_id', $invoice->customer_id);
+            Arr::set($item,'department', $invoice->department);
+            $invoiceItemBatches = [];
+            collect($results['results'][$item['stock_id']]['batches'])->each(function($batch, $index) use($item, &$invoiceItemBatches, &$invoice, &$removeQuantity,  &$columns) {
+                $columns[] = $batch['department'];
+                $invoiceItemBatches[] = new Invoiceitembatch([
+                    'invoice_id' => $invoice->id,
+                    'stock_id' => $item['stock_id'],
+                    'stockbatch_id' => $batch['id'],
+                    'cost_price' => $batch['cost_price'],
+                    'selling_price' => $item['selling_price'],
+                    'department' => $batch['department'],
+                    'quantity' => $batch['qty']
+                ]);
+                Arr::forget($batch, ['cost_price','department','qty']);
+                $removeQuantity[] =  $batch;
+            });
+
+            $invoice->invoiceitems()->save(
+                new Invoiceitem($item)
+            )->invoiceitembatches()->saveMany($invoiceItemBatches);
+
+        });
+
+        Stock::removeSaleableBatches($invoice, $removeQuantity, array_unique($columns));
+
+
+        logActivity($invoice->id, $invoice->invoice_number,'Invoice was generated status :'.$invoice->status->name);
+
+        if($invoice->customer_id !== 1) { // customer ledger for walking customer
+
+            dispatch(new AddLogToCustomerLedger([
+                'payment_id' => NULL,
+                'invoice_id' => $invoice->id,
+                'customer_id' => $invoice->customer_id,
+                'amount' => -($invoice->sub_total - $invoice->discount_amount),
+                'transaction_date' => $invoice->invoice_date,
+                'user_id' => auth()->id(),
+            ]));
+        }
+
+        logActivity($invoice->id, $invoice->invoice_number, "Invoice was created".$invoice->status->name);
+
+        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+
+        return $invoice;
+    }
+
+
+    public static function returnStock(Invoice $invoice)
+    {
+        $invoiceItemsBatches = [];
+        $reverseItemsBatches = [];
+        $columns = [];
+
+        $invoice->invoiceitembatches->map->only(['stockbatch_id', 'department', 'av_qty', 'quantity'])->each(function($item, $key) use (&$invoiceItemsBatches, &$reverseItemsBatches, &$columns){
+            $columns[] = $item['department'];
+            $invoiceItemsBatches[] = [
+                'id' => $item['stockbatch_id'],
+                $item['department'] =>  $item['av_qty'] +  $item['quantity'],
+            ];
+
+        });
+
+        Stock::returnStocks($invoice, $invoiceItemsBatches, array_unique($columns));
+    }
+
+    public function updateInvoice(Invoice $invoice ,array $invoiceData) : Invoice|array
+    {
+        $items = json_decode($invoiceData['invoiceitems'],true);
+
+        Arr::forget($invoiceData, ['invoiceitems']);
+
+        $invoiceItemsBatches = [];
+        $reverseItemsBatches = [];
+        $columns = [];
+        //prepare to return stocks  here
+        $invoice->invoiceitembatches->map->only(['stockbatch_id', 'department', 'av_qty', 'quantity'])->each(function($item, $key) use (&$invoiceItemsBatches, &$reverseItemsBatches, &$columns){
+            $columns[] = $item['department'];
+            $invoiceItemsBatches[] = [
+                'id' => $item['stockbatch_id'],
+                $item['department'] =>  $item['av_qty'] +  $item['quantity'],
+            ];
+
+            $reverseItemsBatches[] = [
+                'id' => $item['stockbatch_id'],
+                $item['department'] =>  $item['av_qty'] - $item['quantity']
+            ];
+        });
+
+        Stock::returnStocks($invoice, $invoiceItemsBatches, array_unique($columns));
+
+
+        $results =  $this->validateInvoiceItems($items, $invoiceData['department']);
+
+
+        if($results['status'] === false) {
+
+            Stock::removeSaleableBatches($invoice, $reverseItemsBatches, array_unique($columns));
+
+            return $results['errors'];
+        }
+
+        $this->calculateInvoiceTotal($invoiceData, array_column($results['results'], 'item'));
+
+        $invoice->update($invoiceData);
+
+        $invoiceItems = array_column($results['results'], 'item');
+
+        $invoiceItems = collect($invoiceItems);
+
+        $removeQuantity = [];
+
+        $invoice->invoiceitems()->delete();
+
+        $invoice->invoiceitembatches()->delete();
+
+        if($invoice->payment_id !== NULL)
+        {
+            $invoice->payment()->delete();
+
+            $invoice->payment_id = NULL;
+
+            $invoice->update();
+        }
+
+        $columns = [];
+
+        $invoiceItems->each(function($item, $key) use(&$invoice, $results, &$removeQuantity, &$columns){
+            Arr::forget($item, ['name','box','carton','av_qty','total_incentives']);
+            Arr::set($item,'customer_id', $invoice->customer_id);
+            Arr::set($item,'department', $invoice->department);
+            $invoiceItemBatches = [];
+            collect($results['results'][$item['stock_id']]['batches'])->each(function($batch, $index) use($item, &$invoiceItemBatches, &$invoice, &$removeQuantity, &$columns) {
+                $columns[] = $batch['department'];
+                $invoiceItemBatches[] = new Invoiceitembatch([
+                    'invoice_id' => $invoice->id,
+                    'stock_id' => $item['stock_id'],
+                    'stockbatch_id' => $batch['id'],
+                    'cost_price' => $batch['cost_price'],
+                    'selling_price' => $item['selling_price'],
+                    'department' => $batch['department'],
+                    'quantity' => $batch['qty']
+                ]);
+                Arr::forget($batch, ['cost_price','department','qty']);
+                $removeQuantity[] =  $batch;
+            });
+
+            $invoice->invoiceitems()->save(
+                new Invoiceitem($item)
+            )->invoiceitembatches()->saveMany($invoiceItemBatches);
+
+        });
+
+
+        Stock::removeSaleableBatches($invoice, $removeQuantity, array_unique( $columns));
+
+        logActivity($invoice->id, $invoice->invoice_number, "Invoice was updated".$invoice->status->name);
+
+        if($invoice->customer_id !== 1) { // customer ledger for walking customer
+
+            dispatch(new AddLogToCustomerLedger([
+                'payment_id' => NULL,
+                'invoice_id' => $invoice->id,
+                'customer_id' => $invoice->customer_id,
+                'amount' => -($invoice->sub_total - $invoice->discount_amount),
+                'transaction_date' => $invoice->invoice_date,
+                'user_id' => auth()->id(),
+            ]));
+        }
+
+        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+
+        $this->initiateBinCard($invoice);
+
+        return $invoice;
+
+    }
+
+
+
+    public function createOnlineInvoice(array $invoiceData, Collection $orderTotal) : Invoice
+    {
+        $invoiceitems = collect($invoiceData['invoiceitems']);
+
+        Arr::forget($invoiceData, ['invoiceitems']);
+
+        $invoice = Invoice::create($invoiceData);
+
+        $removeQuantity = [];
+        $columns = [];
+        $invoiceitems->each(function ($item) use(&$invoice, &$columns) {
+            $batches = $item['batches'];
+
+            Arr::forget($item, ['name','box','carton','av_qty','total_incentives','batches']);
+            Arr::set($item,'customer_id', $invoice->customer_id);
+            Arr::set($item,'department', $invoice->department);
+            $invoiceItemBatches = [];
+
+            collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns){
+                $columns[] = $batch['department'];
+                $invoiceItemBatches[] = new Invoiceitembatch([
+                    'invoice_id' => $invoice->id,
+                    'stock_id' => $item['stock_id'],
+                    'stockbatch_id' => $batch['id'],
+                    'cost_price' => $batch['cost_price'],
+                    'selling_price' => $item['selling_price'],
+                    'department' => $batch['department'],
+                    'quantity' => $batch['qty']
+                ]);
+                $removeQuantity[] =  $batch;
+            });
+
+            $invoice->invoiceitems()->save(
+                new Invoiceitem($item)
+            )->invoiceitembatches()->saveMany($invoiceItemBatches);
+
+        });
+
+        Stock::removeSaleableBatches($invoice, $removeQuantity, array_unique($columns)); // remove stock quantity
+
+        $totals = [];
+        $orderTotal->each(function($total) use(&$totals) {
+            $totals[] = new Onlineordertotal([
+                'name'=>$total['name'],
+                'value'=>$total['value']
+            ]);
+        });
+
+        $invoice->onlineordertotals()->saveMany($totals);
+
+        $this->initiateBinCard($invoice);
+
+        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+
+        return $invoice;
+    }
+
+
+    private function initiateBinCard(Invoice $invoice)
+    {
+        $returnBatches = [];
+
+        $cards = $invoice->invoiceitembatches->map(function($item) use(&$returnBatches, &$invoice){
+            return [
+                'bin_card_type'=>"APP//SOLD",
+                'bin_card_date'=>todaysDate(),
+                'user_id'=>auth()->id(),
+                'stock_id' => $item->stock_id,
+                'return_qty'=>$item->quantity,
+                'stockbatch_id'=> $item->stockbatch_id,
+                'to_department'=>$item->department,
+                'comment'=>"Stock Sold By : by ".$invoice->created_by,
+                'balance'=>$item->stock->totalBalance(),
+                'department_balance'=>$item->stock->{$item->department}
+            ];
+        })->toArray();
+
+        dispatch(new AddLogToProductBinCard($cards));
+    }
+
+}
