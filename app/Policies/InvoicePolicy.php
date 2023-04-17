@@ -30,7 +30,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice) : bool
     {
-        if(!userCanView(type().'view')) return false;
+        //if(!userCanView(type().'view')) return false;
 
         return true;
     }
