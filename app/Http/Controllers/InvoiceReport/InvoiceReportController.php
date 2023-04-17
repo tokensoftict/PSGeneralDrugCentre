@@ -18,7 +18,7 @@ class InvoiceReportController extends Controller
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
                 'filters' => [
-                    'between.invoice_date' => monthlyDateRange()
+                    'between.invoice_date' => monthlyDateRange(),
                 ]
             ]
         ];

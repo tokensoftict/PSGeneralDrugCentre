@@ -40,8 +40,6 @@ class Stockbatch extends Model
 	protected $table = 'stockbatches';
 
 	protected $casts = [
-		'received_date' => 'datetime',
-		'expiry_date' => 'datetime',
 		'wholesales' => 'int',
 		'bulksales' => 'int',
 		'retail' => 'int',

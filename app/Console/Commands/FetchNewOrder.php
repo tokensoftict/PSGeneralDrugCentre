@@ -23,8 +23,8 @@ class FetchNewOrder extends Command
 
     public static array $onlineWholeSalesDepartment = [
         "bulksales",
-        "quantity",
         "wholesales",
+        "quantity",
     ];
 
     public static array $onlineRetailSalesDepartment = ['retail'];

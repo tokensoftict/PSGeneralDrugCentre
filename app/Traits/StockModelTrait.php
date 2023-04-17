@@ -29,6 +29,11 @@ trait StockModelTrait
 
     }
 
+    public function minimumBatches()
+    {
+        return $this->stockbatches()->orderBy('received_date', 'DESC')->limit(3);
+    }
+
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
 
         Stockbatch::upsert($batches, ['id'], $columns);
