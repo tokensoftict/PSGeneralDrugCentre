@@ -78,8 +78,8 @@ class ProductRepository
             'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
             'retail' => 'retail_cost_price',
         };
-
-        return DB::table('stocks')->select('id', request()->column.' as quantity', $cost_price." as cost_price", $selling_price." as selling_price",'name', 'box', 'location','name as text', 'carton')->where(request()->column ,'>',0)->where(function($query) use(&$name){
+//->where(request()->column ,'>',0)
+        return DB::table('stocks')->select('id', request()->column.' as quantity', $cost_price." as cost_price", $selling_price." as selling_price",'name', 'box', 'location','name as text', 'carton')->where(function($query) use(&$name){
             foreach ($name as $char) {
                 $query->where('name', 'LIKE', "%$char%");
             }
