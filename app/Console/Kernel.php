@@ -15,13 +15,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('open:stock')->dailyAt('01:00')->sendOutputTo('storage/app/stockopening.txt');;
+        $schedule->command('open:stock')->dailyAt('01:00')->appendOutputTo('storage/app/stockopening.txt');;
 
-        $schedule->command('orders:refresh')->everyMinute()->withoutOverlapping()->sendOutputTo('storage/app/orderrefresh.txt');;
+        $schedule->command('orders:refresh')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/orderrefresh.txt');;
 
-        $schedule->command('queue:work --sansdaemon --tries=3 --timeout=0')->everyMinute()->withoutOverlapping()->sendOutputTo('storage/app/queuework.txt');;
+        $schedule->command('queue:work --sansdaemon --tries=3 --timeout=0')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/queuework.txt');;
 
-        $schedule->command('backup:run --only-db')->dailyAt('00:00')->sendOutputTo('storage/app/backup.txt');;
+        $schedule->command('backup:run --only-db')->dailyAt('00:00')->appendOutputTo('storage/app/backup.txt');;
 
     }
 
