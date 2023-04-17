@@ -133,7 +133,7 @@ class PurchaseOrderRepository
             ];
 
             $stockUpdate[] = [
-                'cost_price' => $item->cost_price,
+                cost_price_column(department_by_quantity_column($purchase->department)->id) => $item->cost_price,
                 'id' => $item->stock_id
             ];
 
@@ -156,16 +156,15 @@ class PurchaseOrderRepository
 
         dispatch(new AddLogToProductBinCard($bincards));
 
-        DB::transaction(function() use($batchInsert, $stockUpdate) {
+        DB::transaction(function() use($batchInsert, $stockUpdate, &$purchase)  {
 
             DB::table('stockbatches')->insert($batchInsert);
 
             Stock::upsert(
                 $stockUpdate,
                 ['id'],
-                ['cost_price']
+                [ cost_price_column(department_by_quantity_column($purchase->department)->id)]
             );
-
 
 
         });
