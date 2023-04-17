@@ -127,7 +127,7 @@ class PurchaseOrderRepository
                 'received_date' => todaysDate(),
                 'expiry_date' => $item->expiry_date,
                 $purchase->department => $item->qty,
-                'cost_price' => $item->cost_price,
+                cost_price_column(department_by_quantity_column($purchase->department)->id)=> $item->cost_price,
                 'stock_id' => $item->stock_id,
                 'supplier_id' => $purchase->supplier_id
             ];
