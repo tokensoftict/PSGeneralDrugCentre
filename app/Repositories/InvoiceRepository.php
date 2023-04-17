@@ -416,7 +416,7 @@ class InvoiceRepository
             Arr::set($item,'department', $invoice->department);
             $invoiceItemBatches = [];
 
-            collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns){
+            collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns, &$invoiceItemBatches){
                 $columns[] = $batch['department'];
                 $invoiceItemBatches[] = new Invoiceitembatch([
                     'invoice_id' => $invoice->id,
