@@ -49,6 +49,7 @@ class TaskGenerate extends Command
             'PaymentReport' => 'Payment Report(s)',
             'InvoiceReport' => 'Invoice Report(s)',
             'StockTransferReport' => 'Stock Transfer Report(s)',
+            'CustomerReport' => 'Customer Report(s)',
 
         ];
 
@@ -67,6 +68,7 @@ class TaskGenerate extends Command
             'PaymentReport' => 'Payment Report(s)',
             'InvoiceReport' => 'Invoice Report(s)',
             'StockTransferReport' => 'Stock Transfer Report(s)',
+            'CustomerReport' => '',
         ];
 
         $taskList = DB::table('tasks')->pluck('route', 'id');
