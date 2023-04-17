@@ -16,4 +16,6 @@
 
 @section('content')
 
+    <livewire:invoice-and-sales.discount.apply-product-discount-component :invoice="$invoice"/>
+
 @endsection
