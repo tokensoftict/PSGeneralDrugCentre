@@ -75,7 +75,10 @@ class ApplyProductDiscountComponent extends Component
 
         $this->invoice->update(
             [
-                'sub_total' => $this->invoice->invoiceitems()->sum('total_selling_price'),
+                'sub_total' => $this->invoice->invoiceitems()->get()->sum(function($item){
+                    return ($item->quantity * ($item->selling_price - $item->discount_amount));
+                }),
+                'status_id' => status('Draft')
             ]
         );
 

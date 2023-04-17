@@ -124,4 +124,39 @@ class ShowInvoiceComponent extends Component
     }
 
 
+    public function sendBackToDraft()
+    {
+        $this->invoice->status_id = status('Draft');
+        $this->invoice->update();
+
+        $this->alert(
+            "success",
+            "Invoice",
+            [
+                'position' => 'center',
+                'timer' => 1500,
+                'toast' => false,
+                'text' =>  "Invoice Status has been updated to Draft successfully!.",
+            ]
+        );
+    }
+
+
+    public function requestForDiscount()
+    {
+        $this->invoice->status_id = status('Discount');
+        $this->invoice->update();
+
+        $this->alert(
+            "success",
+            "Invoice",
+            [
+                'position' => 'center',
+                'timer' => 1500,
+                'toast' => false,
+                'text' =>  "Discount Request has been sent successfully!.",
+            ]
+        );
+    }
+
 }

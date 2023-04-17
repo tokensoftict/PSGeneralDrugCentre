@@ -175,8 +175,8 @@
                             <tr>
                                 <th>#</th>
                                 <th class="text-left" style="width: 40%;font-size: 14px">Name</th>
-                                <th class="text-center" style="width: 15%;font-size: 14px">Discount</th>
                                 <th class="text-center" style="width: 10%;font-size: 14px">Rate</th>
+                                <th class="text-center" style="width: 15%;font-size: 14px">Discount</th>
                                 <th class="text-center" style="width: 10%;font-size: 14px">Quantity</th>
                                 <th class="text-end" style="width: 10%;font-size: 14px">Total</th>
                             </tr>
@@ -186,10 +186,10 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td class="text-left">{{ $item->stock->name }}</td>
-                                    <td class="text-center">{{ money($item->discount_amount) }}</td>
                                     <td class="text-center">{{ money($item->selling_price - $item->discount_amount) }}</td>
+                                    <td class="text-center">{{ money($item->discount_amount) }}</td>
                                     <td class="text-center">{{ $item->quantity }}</td>
-                                    <td class="text-end">{{ money(($item->quantity * $item->selling_price)-$item->discount_amount) }}</td>
+                                    <td class="text-end">{{ money($item->quantity *  ($item->selling_price-$item->discount_amount)) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -238,6 +238,19 @@
             </div>
             <br/>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#invoice_logs">View Invoice Log(s)</button>
+
+            @if($invoice->status_id === status('Discount'))
+                <button type="button" wire:target="sendBackToDraft"  wire:loading.attr="disabled"  class="btn btn-dark" wire:click="sendBackToDraft" >
+                    Send Back To Draft    <span wire:loading wire:target="sendBackToDraft" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                </button>
+            @endif
+
+            @if(userCanView('invoiceandsales.requestForDiscount') && $invoice->status_id === status('Draft'))
+                <button type="button" wire:target="requestForDiscount"  wire:loading.attr="disabled"  class="btn btn-success" wire:click="requestForDiscount" >
+                    Request For Discount    <span wire:loading wire:target="requestForDiscount" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                </button>
+
+              @endif
         </div>
 
 
