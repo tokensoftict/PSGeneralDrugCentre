@@ -23,7 +23,7 @@ class PermitTask
 
         $myAccess =  accessGroup($group_id);
 
-        //if (!$myAccess) abort('403');
+        if (!$myAccess) abort('403');
 
         $validTask = userCanView(Route::currentRouteName());
 
@@ -34,7 +34,7 @@ class PermitTask
             session()->put('past_page',Route::currentRouteName());
         }
 
-        //if (!$validTask) abort('403');//throw new UplException('access_denied');
+        if (!$validTask) abort('403');//throw new UplException('access_denied');
 
         //$request->user()->update(['last_activity' => Carbon::now()->toDateTimeString()]);
 
