@@ -7,7 +7,7 @@
         html, body {
             margin: 0;
             padding: 0;
-            font-size: 5pt;
+            font-size: 8pt;
             background-color: #fff;
         }
 
@@ -16,7 +16,7 @@
         }
 
         #products tr td {
-            font-size: 10pt;
+            font-size: 7pt;
         }
 
         #printbox {
@@ -27,11 +27,11 @@
         }
 
         .inv_info tr td {
-            padding-right: 10pt;
+            padding-right: 14pt;
         }
 
         .product_row {
-            margin: 15pt;
+            margin: 13pt;
         }
 
         .stamp {

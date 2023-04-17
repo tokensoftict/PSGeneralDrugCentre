@@ -98,7 +98,7 @@
             <td align="right"><b>Total</b></td>
         </tr>
         <tr>
-            <td colspan="5">
+            <td colspan="6">
                 <hr>
             </td>
         </tr>
@@ -119,7 +119,10 @@
             @foreach($invoice->onlineordertotals as $ordertotal)
                 <tr>
                     <td></td>
-                    <td align="right" colspan="3">{{ str_replace('Subtotal','Sub total',$ordertotal['name']) }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td align="right">{{ str_replace('Subtotal','Sub total',$ordertotal['name']) }}</td>
                     <td align="right">{{ number_format($ordertotal->value,2) }}</td>
                 </tr>
             @endforeach
@@ -128,11 +131,13 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class="text-right">Sub Total</td>
-                <td class="text-right">{{ number_format($invoice->sub_total,2) }}</td>
+                <td></td>
+                <td align="right">Sub Total</td>
+                <td align="right">{{ number_format($invoice->sub_total,2) }}</td>
             </tr>
         @endif
         <tr>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>

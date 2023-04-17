@@ -37,12 +37,12 @@ class ImportExistingData extends Command
 
         $stores = (array)$stores;
 
-        \Arr::forget($stores, ['id','created_at','updated_at','logo']);
+        \Arr::forget($stores, ['id','created_at','updated_at']);
 
         $settings->put($stores);
 
 
-
+/*
 
         $classifications = DB::connection('mysql2')->table('classifications')->get();
 
@@ -444,7 +444,7 @@ class ImportExistingData extends Command
         });
 
 
-/*
+
         $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
 
         DB::transaction(function() use($stock_opening) {
@@ -457,7 +457,7 @@ class ImportExistingData extends Command
 
         });
 
-*/
+
 
         $stock_bincard =  DB::connection('mysql2')->table('stock_bincard')
             ->select(
@@ -542,7 +542,7 @@ class ImportExistingData extends Command
             }
 
         });
-
+*/
         Schema::enableForeignKeyConstraints();
 
 
