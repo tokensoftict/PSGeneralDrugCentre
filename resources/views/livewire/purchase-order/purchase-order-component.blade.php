@@ -138,7 +138,7 @@
                 stock_id : "",
                 cost_price : "",
                 quantity : "",
-                expiry_date: "{{ todaysDate() }}",
+                expiry_date: "",
                 selectStock : {},
                 netTotal :0,
                 purchaseitems : @this.get('data.purchaseitems') ?  JSON.parse(@this.get('data.purchaseitems')) : [],
@@ -225,6 +225,7 @@
                         'status_id' : '{{ status("Pending") }}'
                     });
 
+                    this.expiry_date = "";
                     this.cost_price = "";
                     this.quantity = "";
                     this.expiry_date = ""
