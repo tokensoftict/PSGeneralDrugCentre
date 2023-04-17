@@ -172,6 +172,8 @@ class InvoicePolicy
     {
         if(!userCanView(type()."pos_print")) return false;
 
+        if($invoice->department === 'retail' && ($invoice->status_id !== status('Complete') || $invoice->status_id !== status('Paid'))) return false;
+
         if($invoice->status_id ==  status('Deleted')) return false;
 
         return true;
