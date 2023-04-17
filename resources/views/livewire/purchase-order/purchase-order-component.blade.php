@@ -167,11 +167,14 @@
 
                     $('#select2').on('change',function(eventData){
                         var data = $(this).select2('data');
-                        obj.stock_id = data[0].id;
-                        obj.cost_price = data[0].cost_price;
-                        obj.quantity = 1;
-                        obj.name = data.name;
-                        obj.selectStock = data[0];
+                        if(data[0] !==undefined) {
+                            console.log(data);
+                            obj.stock_id = data.id;
+                            obj.cost_price = data[0].cost_price;
+                            obj.quantity = 1;
+                            obj.name = data.name;
+                            obj.selectStock = data[0];
+                        }
                     });
 
                 },
@@ -228,9 +231,10 @@
                     this.expiry_date = "";
                     this.cost_price = "";
                     this.quantity = "";
-                    this.expiry_date = ""
-                    $('#select2').empty().trigger('change');
+                    this.expiry_date = "";
                     this.totalPurchase();
+                    $('#select2').empty().trigger('change');
+
 
                  },
 
