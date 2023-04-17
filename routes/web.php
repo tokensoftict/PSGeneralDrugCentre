@@ -367,6 +367,15 @@ Route::middleware(['auth'])->group(function () {
             });
 
 
+            Route::prefix('customerReport')->as('customerReport.')->namespace('CustomerReport')->group(function(){
+
+                Route::match(['get','post'],'balance_sheet', ['as' => 'balance_sheet', 'uses' => 'CustomerReportController@balance_sheet', 'custom_label'=>'Customer Balance Sheet']);
+
+                Route::match(['get','post'],'customer_ledger', ['as' => 'customer_ledger', 'uses' => 'CustomerReportController@customer_ledger', 'custom_label'=>'Customer Ledger']);
+
+
+            });
+
 
         });
 
