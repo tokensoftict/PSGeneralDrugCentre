@@ -122,7 +122,7 @@ class ProductController extends Controller
         $data = [];
 
         $data['departments'] = departments(true)->filter(function($item){
-            return $item->id == 1 ||  $item->id == 2 || $item->id == 3 || $item->id == 5;
+            return $item->id == 1 ||  $item->id == 2 || $item->id == 3 || $item->id == 4;
         });
         $data['selectedDepartment'] = "";
         $data['stock_id'] = "";
