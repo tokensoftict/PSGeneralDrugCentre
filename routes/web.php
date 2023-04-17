@@ -347,7 +347,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_status', ['as' => 'by_status', 'uses' => 'InvoiceReportController@by_status', 'custom_label'=>'Invoice Report By Status']);
 
-                //Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'InvoiceReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
+                Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'InvoiceReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
 
                 Route::match(['get','post'],'by_customer', ['as' => 'by_customer', 'uses' => 'InvoiceReportController@by_customer', 'custom_label'=>'Invoice Report By Customer']);
 
@@ -362,7 +362,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_status', ['as' => 'by_status', 'uses' => 'StockTransferReportController@by_status', 'custom_label'=>'Stock Transfer By Status']);
 
-                //Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'InvoiceReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
+                Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'StockTransferReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
 
             });
 

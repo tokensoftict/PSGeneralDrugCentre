@@ -40,25 +40,25 @@ class InvoiceDataTable extends DataTableComponent
                 ->sortable()->searchable(),
             Column::make("Sub total", "sub_total")
                 ->format(fn($value, $row, Column $column)=> money($row->sub_total))
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Status", "status.name")
                 ->format(fn($value, $row, Column $column) => showStatus($value))->html()
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Discount", "discount_amount")
                 ->format(fn($value, $row, Column $column)=> money($row->discount_amount))
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Total paid", "total_amount_paid")
                 ->format(fn($value, $row, Column $column)=> money($row->total_amount_paid))
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Date", "invoice_date")
                 ->format(fn($value, $row, Column $column)=> eng_str_date($row->invoice_date))
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Time", "sales_time")
                 ->format(fn($value, $row, Column $column)=> twelveHourClock($row->sales_time))
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("By", "last_updated.name")
                 ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
+                ->sortable()->searchable(),
             Column::make("Action","id")
                 ->format(function($value, $row, Column $column){
                     $html = "No Action";

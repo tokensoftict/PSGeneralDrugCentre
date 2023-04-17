@@ -142,18 +142,7 @@
             @endif
 
 
-            @if(isset($filters['rawmaterial_id']))
-                <div class="col-lg-4">
-                    <div class="mb-3">
-                        <label class="form-label">Raw Material</label>
-                        <select class="form-control" data-trigger name="filter[rawmaterial_id]" id="choices-single-default" placeholder="Select Raw Material">
-                            @foreach($materials as $material)
-                                <option {{ $filters['rawmaterial_id'] == $material->id ? 'selected' : '' }} value="{{ $material->id }}">{{ $material->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            @endif
+
 
                 @if(isset($filters['purchase_id']))
                 <div class="col-lg-4">
@@ -168,18 +157,7 @@
                 </div>
             @endif
 
-                @if(isset($filters['batchno']))
-                    <div class="col-lg-4">
-                        <div class="mb-3">
-                            <label class="form-label">Batch Number</label>
-                            <select class="form-control" data-trigger name="filter[batchno]" id="choices-single-default" placeholder="Select Batch Number">
-                                @foreach($batch_numbers as $batch_number)
-                                    <option {!! $filters['batchno'] == $batch_number ? 'selected' : '' !!} value="{!! $batch_number !!}">{!! $batch_number !!}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                @endif
+
 
             @if(isset($filters['paymentmethod_id']))
                 <div class="col-lg-4">
@@ -198,11 +176,11 @@
             @if(isset($filters['stock_id']))
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <label class="form-label">Product</label>
-                        <select class="form-control" data-trigger name="filter[stock_id]" id="choices-single-default" placeholder="Select Product">
-                            @foreach($stocks as $stock)
-                                <option {{ $filters['stock_id'] == $stock->id ? 'selected' : '' }} value="{{ $stock->id }}">{{ $stock->name }}</option>
-                            @endforeach
+                        <label class="form-label">Search Product</label>
+                        <select class="form-control select2Product" name="filter[stock_id]" id="choices-single-default" placeholder="Select Product">
+                         @if(isset($filters['stock']))
+                             <option selected value="{{ $filters['stock']->id }}">{{ $filters['stock']->name }}</option>
+                          @endif
                         </select>
                     </div>
                 </div>

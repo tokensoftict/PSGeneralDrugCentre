@@ -264,7 +264,7 @@ class TaskGenerate extends Command
         print "\n";
 
 
-        Artisan::call('db:seed --class=PermissionSeeder');
+        //Artisan::call('db:seed --class=PermissionSeeder');
 
         return Command::SUCCESS;
     }

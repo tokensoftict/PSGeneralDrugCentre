@@ -80,4 +80,7 @@ class StockTransferReportController extends Controller
         }
         return setPageContent('reports.stocktransfer.index', $data);
     }
+
+
+
 }
