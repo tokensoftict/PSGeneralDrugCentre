@@ -274,6 +274,11 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::get('{invoice}/pos_print', ['as' => 'pos_print', 'uses' => 'RetailSalesController@print_pos','custom_label'=>'Print Thermal' ]);
 
+                Route::get('{invoice}/view', ['as' => 'view', 'uses' => 'RetailSalesController@view']);
+
+
+
+
                 Route::match(['get', 'post'],'requestForDiscount', ['as' => 'requestForDiscount', 'uses' => 'RetailSalesController@requestForDiscount', 'custom_label'=>'Request For Discount']);
 
             });
