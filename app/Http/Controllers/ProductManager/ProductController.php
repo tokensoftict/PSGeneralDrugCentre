@@ -116,4 +116,23 @@ class ProductController extends Controller
 
     }
 
+
+    public function balance_stock(Request $request) {
+
+        $data = [];
+
+        $data['departments'] = departments(true)->filter(function($item){
+            return $item->id == 1 ||  $item->id == 2 || $item->id == 3 || $item->id == 5;
+        });
+        $data['selectedDepartment'] = "";
+        $data['stock_id'] = "";
+        if($request->get('stock_id')){
+            $data['stock_id'] = $request->get('stock_id');
+            $data['stock'] = Stock::with(['activeBatches','minimumBatches'])->find($request->get('stock_id'));
+            $data['selectedDepartment'] = $request->get('department_id');
+        }
+
+        return view('product.stockbatch', $data);
+    }
+
 }
