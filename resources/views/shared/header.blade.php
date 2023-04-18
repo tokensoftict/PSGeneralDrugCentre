@@ -3,7 +3,7 @@
         <div class="d-flex">
             <!-- LOGO -->
             <div class="navbar-brand-box" >
-                <img src="{{ asset('images/logo.jpg') }}" style="width: 80%;" alt="">
+                <img src="{{ asset('images/logo.jpg') }}" style="width: 30%;" alt="">
             </div>
 
             <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn">
