@@ -56,19 +56,19 @@ class InvoiceFormComponent extends Component
         $this->departments = match ($department) {
             5 => departments(true)->filter(function($item){
                 return in_array($item->id, [2,1]);
-            }),
+            })->reverse(),
             4 => departments(true)->filter(function($item){
                 return $item->id == 4;
-            }),
+            })->reverse(),
             3 => departments(true)->filter(function($item){
                 return in_array($item->id, [3, 1]);
-            }),
+            })->reverse(),
             2 => departments(true)->filter(function($item){
                 return in_array($item->id, [2, 1]);
-            }),
+            })->reverse(),
             1 => departments(true)->filter(function($item){
                 return $item->id == 1;
-            }),
+            })->reverse(),
 
         };
 
