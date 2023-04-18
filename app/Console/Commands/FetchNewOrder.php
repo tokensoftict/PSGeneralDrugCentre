@@ -22,8 +22,8 @@ class FetchNewOrder extends Command
     protected $signature = 'orders:refresh';
 
     public static array $onlineWholeSalesDepartment = [
-        "quantity",
         "bulksales",
+        "quantity",
         "wholesales",
     ];
 
