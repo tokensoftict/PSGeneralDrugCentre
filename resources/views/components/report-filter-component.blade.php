@@ -49,7 +49,7 @@
             @endif
 
             @if(isset($filters['customer_id']))
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="mb-3">
                         <label class="form-label">Customer</label>
                         <select class="form-control select2Product"  name="filter[customer_id]" id="choices-single-default" placeholder="Select Customer">
@@ -174,7 +174,7 @@
 
 
             @if(isset($filters['stock_id']))
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="mb-3">
                         <label class="form-label">Search Product</label>
                         <select class="form-control select2Product" name="filter[stock_id]" id="choices-single-default" placeholder="Select Product">
