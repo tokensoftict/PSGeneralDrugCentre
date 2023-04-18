@@ -286,7 +286,6 @@ class InvoiceRepository
 
     public function updateInvoice(Invoice $invoice ,array $invoiceData) : Invoice|array
     {
-        dd($invoiceData);
         $items = json_decode($invoiceData['invoiceitems'],true);
 
         Arr::forget($invoiceData, ['invoiceitems']);

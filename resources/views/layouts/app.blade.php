@@ -30,10 +30,11 @@
     $pm6 = \Carbon\Carbon::parse(date('Y-m-d').' 6:30 PM');
 @endphp
 @if($now->gt($pm6))
-  <body  data-bs-theme="dark" data-topbar="dark" data-sidebar="dark">
+
 @else
-   <body>
 @endif
+
+<body>
 <script>
     const BASE_URL = '{{ asset('') }}';
 </script>
