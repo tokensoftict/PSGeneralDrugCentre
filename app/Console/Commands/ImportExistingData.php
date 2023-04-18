@@ -34,8 +34,8 @@ class ImportExistingData extends Command
 
         Schema::disableForeignKeyConstraints();
 
-        /*
 
+/*
         $stores = DB::connection('mysql2')->table('store')->get()->first();
 
         $stores = (array)$stores;
@@ -187,7 +187,6 @@ class ImportExistingData extends Command
             }
 
         });
-*/
 
         $stock_batch =  DB::connection('mysql2')->table('stock_batch')->select(
             'id',
@@ -216,7 +215,7 @@ class ImportExistingData extends Command
             }
 
         });
-/*
+
         DB::statement(
             "UPDATE stocks INNER JOIN (SELECT stock_id, SUM(wholesales) as wholesum, SUM(bulksales) as bulksum, SUM(retail) as retailsum, SUM(quantity) as quantitysum from stockbatches GROUP BY stock_id)  b ON stocks.id = b.stock_id SET stocks.wholesales = b.wholesum, stocks.bulksales=b.bulksum, stocks.retail = b.retailsum, stocks.quantity =b.quantitysum");
 
@@ -448,18 +447,6 @@ class ImportExistingData extends Command
 
 
 
-        $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
-
-        DB::transaction(function() use($stock_opening) {
-
-            foreach ($stock_opening->chunk(1000) as $chunk) {
-
-                DB::table('stockopenings')->insert(json_decode($chunk->toJson(), true));
-
-            }
-
-        });
-
 
 
         $stock_bincard =  DB::connection('mysql2')->table('stock_bincard')
@@ -545,7 +532,81 @@ class ImportExistingData extends Command
             }
 
         });
+
 */
+
+        //import po
+
+        $purchases = DB::connection('mysql2')->table('po')->select(
+            'id',
+            DB::raw('(CASE
+                        WHEN status = "completed" THEN 6
+                        WHEN status = "draft" THEN 3
+                        WHEN status = "approved" THEN 7
+                     END) AS status_id'),
+            'created_by as user_id',
+            'approved_by as completed_by',
+            'supplier_id',
+            'for_department as department',
+            'date_created',
+            'date_completed',
+            'created_at',
+            'updated_at'
+        );
+
+        DB::transaction(function() use($purchases) {
+
+            foreach ($purchases->chunk(3500) as $chunk) {
+
+                DB::table('purchases')->insert(json_decode($chunk->toJson(), true));
+
+            }
+
+        });
+
+
+        //import po items
+
+        $purchasesitesm = DB::connection('mysql2')->table('po_items')->select(
+            'id',
+            'po_id as purchase_id',
+            'stock_id',
+            'expiry_date',
+            'qty',
+            'cost_price',
+            'added_by as user_id',
+            'created_at',
+            'updated_at'
+        );
+
+
+        DB::transaction(function() use($purchasesitesm) {
+
+            foreach ($purchasesitesm->chunk(3500) as $chunk) {
+
+                DB::table('purchaseitems')->insert(json_decode($chunk->toJson(), true));
+
+            }
+
+        });
+
+
+        /*
+         *  $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
+
+        DB::transaction(function() use($stock_opening) {
+
+            foreach ($stock_opening->chunk(35000) as $chunk) {
+
+                DB::table('stockopenings')->insert(json_decode($chunk->toJson(), true));
+
+            }
+
+        });
+         */
+
+
+
         Schema::enableForeignKeyConstraints();
 
 
