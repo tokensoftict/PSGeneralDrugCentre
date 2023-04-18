@@ -48,7 +48,7 @@ class ProductBincard extends DataTableComponent
         return [
             Column::make("Type", "bin_card_type")
                 ->sortable()
-                ->format(fn($value, $row, Column $column) => self::$bincardType)
+                ->format(fn($value, $row, Column $column) => self::$bincardType[$value])
                 ->searchable(),
             Column::make("In qty", "in_qty")
                 ->sortable()->searchable(),
