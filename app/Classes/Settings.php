@@ -7,6 +7,7 @@ use Spatie\Valuestore\Valuestore;
 class Settings extends Valuestore
 {
 
+
     public static array $department = [
         'quantity' => 'Main Store',
         'wholesales' => 'Whole Sales Department',

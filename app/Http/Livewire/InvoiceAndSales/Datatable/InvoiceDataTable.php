@@ -19,16 +19,12 @@ class InvoiceDataTable extends DataTableComponent
 
     public array $filters = [];
 
-    public bool $perPageAll = true;
-
-    public array $perPageAccepted = [100, 200, 500, 100000000];
+    public array $perPageAccepted = [100, 200, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5000, 6000, 6500];
 
 
     public function builder(): Builder
     {
-
         return Invoice::query()->select('*')->filterdata($this->filters);
-
 
     }
 
@@ -84,34 +80,34 @@ class InvoiceDataTable extends DataTableComponent
                         $html = '<div class="dropdown"><button class="btn btn-link font-size-16 shadow-none py-0 text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded"></i></button>';
                         $html .= '<ul class="dropdown-menu dropdown-menu-end">';
                         if (auth()->user()->can('view', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.view', $row->id) . '" class="dropdown-item">Invoice Details</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.view', $row->id) . '" class="dropdown-item">Invoice Details</a></li>';
                         }
                         if (auth()->user()->can('edit', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.edit', $row->id) . '" class="dropdown-item">Edit Invoice</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.edit', $row->id) . '" class="dropdown-item">Edit Invoice</a></li>';
                         }
 
                         if (auth()->user()->can('return', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.return', $row->id) . '" class="dropdown-item">Return Invoice</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.return', $row->id) . '" class="dropdown-item">Return Invoice</a></li>';
                         }
 
                         if (auth()->user()->can('printAfour', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.print_afour', $row->id) . '" class="dropdown-item print">Print A4</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.print_afour', $row->id) . '" class="dropdown-item print">Print A4</a></li>';
                         }
 
                         if (auth()->user()->can('return', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.return', $row->id) . '" class="dropdown-item">Return Invoice</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.return', $row->id) . '" class="dropdown-item">Return Invoice</a></li>';
                         }
 
                         if (auth()->user()->can('printThermal', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.pos_print', $row->id) . '" class="dropdown-item print">Print Thermal</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.pos_print', $row->id) . '" class="dropdown-item print">Print Thermal</a></li>';
                         }
 
                         if (auth()->user()->can('printWaybill', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.print_way_bill', $row->id) . '" class="dropdown-item print">Print Waybill</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.print_way_bill', $row->id) . '" class="dropdown-item print">Print Waybill</a></li>';
                         }
 
                         if (auth()->user()->can('delete', $row)) {
-                            $html .= '<a href="' . route('invoiceandsales.destroy', $row->id) . '" href="javascript:" class="dropdown-item">Delete Invoice</a></li>';
+                            $html .= '<li><a href="' . route('invoiceandsales.destroy', $row->id) . '" href="javascript:" class="dropdown-item">Delete Invoice</a></li>';
                         }
 
                         $html .= '</ul></div>';

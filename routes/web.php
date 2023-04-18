@@ -313,7 +313,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_system_user', ['as' => 'by_system_user', 'uses' => 'PurchaseReportsController@by_system_user', 'custom_label'=>'Purchase Report By User']);
 
-                //Route::match(['get','post'],'by_stock', ['as' => 'by_material', 'uses' => 'PurchaseReportsController@by_stock', 'custom_label'=>'Purchase Report By Stock']);
+                Route::match(['get','post'],'by_stock', ['as' => 'by_material', 'uses' => 'PurchaseReportsController@by_stock', 'custom_label'=>'Purchase Report By Stock']);
 
                 Route::match(['get','post'],'by_status', ['as' => 'by_status', 'uses' => 'PurchaseReportsController@by_status', 'custom_label'=>'Purchase Report By Status']);
 

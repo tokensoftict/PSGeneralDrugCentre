@@ -4,12 +4,13 @@
 @section('pageHeaderDescription', $subtitle)
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/flatpickr/flatpickr.min.css') }}"/>
     <link href="{{ asset('libs/choices.js/public/assets/styles/choices.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('js')
-
+    <script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
     <script src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
     <script src="{{ asset('libs/choices.js/public/assets/scripts/choices.min.js') }}"></script>
     <script>
@@ -22,6 +23,35 @@
             }
         });
 
+
+
+    </script>
+    <script>
+        window.onload = function (){
+            $(document).ready(function(){
+                var path = '{{ route('findpurchasestock') }}'+"?select2=yes"
+                var obj = this;
+                var select =  $('.select2Product').select2({
+                    placeholder: 'Select for product',
+                    ajax: {
+                        url: path,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (data) {
+                            return {
+                                searchTerm: data.term // search term
+                            };
+                        },
+                        processResults: function (response) {
+                            return {
+                                results:response
+                            };
+                        },
+                    }
+                })
+
+            });
+        }
     </script>
 @endsection
 

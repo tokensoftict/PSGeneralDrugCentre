@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PurchaseReport;
 
 use App\Http\Controllers\Controller;
+use App\Models\Stock;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -87,6 +88,7 @@ class PurchaseReportsController extends Controller
             'title' => 'Purchase Report By Date and Stock',
             'subtitle' => 'View Report By Date Range and Stock',
             'filters' => [
+                'stock' => Stock::find(1),
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
                 'stock_id' => 1,
@@ -99,11 +101,12 @@ class PurchaseReportsController extends Controller
         if($request->get('filter'))
         {
             $data['filters'] = $request->get('filter');
+            $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
             $data['filters']['filters']['between.purchases.date_created'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
 
         }
-        return setPageContent('reports.purchases.purchaseorderbymaterial', $data);
+        return view('reports.purchases.purchaseorderbymaterial', $data);
     }
 
     public function by_status(Request $request)

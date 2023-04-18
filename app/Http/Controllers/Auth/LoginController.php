@@ -20,10 +20,12 @@ class LoginController extends Controller
     {
         $request->validate([
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         $credentials = $request->except(['_token']);
+
+        $credentials['status'] = 1;
 
         if (auth()->attempt($credentials)) {
 
