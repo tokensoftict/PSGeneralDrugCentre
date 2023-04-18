@@ -188,6 +188,7 @@ class ImportExistingData extends Command
 
         });
 
+*/
         $stock_batch =  DB::connection('mysql2')->table('stock_batch')->select(
             'id',
             'received_date',
@@ -215,7 +216,7 @@ class ImportExistingData extends Command
             }
 
         });
-
+/*
         DB::statement(
             "UPDATE stocks INNER JOIN (SELECT stock_id, SUM(wholesales) as wholesum, SUM(bulksales) as bulksum, SUM(retail) as retailsum, SUM(quantity) as quantitysum from stockbatches GROUP BY stock_id)  b ON stocks.id = b.stock_id SET stocks.wholesales = b.wholesum, stocks.bulksales=b.bulksum, stocks.retail = b.retailsum, stocks.quantity =b.quantitysum");
 
@@ -590,13 +591,13 @@ class ImportExistingData extends Command
 
         });
 
-*/
+
 
            $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
 
         DB::transaction(function() use($stock_opening) {
 
-            foreach ($stock_opening->chunk(35000) as $chunk) {
+            foreach ($stock_opening->chunk(3500) as $chunk) {
 
                 DB::table('stockopenings')->insert(json_decode($chunk->toJson(), true));
 
@@ -605,7 +606,7 @@ class ImportExistingData extends Command
         });
 
 
-
+*/
 
         Schema::enableForeignKeyConstraints();
 
