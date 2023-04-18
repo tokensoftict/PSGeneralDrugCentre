@@ -377,6 +377,13 @@ Route::middleware(['auth'])->group(function () {
             });
 
 
+            Route::prefix('productReport')->as('productReport.')->namespace('ProductReport')->group(function(){
+
+                Route::match(['get','post'],'bin', ['as' => 'bincard_report', 'uses' => 'ProductReportController@bincard_report', 'custom_label'=>'Product Bincard Report']);
+
+            });
+
+
         });
 
         });
