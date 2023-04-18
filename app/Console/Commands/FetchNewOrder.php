@@ -22,9 +22,9 @@ class FetchNewOrder extends Command
     protected $signature = 'orders:refresh';
 
     public static array $onlineWholeSalesDepartment = [
+        "quantity",
         "bulksales",
         "wholesales",
-        "quantity",
     ];
 
     public static array $onlineRetailSalesDepartment = ['retail'];
@@ -79,7 +79,7 @@ class FetchNewOrder extends Command
                     $columns[] = $item->department;
                     $returnBatches[] = [
                         'id' => $item->stockbatch_id,
-                        $item->department=>$item->quantity
+                        $item->department=> ($item->stock->{ $item->department} + $item->quantity)
                     ];
                      $cards[] = [
                         'bin_card_type'=>"APP//RETURN",
@@ -195,7 +195,6 @@ class FetchNewOrder extends Command
                 'batches' => $item['batches']
             ] ;
         })->toArray();
-
 
         $invoiceData['customer_id'] = $customer;
 

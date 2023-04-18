@@ -408,7 +408,7 @@ class InvoiceRepository
 
         $removeQuantity = [];
         $columns = [];
-        $invoiceitems->each(function ($item) use(&$invoice, &$columns) {
+        $invoiceitems->each(function ($item) use(&$invoice, &$columns,&$removeQuantity) {
             $batches = $item['batches'];
 
             Arr::forget($item, ['name','box','carton','av_qty','total_incentives','batches']);
@@ -427,7 +427,7 @@ class InvoiceRepository
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
                 ]);
-                $removeQuantity[] =  $batch;
+                $removeQuantity[] =  Arr::only($batch, ['id',$batch['department']]);
             });
 
             $invoice->invoiceitems()->save(

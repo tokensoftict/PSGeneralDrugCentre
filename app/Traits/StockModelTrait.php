@@ -105,7 +105,6 @@ trait StockModelTrait
         foreach ($departments as $department){
 
             $batches = $this->pingSaleableBatches($department, $online_quantity, $activeBatches);
-
             if($batches !== false) {
 
                 $qty = 0;
@@ -150,6 +149,7 @@ trait StockModelTrait
 
         foreach ($activeBatches as $batch)
         {
+            if($batch->{$from} === 0) continue;
             if($batch->{$from} - $qty < 0){
                 $qty = $qty - $batch->{$from};
                 $neededBatches[] = [
@@ -161,6 +161,7 @@ trait StockModelTrait
                 ];
             }else{
                 $newqty = $batch->{$from} - $qty;
+
                 $neededBatches[] = [
                     'id' => $batch->id,
                     $from => $newqty,
