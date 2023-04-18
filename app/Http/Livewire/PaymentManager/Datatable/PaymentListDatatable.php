@@ -53,6 +53,7 @@ class PaymentListDatatable extends DataTableComponent
 
             Column::make("Invoice Number", "invoice_number")
                 ->format(fn($value, $row, Column $column)=> $row->invoice_number)
+                ->searchable()
                 ->sortable(),
             Column::make("Type", "invoice_type")
                 ->format(function($value, $row, Column $column){
@@ -61,18 +62,22 @@ class PaymentListDatatable extends DataTableComponent
                 ->sortable(),
             Column::make("Sub Total", "total_paid")
                 ->format(fn($value, $row, Column $column)=> money($row->sub_total))
+                ->searchable()
                 ->sortable(),
             Column::make("Total Paid", "total_paid")
                 ->format(fn($value, $row, Column $column)=> money($row->total_paid))
+                ->searchable()
                 ->footer(function($rows){
                     return money($rows->sum('total_paid'));
                 })
                 ->sortable(),
             Column::make("Payment Date", "payment_date")
                 ->format(fn($value, $row, Column $column) => eng_str_date($row->payment_date))
+                ->searchable()
                 ->sortable(),
             Column::make("Time", "payment_time")
                 ->format(fn($value, $row, Column $column) => twelveHourClock($row->payment_time))
+                ->searchable()
                 ->sortable(),
             Column::make("By", "user.name")
                 ->format(fn($value, $row, Column $column) => $value)
