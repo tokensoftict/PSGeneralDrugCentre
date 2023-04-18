@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CustomerReport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Creditpaymentlog;
+use App\Models\Customer;
 use App\Models\CustomerLedger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -17,18 +18,20 @@ class CustomerReportController extends Controller
             'title' => 'Customer Balance Sheet Report',
             'subtitle' => 'View Customer Balance Sheet Report By Date Range and customer',
             'filters' => [
+                'customer' => Customer::find(2),
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
-                'customer_id' => 1,
+                'customer_id' => 2,
                 'filters' => [
                     'between.return_date' => monthlyDateRange(),
-                    'customer_id' => 1
+                    'customer_id' => 2
                 ]
             ]
         ];
         if($request->get('filter'))
         {
             $data['filters'] = $request->get('filter');
+            $data['filters']['customer'] = Customer::find($data['filters']['customer_id']);
             $data['filters']['filters']['between.return_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['customer_id'] = $data['filters']['customer_id'];
         }
@@ -48,18 +51,20 @@ class CustomerReportController extends Controller
             'title' => 'Customer Ledger  Report',
             'subtitle' => 'View Customer  Ledger Report By Date Range and customer',
             'filters' => [
+                'customer' => Customer::find(2),
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
-                'customer_id' => 1,
+                'customer_id' => 2,
                 'filters' => [
                     'between.return_date' => monthlyDateRange(),
-                    'customer_id' => 1
+                    'customer_id' => 2
                 ]
             ]
         ];
         if($request->get('filter'))
         {
             $data['filters'] = $request->get('filter');
+            $data['filters']['customer'] = Customer::find($data['filters']['customer_id']);
             $data['filters']['filters']['between.return_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['customer_id'] = $data['filters']['customer_id'];
         }

@@ -52,10 +52,10 @@
                 <div class="col-lg-4">
                     <div class="mb-3">
                         <label class="form-label">Customer</label>
-                        <select class="form-control" data-trigger name="filter[customer_id]" id="choices-single-default" placeholder="Select Customer">
-                            @foreach($customers as $customer)
-                                <option {{ $filters['customer_id'] == $customer->id ? 'selected' : '' }} value="{{ $customer->id }}">{{ $customer->firstname. " ".$customer->lastname }}</option>
-                            @endforeach
+                        <select class="form-control select2Product"  name="filter[customer_id]" id="choices-single-default" placeholder="Select Customer">
+                            @if(isset($filters['customer']))
+                                <option selected value="{{ $filters['customer']->id }}">{{ $filters['customer']->firstname }} {{ $filters['customer']->lastname }}</option>
+                            @endif
                         </select>
                     </div>
                 </div>
