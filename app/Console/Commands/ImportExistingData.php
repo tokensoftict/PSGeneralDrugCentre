@@ -533,7 +533,7 @@ class ImportExistingData extends Command
 
         });
 
-*/
+
 
         //import po
 
@@ -590,9 +590,9 @@ class ImportExistingData extends Command
 
         });
 
+*/
 
-        /*
-         *  $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
+           $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
 
         DB::transaction(function() use($stock_opening) {
 
@@ -603,7 +603,7 @@ class ImportExistingData extends Command
             }
 
         });
-         */
+
 
 
 
