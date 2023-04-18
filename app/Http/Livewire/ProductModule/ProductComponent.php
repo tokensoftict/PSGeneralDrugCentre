@@ -68,18 +68,29 @@ class ProductComponent extends Component
 
     public function saveStock()
     {
-        $this->validate([
-            "product_data.name"=>"bail|required|max:255",
-            "product_data.piece"=>"bail|required",
-            "product_data.carton"=>"bail|required",
-            "product_data.box"=>"bail|required",
-            "product_data.whole_price"=>"required",
-            "product_data.bulk_price"=>"required",
-            "product_data.retail_price"=>"required",
-            "product_data.location"=>"required"
-        ]);
+
+       $data = [
+           "product_data.name"=>"bail|required|max:255",
+           "product_data.piece"=>"bail|required",
+           "product_data.carton"=>"bail|required",
+           "product_data.box"=>"bail|required",
+           "product_data.location"=>"required"
+       ];
 
 
+        if(userCanView('product.changeSellingPrice'))
+        {
+            $data["product_data.whole_price"] ="required";
+            $data["product_data.bulk_price"] ="required";
+            $data["product_data.retail_price"] ="required";
+        }
+        else {
+
+            Arr::forget($this->product_data, ['whole_price','bulk_price','retail_price']);
+
+        }
+
+        $this->validate($data);
 
         if(isset($this->product->id))
         {
