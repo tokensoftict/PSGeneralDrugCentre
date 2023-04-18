@@ -552,7 +552,7 @@ class ImportExistingData extends Command
             'date_completed',
             'created_at',
             'updated_at'
-        );
+        )->get();
 
         DB::transaction(function() use($purchases) {
 
@@ -577,7 +577,7 @@ class ImportExistingData extends Command
             'added_by as user_id',
             'created_at',
             'updated_at'
-        );
+        )->get();
 
 
         DB::transaction(function() use($purchasesitesm) {
