@@ -593,20 +593,9 @@ class ImportExistingData extends Command
 
 */
 
-           $stock_opening = DB::connection('mysql2')->table('stock_opening')->get();
-
-        DB::transaction(function() use($stock_opening) {
-
-            foreach ($stock_opening->chunk(3500) as $chunk) {
-
-                DB::table('stockopenings')->insert(json_decode($chunk->toJson(), true));
-
-            }
-
-        });
-
-
-
+           $stock_opening = DB::connection('mysql2')->table('stock_opening')->orderBy('id', 'ASC')->chunk(2000, function($chunks){
+               DB::table('stockopenings')->insert(json_decode($chunks->toJson(), true));
+           });
 
         Schema::enableForeignKeyConstraints();
 
