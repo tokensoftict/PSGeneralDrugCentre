@@ -14,9 +14,6 @@
     @livewireStyles
     @livewireScripts
     <style>
-        .table-responsive {
-            overflow: visible !important;
-        }
         .table td{
             font-size: 12px !important;
         }

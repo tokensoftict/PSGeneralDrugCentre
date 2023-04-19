@@ -32,5 +32,7 @@
 @endsection
 
 @section('content')
+    <div class="table-responsive">
     <livewire:payment-manager.datatable.payment-list-datatable :filters="$filters['filters']"/>
+    </div>
 @endsection

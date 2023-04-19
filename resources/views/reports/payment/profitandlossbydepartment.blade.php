@@ -87,7 +87,7 @@
 @endsection
 
 @section('content')
-
+    <div class="table-responsive">
     <table class="table table-bordered table-striped m-t-40" id="invoice-list">
         <thead>
         <tr>
@@ -114,5 +114,5 @@
         </tr>
         </tfoot>
     </table>
-
+    </div>
 @endsection

@@ -5,5 +5,7 @@
 
 
 @section('content')
+    <div class="table-responsive">
     <livewire:invoice-and-sales.datatable.invoice-data-table :filters="$filters"/>
+    </div>
 @endsection

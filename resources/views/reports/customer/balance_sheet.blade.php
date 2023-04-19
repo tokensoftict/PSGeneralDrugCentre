@@ -77,7 +77,8 @@
 @section('content')
 
     <h5><b>Opening Balance</b> : {{ number_format($opening,2) }}</h5>
-    <table id="invoice-list" class="table table-bordered table-responsive table table-striped">
+    <div class="table-responsive">
+    <table id="invoice-list" class="table table-bordered  table table-striped">
         <thead>
         <tr>
             <th>#</th>
@@ -113,4 +114,5 @@
         <tfoot>
         </tfoot>
     </table>
+    </div>
 @endsection

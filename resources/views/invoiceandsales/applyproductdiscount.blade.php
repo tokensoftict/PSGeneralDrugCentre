@@ -15,7 +15,7 @@
 @endsection
 
 @section('content')
-
-    <livewire:invoice-and-sales.discount.apply-product-discount-component :invoice="$invoice"/>
-
+    <div class="table-responsive">
+        <livewire:invoice-and-sales.discount.apply-product-discount-component :invoice="$invoice"/>
+    </div>
 @endsection

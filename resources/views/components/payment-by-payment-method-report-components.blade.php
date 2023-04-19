@@ -4,6 +4,7 @@
     @endphp
     @foreach($payments as $payment)
         <h3>{{ $payment->name }}'S PAYMENT</h3>
+        <div class="table-responsive">
     <table class="table table-bordered table-striped mt-5 payment">
         <thead>
             <tr>
@@ -54,6 +55,7 @@
         </tr>
         </tfoot>
     </table>
+        </div>
     @endforeach
 
 <br/><br/>

@@ -62,5 +62,7 @@
 @endsection
 
 @section('content')
+    <div class="table-responsive">
     <livewire:purchase-order.datatable.purchase-order-item-datatable :filters="$filters['filters']"/>
+    </div>
 @endsection

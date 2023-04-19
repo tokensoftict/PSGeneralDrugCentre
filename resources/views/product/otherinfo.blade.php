@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-
+    <div class="table-responsive">
     <livewire:product-module.datatable.product-component-datatable-otherinfo :filters="$filters" template="boostrap5"/>
-
+    </div>
 @endsection

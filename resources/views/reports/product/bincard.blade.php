@@ -64,5 +64,7 @@
 @endsection
 
 @section('content')
+    <div class="table-responsive">
     <livewire:product-module.bin-card.product-bincard :filters="$filters['filters']"/>
+    </div>
 @endsection

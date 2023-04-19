@@ -21,7 +21,8 @@
 @endsection
 
 @section('content')
-
+    <div class="table-responsive">
     <livewire:stock-transfer.datatable.stock-transfer-datatable :filters="$filters"/>
+    </div>
 
 @endsection
