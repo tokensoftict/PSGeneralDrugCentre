@@ -35,6 +35,7 @@ class InvoiceitemDatatable extends DataTableComponent
                 ->sortable()->searchable(),
             Column::make("Department", "invoice.in_department")
                 ->format(fn($value, $row, Column $column)=> Settings::$department[$value]),
+                ->sortable(),
             Column::make("Product", "stock.name")
                 ->format(fn($value, $row, Column $column)=> $value)
                 ->sortable()->searchable(),
