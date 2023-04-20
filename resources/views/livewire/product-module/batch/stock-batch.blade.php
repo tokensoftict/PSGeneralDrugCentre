@@ -18,7 +18,7 @@
                 <td>{{ $this->stock->name }}</td>
                 <td><input type="text"  wire:model.defer="batches.{{ $key}}.expiry_date" class="form-control datepicker-basic"/> </td>
                 <td><input type="number" wire:model.defer="batches.{{ $key}}.{{ $selectedDepartment }}" class="form-control"> </td>
-                <td><input type="number" step="0.0000001" wire:model.defer="batches.{{ $key}}.cost_price" class="form-control"> </td>
+                <td><input type="number" step="0.0000001" wire:model.defer="batches.{{ $key}}.{{ cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) }}" class="form-control"> </td>
                 <td><select wire:model.defer="batches.{{ $key}}.supplier_id" class="form-control">
                         @foreach($this->suppliers as $supplier)
                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
