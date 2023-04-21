@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Http\Livewire\InvoiceAndSales\InvoiceFormComponent;
+use App\Jobs\AddLogToCustomerLedger;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushStockUpdateToServerFromDeletedFetchInvoice;
+use App\Models\CustomerLedger;
 use App\Models\Invoice;
 use App\Models\Onlineordertotal;
 use App\Models\Stock;
@@ -69,18 +71,22 @@ class FetchNewOrder extends Command
                 $this->warn('Already exist in local database '.$order['invoice_no']);
 
                 if( $invoice->payment_id && $invoice->payment()->exists()){
+                    CustomerLedger::where('payment_id', $invoice->payment_id )->delete();
                     $invoice->payment->delete();
                 }
+                CustomerLedger::where('invoice_id', $invoice->id)->delete();
 
                 $returnBatches = [];
                 $columns = [];
                 $cards = [];
                  $invoice->invoiceitembatches->map(function($item) use(&$returnBatches, &$columns, &$cards){
                     $columns[] = $item->department;
-                    $returnBatches[] = [
+                    $returnBatches[] = array_merge([
                         'id' => $item->stockbatch_id,
                         $item->department=> ($item->stock->{ $item->department} + $item->quantity)
-                    ];
+                    ], addOtherDepartment($item->stockbatch, $item->department ));
+
+
                      $cards[] = [
                         'bin_card_type'=>"APP//RETURN",
                         'bin_card_date'=>todaysDate(),

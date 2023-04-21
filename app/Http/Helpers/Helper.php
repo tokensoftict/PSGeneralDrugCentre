@@ -6,13 +6,14 @@ use App\Models\Department;
 use App\Models\Paymentmethod;
 use App\Models\Usergroup;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use App\Classes\Settings;
 use Spatie\Valuestore\Valuestore;
 
 function onlineBase(){
-    return  'https://admin.generaldrugcentre.com/';  //env('CURL_BASE_URL', 'https://admin.generaldrugcentre.com/api/data/');
+    return  'http://localhost/rest-ecommerce-github/general_drug/public/'; //'https://admin.generaldrugcentre.com/';  //env('CURL_BASE_URL', 'https://admin.generaldrugcentre.com/api/data/');
 }
 
 function _GET($endpoint, $payload = []) : array|bool
@@ -36,11 +37,15 @@ function _FETCH($url) : array|bool
     return false;
 }
 
-function _POST($endpoint, $payload = []) : array
+function _POST($endpoint, $payload = []) : array|bool
 {
     $response =   Http::timeout(120)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
-    return json_decode($response->body(), true);
+    if($response->status() == 200 )
+    {
+        return json_decode($response->body(), true);
+    }
+    return false;
 }
 
 if (!function_exists('isJson')) {
@@ -111,11 +116,11 @@ function manufacturers($active = false)
         return DB::table('manufacturers')->get();
     });
 
-     if($active === true) return $manus->filter(function($item){
-         return $item->status == true;
-     });
+    if($active === true) return $manus->filter(function($item){
+        return $item->status == true;
+    });
 
-     return $manus;
+    return $manus;
 }
 
 
@@ -166,7 +171,7 @@ function departments($active = false)
     });
 
     if($active === true) return $depts->filter(function($item){
-       return $item->status == true;
+        return $item->status == true;
     });
 
     return $depts;
@@ -215,7 +220,7 @@ function stockgroups($active = false)
     });
 
     if($active === true) return $depts->filter(function($item){
-       return $item->status == true;
+        return $item->status == true;
     });
 
     return $depts;
@@ -253,7 +258,7 @@ function usergroups($active = false)
 function bank_accounts($active = false)
 {
     $bank_accounts =  Cache::remember('bank_accounts', 85400, function(){
-       return   DB::table('bank_accounts')->select("banks.name","bank_accounts.bank_id","bank_accounts.account_number","bank_accounts.account_name",'bank_accounts.status','bank_accounts.id')->leftJoin('banks','bank_accounts.bank_id','=','banks.id')->get();
+        return   DB::table('bank_accounts')->select("banks.name","bank_accounts.bank_id","bank_accounts.account_number","bank_accounts.account_name",'bank_accounts.status','bank_accounts.id')->leftJoin('banks','bank_accounts.bank_id','=','banks.id')->get();
     });
 
     if($active === true) return $bank_accounts->filter(function($item){
@@ -441,7 +446,7 @@ function eng_str_date($time = false, $pad = false)
 
 function twentyfourHourClock($time)
 {
-  return  date('H:i', strtotime($time));
+    return  date('H:i', strtotime($time));
 }
 
 function twelveHourClock($time)
@@ -940,7 +945,7 @@ function invoice_status($status){
 
 
 function dailySales(){
-   return \App\Models\Invoice::where('invoice_date',dailyDate())->where('status','COMPLETE')->sum('total_amount_paid');
+    return \App\Models\Invoice::where('invoice_date',dailyDate())->where('status','COMPLETE')->sum('total_amount_paid');
 }
 
 
@@ -989,7 +994,7 @@ function getActualStore($product_type,$store_selected){
     $store = Warehousestore::find($store_selected);
 
     if($product_type == "NORMAL") {
-       return $store->packed_column;
+        return $store->packed_column;
     }
     if($product_type == "PACKED") {
         return $store->yard_column;
@@ -1073,16 +1078,16 @@ function numberTowords($num)
 
 
 function logActivity($invoice_id, $invoice_number, $activities){
-   /*
-    \App\Models\Invoiceactivitylog::create([
-        'invoice_id'=>$invoice_id,
-        'invoice_number'=>$invoice_number,
-        'activity'=>$activities,
-        'user_id'=>auth()->id(),
-        'activity_date'=>date('Y-m-d'),
-        'activity_time'=>Carbon::now()->toTimeString()
-    ]);
-   */
+    /*
+     \App\Models\Invoiceactivitylog::create([
+         'invoice_id'=>$invoice_id,
+         'invoice_number'=>$invoice_number,
+         'activity'=>$activities,
+         'user_id'=>auth()->id(),
+         'activity_date'=>date('Y-m-d'),
+         'activity_time'=>Carbon::now()->toTimeString()
+     ]);
+    */
 }
 
 function isLogAvailable($invoice_id){
@@ -1143,4 +1148,19 @@ function can(array $permissions, $model): bool
     return  false;
 }
 
+function addOtherDepartment($batch, $department): array
+{
+    if($department === 'retail')  return [];
+
+    $nessArray = [
+        'bulksales' => $batch->bulksales,
+        'quantity' => $batch->quantity,
+        'wholesales' => $batch->wholesales
+    ];
+
+   Arr::forget($nessArray, $department);
+
+    return $nessArray;
+
+}
 

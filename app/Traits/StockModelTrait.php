@@ -31,7 +31,18 @@ trait StockModelTrait
 
     public function minimumBatches()
     {
-        return $this->stockbatches()->orderBy('received_date', 'DESC')->limit(3);
+        $departments = departments(true)->filter(function($item){
+            return $item->quantity_column !== NULL;
+        });
+
+        return $this->stockbatches()->orderBy('received_date', 'DESC')
+            ->where(function($query) use($departments){
+                foreach ($departments as $department)
+                {
+                    if($department->quantity_column == NULL) continue;
+                    $query->orWhere($department->quantity_column,">", 0);
+                }
+            });
     }
 
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
@@ -104,17 +115,38 @@ trait StockModelTrait
 
         foreach ($departments as $department){
 
-            $batches = $this->pingSaleableBatches($department, $online_quantity, $activeBatches);
-            if($batches !== false) {
+            if($department === 'retail') {
+                $cost_price_column = cost_price_column(4);
+            }else{
+                $cost_price_column = cost_price_column();
+            }
 
-                $qty = 0;
-                foreach ($batches as $batch){
+            foreach ($activeBatches as $batch)
+            {
+                if($batch->{$department} === 0) continue;
+                if($batch->{$department} - $online_quantity < 0){
+                    $online_quantity = $online_quantity - $batch->{$department};
+                    $allbatches[] = array_merge([
+                        'id' => $batch->id,
+                        $department => 0,
+                        'qty' => $batch->{$department},
+                        'cost_price' => $batch->{$cost_price_column},
+                        'department' => $department
+                    ], addOtherDepartment($batch, $department));
+                }else{
+                    $newqty = $batch->{$department} - $online_quantity;
 
-                    $qty+=$batch['qty'];
-                    $allbatches[] = $batch;
+                    $allbatches[] = array_merge([
+                        'id' => $batch->id,
+                        $department => $newqty,
+                        'cost_price' => $batch->{$cost_price_column},
+                        'department' => $department,
+                        'qty' => $online_quantity
+                    ],addOtherDepartment($batch, $department));
+                    $online_quantity = 0;
                 }
 
-                $online_quantity= $online_quantity-$qty;
+                if($online_quantity === 0) return $allbatches;
             }
 
             if($online_quantity === 0) break;

@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class AddLogToProductBinCard //implements ShouldQueue
 {
@@ -38,14 +39,12 @@ class AddLogToProductBinCard //implements ShouldQueue
             $item['created_at'] = Carbon::now()->toDateTimeLocalString();
             $item['updated_at'] = Carbon::now()->toDateTimeLocalString();
             return $item;
-        })->toArray();  // ad created and updated filed to column
-//dd($this->bincards);
-        \DB::table('stockbincards') ->insert($this->bincards);
-      /*
-        \DB::transaction(function(){
+        })->toArray();
 
+        DB::transaction(function(){
+            DB::table('stockbincards') ->insert($this->bincards);
         });
-      */
+
 
     }
 }

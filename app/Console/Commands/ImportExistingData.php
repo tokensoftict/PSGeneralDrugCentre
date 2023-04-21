@@ -33,9 +33,8 @@ class ImportExistingData extends Command
         ini_set('memory_limit', '-1');
 
         Schema::disableForeignKeyConstraints();
-
-
 /*
+
         $stores = DB::connection('mysql2')->table('store')->get()->first();
 
         $stores = (array)$stores;
@@ -149,7 +148,7 @@ class ImportExistingData extends Command
 
         });
 
-
+*/
         // make sure you drop added_by column
         $stocks = DB::connection('mysql2')->table('stocks')->select(
             'id',
@@ -227,7 +226,7 @@ class ImportExistingData extends Command
 
 
         //import invoice
-
+/*
         $invoices =  DB::connection('mysql2')->table('invoices')->select(
             'id',
             'invoice_number',
@@ -591,12 +590,12 @@ class ImportExistingData extends Command
 
         });
 
-*/
+
 
            $stock_opening = DB::connection('mysql2')->table('stock_opening')->orderBy('id', 'ASC')->chunk(2000, function($chunks){
                DB::table('stockopenings')->insert(json_decode($chunks->toJson(), true));
            });
-
+*/
         Schema::enableForeignKeyConstraints();
 
 

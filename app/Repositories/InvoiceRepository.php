@@ -427,7 +427,8 @@ class InvoiceRepository
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
                 ]);
-                $removeQuantity[] =  Arr::only($batch, ['id',$batch['department']]);
+                $removeQuantity[] = Arr::only($batch, ['id','bulksales','quantity','wholesales','retail']);
+
             });
 
             $invoice->invoiceitems()->save(
@@ -450,6 +451,20 @@ class InvoiceRepository
 
         $this->initiateBinCard($invoice);
 
+
+        if($invoice->customer_id !== 1) { // customer ledger for walking customer
+
+            dispatch(new AddLogToCustomerLedger([
+                'payment_id' => NULL,
+                'invoice_id' => $invoice->id,
+                'customer_id' => $invoice->customer_id,
+                'amount' => -($invoice->sub_total - $invoice->discount_amount),
+                'transaction_date' => $invoice->invoice_date,
+                'user_id' => auth()->id(),
+            ]));
+        }
+
+
         dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
 
         return $invoice;
@@ -466,10 +481,10 @@ class InvoiceRepository
                 'bin_card_date'=>todaysDate(),
                 'user_id'=>auth()->id(),
                 'stock_id' => $item->stock_id,
-                'return_qty'=>$item->quantity,
+                'sold_qty'=>$item->quantity,
                 'stockbatch_id'=> $item->stockbatch_id,
                 'to_department'=>$item->department,
-                'comment'=>"Stock Sold By : by ".$invoice->created_by,
+                'comment'=>"Stock Sold By : by ".$invoice->create_by->name,
                 'balance'=>$item->stock->totalBalance(),
                 'department_balance'=>$item->stock->{$item->department}
             ];
