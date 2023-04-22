@@ -337,6 +337,9 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'payment_method_by_user', ['as' => 'payment_method_by_user', 'uses' => 'PaymentReportsController@payment_method_by_user', 'custom_label'=>'Payment Method Report By Users']);
 
+                Route::match(['get','post'],'credit_report', ['as' => 'credit_report', 'uses' => 'PaymentReportsController@credit_report', 'custom_label'=>'Credit Report By Date']);
+
+                Route::match(['get','post'],'credit_payment_report', ['as' => 'credit_payment_report', 'uses' => 'PaymentReportsController@credit_payment_report', 'custom_label'=>'Credit Payment Report By Date']);
             });
 
             Route::prefix('invoiceReport')->as('invoice.')->namespace('InvoiceReport')->group(function(){

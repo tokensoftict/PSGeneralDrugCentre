@@ -135,6 +135,11 @@ class Invoice extends Model
         return $this->morphOne(Payment::class,'invoice');
     }
 
+    public function creditlogs()
+    {
+        return $this->morphOne(Creditpaymentlog::class, 'invoicelog');
+    }
+
     public function paymentmethoditems()
     {
         return $this->morphMany(Paymentmethoditem::class,'invoice');

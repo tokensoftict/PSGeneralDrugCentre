@@ -8,7 +8,7 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Creditpaymentlog;
 
-class CreditPaymentLogs extends DataTableComponent
+class CreditLogs extends DataTableComponent
 {
 
     use SimpleDatatableComponentTrait;
@@ -26,7 +26,7 @@ class CreditPaymentLogs extends DataTableComponent
 
     public function builder(): Builder
     {
-        return  Creditpaymentlog::query()->select('*')->filterdata($this->filters)->where('creditpaymentlogs.amount', '>', 0);
+        return  Creditpaymentlog::query()->select('*')->filterdata($this->filters)->where('creditpaymentlogs.amount', '<', 0);
     }
 
 
@@ -40,16 +40,15 @@ class CreditPaymentLogs extends DataTableComponent
                 ->searchable()
                 ->sortable(),
             Column::make("Amount", "amount")
-                ->format(fn($value, $row, Column $column)=> money($value))
+                ->format(fn($value, $row, Column $column)=> money(-$value))
                 ->sortable()
                 ->footer(function($rows){
-                    return money($rows->sum('amount'));
+                    return money(-$rows->sum('amount'));
                 })
                 ->searchable(),
             Column::make("Payment date", "payment_date")
+                ->format(fn($value, $row, Column $column)=> eng_str_date($value))
                 ->sortable()->searchable(),
-            Column::make("Payment Method", "paymentmethod.name")
-                ->sortable(),
         ];
     }
 /*

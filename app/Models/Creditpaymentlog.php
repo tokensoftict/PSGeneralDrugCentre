@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,6 +37,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Creditpaymentlog extends Model
 {
+
+    use ModelFilterTraits;
+
 	protected $table = 'creditpaymentlogs';
 
 	protected $casts = [
@@ -86,4 +90,8 @@ class Creditpaymentlog extends Model
 	{
 		return $this->belongsTo(User::class);
 	}
+
+    public function invoicelog(){
+        return $this->morphTo();
+    }
 }

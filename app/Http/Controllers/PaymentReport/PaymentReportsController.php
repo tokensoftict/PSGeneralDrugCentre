@@ -201,4 +201,47 @@ class PaymentReportsController extends Controller
     }
 
 
+    public function credit_report(Request $request)
+    {
+        $data = [
+            'title' => 'Payment Report By Date',
+            'subtitle' => 'View Payment Report By Date Range',
+            'filters' => [
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
+                'filters' => [
+                    'between.payment_date' =>[todaysDate(), todaysDate()]
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.payment_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+        }
+        return view('reports.payment.creditreport', $data);
+    }
+
+
+    public function credit_payment_report(Request $request)
+    {
+        $data = [
+            'title' => 'Payment Report By Date',
+            'subtitle' => 'View Payment Report By Date Range',
+            'filters' => [
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
+                'filters' => [
+                    'between.payment_date' =>[todaysDate(), todaysDate()]
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.payment_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+        }
+        return view('reports.payment.creditpaymentreport', $data);
+    }
+
 }
