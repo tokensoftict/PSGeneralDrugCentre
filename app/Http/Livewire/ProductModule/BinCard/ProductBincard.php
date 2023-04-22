@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ProductModule\BinCard;
 
+use App\Classes\Settings;
 use App\Models\Stockbincard;
 use App\Traits\SimpleDatatableComponentTrait;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -54,6 +55,12 @@ class ProductBincard extends DataTableComponent
                 ->sortable()->searchable(),
             Column::make("Out qty", "out_qty")
                 ->sortable()->searchable(),
+            Column::make("From", "from_department")
+                ->format(fn($value, $row, Column $column) => $value == "" ? "" : Settings::$department[$value])
+                ->sortable()->searchable(),
+            Column::make("To", "to_department")
+                ->format(fn($value, $row, Column $column) => $value == "" ? "" : Settings::$department[$value])
+                ->sortable()->searchable(),
             Column::make("Sold qty", "sold_qty")
                 ->sortable()->searchable(),
             Column::make("Return qty", "return_qty")
@@ -67,7 +74,8 @@ class ProductBincard extends DataTableComponent
             Column::make("By", "user.name")
                 ->sortable()->searchable(),
             Column::make("Comment", "comment")
-                ->sortable()->html(),
+                ->format(fn($value, $row, Column $column) => $value)->html()
+                ->sortable(),
         ];
     }
 

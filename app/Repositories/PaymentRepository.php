@@ -32,7 +32,7 @@ class PaymentRepository
         $data = array_merge($data, [
             'user_id' => auth()->id(),
             'payment_time' => Carbon::now()->toDateTimeLocalString(),
-            'payment_date' => dailyDate(),
+            'payment_date' => !isset($data['payment_date']) ? dailyDate() : $data['payment_date'],
         ]);
 
         $paymentItems = $this->parsePaymentMethods($methods, $data);
@@ -473,6 +473,7 @@ class PaymentRepository
             'subtotal' => $obj->sub_total,
             'customer_id' => $obj->invoice->customer_id,
             'invoice_id' => $obj->invoice->id,
+            'payment_date' => $obj->invoice->invoice_date
         ];
 
         $this->bridgePayment($obj, $payment_data, $payment_data_items);

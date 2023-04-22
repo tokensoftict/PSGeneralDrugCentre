@@ -78,35 +78,20 @@ class FetchNewOrder extends Command
 
                 $returnBatches = [];
                 $columns = [];
-                $cards = [];
-                 $invoice->invoiceitembatches->map(function($item) use(&$returnBatches, &$columns, &$cards){
+                 $invoice->invoiceitembatches->each(function($item) use(&$returnBatches, &$columns){
                     $columns[] = $item->department;
                     $returnBatches[] = array_merge([
                         'id' => $item->stockbatch_id,
-                        $item->department=> ($item->stock->{ $item->department} + $item->quantity)
+                        $item->department=> ($item->stock->{ $item->department} + $item->quantity),
+                        'department' => $item->department
                     ], addOtherDepartment($item->stockbatch, $item->department ));
 
-
-                     $cards[] = [
-                        'bin_card_type'=>"APP//RETURN",
-                        'bin_card_date'=>todaysDate(),
-                        'user_id'=>auth()->id(),
-                        'stock_id' => $item->stock_id,
-                        'return_qty'=>$item->quantity,
-                        'stockbatch_id'=> $item->stockbatch_id,
-                        'to_department'=>$item->department,
-                        'comment'=>"Stock Returned from Online Invoice Deleted Because of repacking or re-process : by ".Auth::user()->name,
-                        'balance'=>$item->stock->totalBalance(),
-                        'department_balance'=>$item->stock->{$item->department}
-                    ];
                 });
 
                 Stock::returnStocks($invoice, $returnBatches, array_unique($columns)); //return the stock batches
 
+                dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(array_column( $invoice->invoiceitems->toArray(), 'stock_id')));
 
-                dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(array_column($cards, 'product_id')));
-
-                dispatch(new AddLogToProductBinCard($cards));
 
                 dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(
                     array_column($invoice->invoiceitems->toArray(), 'stock_id')
@@ -222,7 +207,7 @@ class FetchNewOrder extends Command
 
         $invoiceRepo->createOnlineInvoice($invoiceData, collect($order['order_total_orders']));
 
-        _GET('processorder/'.$order['id']."/2");
+        //_GET('processorder/'.$order['id']."/2");
 
         //now check if the payment method is a payment gateway
         $this->info('Order ID '.$order['id'].' has been processed successfully!.');

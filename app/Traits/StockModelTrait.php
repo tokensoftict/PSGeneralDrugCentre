@@ -47,25 +47,39 @@ trait StockModelTrait
 
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
 
-        Stockbatch::upsert($batches, ['id'], $columns);
-
-        Stock::whereIn('id', Arr::pluck($invoice->invoiceitems->toArray(), 'stock_id'))->get()->each->updateQuantity();
+        //Stockbatch::upsert($batches, ['id'], $columns);
 
         $bincards = [];
 
-        $invoice->invoiceitems->each(function($stock) use(&$bincards, $invoice){
+        foreach ($batches as $batch)
+        {
+            $b =  Stockbatch::with(['stock'])->find($batch['id']);
+            $b->{$batch['department']} =  $batch[$batch['department']];
+            $b->update();
+            $b->stock->updateQuantity();
+        }
+
+        //Stock::whereIn('id', Arr::pluck($invoice->invoiceitems->toArray(), 'stock_id'))->get()->each->updateQuantity();
+
+        if($invoice->department !=="bulksales") {
+            $comment = "Stock Sold from online - Invoice Number :".$invoice->invoice_number." by ". auth()->user()->name;
+        }else{
+            $comment =  "Stock Sold Invoice Number :".$invoice->invoice_number." by ". auth()->user()->name;
+        }
+
+        $invoice->invoiceitembatches()->get()->each(function($stock) use(&$bincards, $invoice, &$comment){
             $bincards[] =  [
                 'bin_card_type'=>"APP//SOLD",
                 'bin_card_date'=>todaysDate(),
                 'user_id'=>Auth::id(),
                 'sold_qty'=>$stock->quantity,
                 'stock_id'=>$stock->stock_id,
-                'stockbatch_id'=>NULL,
-                'from_department'=>$invoice->department,
+                'stockbatch_id'=>$stock->stockbatch_id,
+                'from_department'=>$stock->department,
                 'invoice_id'=>$invoice->id,
-                'comment'=>"Stock Sold Invoice Number :".$invoice->invoice_number." by ".Auth::user()->name,
+                'comment'=>$comment,
                 'balance'=>$stock->stock->totalBalance(),
-                'department_balance'=>$stock->stock->getCurrentlevel($invoice->department)
+                'department_balance'=>$stock->stock->getCurrentlevel($stock->department)
             ];
         });
 
@@ -77,29 +91,42 @@ trait StockModelTrait
 
     public static function returnStocks(Invoice $invoice, $batches, $columns = [])
     {
-        Stockbatch::upsert($batches, ['id'], $columns);
+        //Stockbatch::upsert($batches, ['id'], $columns);
 
-        Stock::whereIn('id', Arr::pluck($invoice->invoiceitems->toArray(), 'stock_id'))->get()->each->updateQuantity();
-
-
-        if($invoice->department !=="bulksales") {
-            $cards = $invoice->invoiceitembatches->map(function ($item) {
-                return [
-                    'bin_card_type' => "APP//RETURN",
-                    'bin_card_date' => todaysDate(),
-                    'user_id' => auth()->id(),
-                    'stock_id' => $item->stock_id,
-                    'return_qty' => $item->quantity,
-                    'stockbatch_id' => $item->stockbatch_id,
-                    'to_department' => $item->department,
-                    'comment' => "Stock Returned Invoice : by " . Auth::user()->name,
-                    'balance' => $item->stock->totalBalance(),
-                    'department_balance' => $item->stock->{$item->department}
-                ];
-            })->toArray();
-
-            dispatch(new AddLogToProductBinCard($cards));
+        foreach ($batches as $batch)
+        {
+            $b =  Stockbatch::with(['stock'])->find($batch['id']);
+            $b->{$batch['department']} =  $batch[$batch['department']];
+            $b->update();
+            $b->stock->updateQuantity();
         }
+
+
+        //Stock::whereIn('id', Arr::pluck($invoice->invoiceitems->toArray(), 'stock_id'))->get()->each->updateQuantity();
+
+        $cards = [];
+        if($invoice->department !=="bulksales") {
+            $comment =  "Stock Returned Invoice : by " .auth()->user()->name;
+        }else{
+            $comment =  "Stock Returned from Online Invoice Deleted Because of repacking or re-process : by ".auth()->user()->name;
+        }
+        $invoice->invoiceitembatches()->get()->each(function ($item) use(&$invoice, &$cards, &$comment) {
+            $cards[] = [
+                'bin_card_type' => "APP//RETURN",
+                'bin_card_date' => todaysDate(),
+                'user_id' => auth()->id(),
+                'stock_id' => $item->stock_id,
+                'return_qty' => $item->quantity,
+                'stockbatch_id' => $item->stockbatch_id,
+                'to_department' => $item->department,
+                'comment' => $comment,
+                'balance' => $item->stock->totalBalance(),
+                'department_balance' => $item->stock->{$item->department}
+            ];
+        });
+
+        dispatch(new AddLogToProductBinCard($cards));
+
 
     }
 
@@ -228,6 +255,7 @@ trait StockModelTrait
                 $neededBatches[] = [
                     'id' => $batch->id,
                     $from => 0,
+                    'qty' => $batch->{$from},
                     $to =>  ($to !=='retail' ?  $batch->{$from} :  $batch->{$from} * $this->box),
                     $cost_price => ($to !== 'retail') ? $batch->{$cost_price} : round(abs($batch->cost_price / $this->box))
                 ];
@@ -235,6 +263,7 @@ trait StockModelTrait
                 $newqty = $batch->{$from} - $qty;
                 $neededBatches[] = [
                     'id' => $batch->id,
+                    'qty' => $qty,
                     $from => $newqty ,
                     $to =>  ($to !=='retail' ? ($batch->{$to} + $qty) :  $batch->{$to} + ($qty * $this->box)),
                     $cost_price => ($to !== 'retail') ? $batch->{$cost_price} : round(abs($batch->cost_price / $this->box))
@@ -258,7 +287,7 @@ trait StockModelTrait
         });
 
         foreach ($depts as $dept) {
-            $this->{$dept->quantity_column} =  $this->stockbatches->sum($dept->quantity_column);
+            $this->{$dept->quantity_column} =  $this->stockbatches()->sum($dept->quantity_column);
             $this->update();
         }
     }
@@ -268,44 +297,58 @@ trait StockModelTrait
     {
         $cost_price =  $stocktransfer->to === 'retail' ? 'retail_cost_price' : 'cost_price';
 
-        Stockbatch::upsert($batches, ['id'], [$stocktransfer->from, $stocktransfer->to, $cost_price]);
-
-        $stocks = Stock::whereIn('id', Arr::pluck($stocktransfer->stocktransferitems->toArray(), 'stock_id'))->get()->each->updateQuantity();
-
         $bincards = [];
 
-        $stocktransfer->stocktransferitems->each(function ($items) use(&$bincards, &$stocktransfer){
-             $bincards[] = [
-                 'bin_card_type'=>'APP//TRANSFER',
-                 'bin_card_date'=>todaysDate(),
-                 'user_id'=>Auth::id(),
-                 'out_qty'=>$items->quantity,
-                 'stock_id'=>$items->stock_id,
-                 'stockbatch_id'=>NULL,
-                 'from_department'=>$items->stocktransfer->from,
-                 'to_department'=>$items->stocktransfer->to,
-                 'stocktransfer_id'=>$stocktransfer->id,
-                 'comment'=>"Stock Transfer Transfer ID : ".$items->stocktransfer_id." by ".Auth::user()->name,
-                 'balance'=>$items->stock->totalBalance(),
-                 'department_balance'=>$items->stock->getCurrentlevel($items->stocktransfer->from)
-             ];
+        foreach ($batches as $batch)
+        {
+            $b = Stockbatch::with(['stock'])->find($batch['id']);
+            $b->{$stocktransfer->from} = $batch[$stocktransfer->from];
+            $b->{$cost_price} = $batch[$cost_price];
+            $b->update();
+            $b->stock->updateQuantity();
+
+            $bincards[] = [
+                'bin_card_type'=>'APP//TRANSFER',
+                'bin_card_date'=>todaysDate(),
+                'user_id'=>Auth::id(),
+                'out_qty'=>$batch['qty'],
+                'in_qty' => 0,
+                'stock_id'=>$b->stock->id,
+                'stockbatch_id'=>$batch['id'],
+                'from_department'=>$stocktransfer->from,
+                'to_department'=>$stocktransfer->to,
+                'stocktransfer_id'=>$stocktransfer->id,
+                'comment'=>"Stock Transfer Transfer ID : ".$stocktransfer->id." by ".Auth::user()->name,
+                'balance'=>$b->stock->totalBalance(),
+                'department_balance'=>$b->stock->getCurrentlevel($stocktransfer->from)
+            ];
+
+            $b = Stockbatch::with(['stock'])->find($batch['id']);
+            $b->{$stocktransfer->to} = $batch[$stocktransfer->to];
+            $b->update();
+            $b->stock->updateQuantity();
+
 
             $bincards[] = [
                 'bin_card_type'=>'APP//RECEIVED',
                 'bin_card_date'=>todaysDate(),
                 'user_id'=>Auth::id(),
-                'in_qty'=>$items->quantity,
-                'stock_id'=>$items->stock_id,
-                'stockbatch_id'=>NULL,
-                'from_department'=>$items->stocktransfer->from,
-                'to_department'=>$items->stocktransfer->to,
+                'in_qty'=>$batch['qty'],
+                'out_qty' => 0,
+                'stock_id'=> $b->stock->id,
+                'stockbatch_id'=>$batch['id'],
+                'from_department'=>$stocktransfer->from,
+                'to_department'=>$stocktransfer->to,
                 'stocktransfer_id'=>$stocktransfer->id,
-                'comment'=>"Stock Received Transfer ID : ".$items->stocktransfer_id." by ".Auth::user()->name,
-                'balance'=>$items->stock->totalBalance(),
-                'department_balance'=>$items->stock->getCurrentlevel($items->stocktransfer->to)
+                'comment'=>"Stock Received Transfer ID : ".$stocktransfer->id." by ".Auth::user()->name,
+                'balance'=>$b->stock->totalBalance(),
+                'department_balance'=>$b->stock->getCurrentlevel($stocktransfer->to)
             ];
 
-         });
+        }
+
+
+
 
         dispatch(new AddLogToProductBinCard($bincards));
 

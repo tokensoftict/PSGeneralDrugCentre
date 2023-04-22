@@ -13,8 +13,9 @@ use App\Classes\Settings;
 use Spatie\Valuestore\Valuestore;
 
 function onlineBase(){
-    return  'http://localhost/rest-ecommerce-github/general_drug/public/'; //'https://admin.generaldrugcentre.com/';  //env('CURL_BASE_URL', 'https://admin.generaldrugcentre.com/api/data/');
+    return  'https://admin.generaldrugcentre.com/';//'http://localhost/rest-ecommerce-github/general_drug/public/'; //'https://admin.generaldrugcentre.com/';  //env('CURL_BASE_URL', 'https://admin.generaldrugcentre.com/api/data/');
 }
+
 
 function _GET($endpoint, $payload = []) : array|bool
 {

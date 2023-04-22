@@ -231,7 +231,6 @@ class InvoiceRepository
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
                 ]);
-                Arr::forget($batch, ['cost_price','department','qty']);
                 $removeQuantity[] =  $batch;
             });
 
@@ -277,6 +276,7 @@ class InvoiceRepository
             $invoiceItemsBatches[] = [
                 'id' => $item['stockbatch_id'],
                 $item['department'] =>  $item['av_qty'] +  $item['quantity'],
+                'department' =>  $item['department']
             ];
 
         });
@@ -299,11 +299,13 @@ class InvoiceRepository
             $invoiceItemsBatches[] = [
                 'id' => $item['stockbatch_id'],
                 $item['department'] =>  $item['av_qty'] +  $item['quantity'],
+                'department' => $item['department']
             ];
 
             $reverseItemsBatches[] = [
                 'id' => $item['stockbatch_id'],
-                $item['department'] =>  $item['av_qty'] - $item['quantity']
+                $item['department'] =>  $item['av_qty'], //- $item['quantity']
+                'department' => $item['department']
             ];
         });
 
@@ -361,7 +363,7 @@ class InvoiceRepository
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
                 ]);
-                Arr::forget($batch, ['cost_price','department','qty']);
+
                 $removeQuantity[] =  $batch;
             });
 
@@ -390,7 +392,7 @@ class InvoiceRepository
 
         dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
 
-        $this->initiateBinCard($invoice);
+        //$this->initiateBinCard($invoice);
 
         return $invoice;
 
@@ -417,7 +419,9 @@ class InvoiceRepository
             $invoiceItemBatches = [];
 
             collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns, &$invoiceItemBatches){
+
                 $columns[] = $batch['department'];
+
                 $invoiceItemBatches[] = new Invoiceitembatch([
                     'invoice_id' => $invoice->id,
                     'stock_id' => $item['stock_id'],
@@ -427,7 +431,10 @@ class InvoiceRepository
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
                 ]);
-                $removeQuantity[] = Arr::only($batch, ['id','bulksales','quantity','wholesales','retail']);
+
+                $removeQuantity[] =  $batch;
+
+                //Arr::only(, ['id','bulksales','quantity','wholesales','retail']);
 
             });
 
@@ -449,7 +456,7 @@ class InvoiceRepository
 
         $invoice->onlineordertotals()->saveMany($totals);
 
-        $this->initiateBinCard($invoice);
+        //$this->initiateBinCard($invoice);
 
 
         if($invoice->customer_id !== 1) { // customer ledger for walking customer
