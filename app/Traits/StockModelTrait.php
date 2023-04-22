@@ -35,7 +35,7 @@ trait StockModelTrait
             return $item->quantity_column !== NULL;
         });
 
-        return $this->stockbatches()->orderBy('received_date', 'DESC')
+        $batch =  $this->stockbatches()->orderBy('received_date', 'DESC')
             ->where(function($query) use($departments){
                 foreach ($departments as $department)
                 {
@@ -43,6 +43,13 @@ trait StockModelTrait
                     $query->orWhere($department->quantity_column,">", 0);
                 }
             });
+
+        if($batch->count() === 0){
+
+            return $this->stockbatches()->orderBy('received_date', 'DESC')->limit(3);
+        }
+
+        return $batch;
     }
 
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
