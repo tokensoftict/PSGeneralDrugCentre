@@ -51,6 +51,22 @@ class StockBatch extends Component
             }
         }
 
+        if(count($this->batches) == 0)
+        {
+            foreach ($this->stock->stockbatches()->orderBy('received_date', 'DESC')->limit(3)->get() as $batch)
+            {
+                $this->batches[] = [
+                    'id' => $batch->id,
+                    'received_date' => $batch->received_date,
+                    'expiry_date' => $batch->expiry_date,
+                    $this->selectedDepartment => $batch->{$this->selectedDepartment},
+                    cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) => $batch->{cost_price_column(department_by_quantity_column($this->selectedDepartment)->id)},
+                    'stock_id' => $batch->stock_id,
+                    'supplier_id' => $batch->supplier_id
+                ];
+            }
+        }
+
         $this->suppliers = suppliers(true);
 
         $this->dept = department_by_quantity_column($this->selectedDepartment)->label;
