@@ -207,7 +207,7 @@ class FetchNewOrder extends Command
 
         $invoiceRepo->createOnlineInvoice($invoiceData, collect($order['order_total_orders']));
 
-        //_GET('processorder/'.$order['id']."/2");
+        _GET('processorder/'.$order['id']."/2");
 
         //now check if the payment method is a payment gateway
         $this->info('Order ID '.$order['id'].' has been processed successfully!.');
