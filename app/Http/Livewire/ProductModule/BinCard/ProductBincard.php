@@ -67,7 +67,7 @@ class ProductBincard extends DataTableComponent
             Column::make("By", "user.name")
                 ->sortable()->searchable(),
             Column::make("Comment", "comment")
-                ->sortable(),
+                ->sortable()->html(),
         ];
     }
 
