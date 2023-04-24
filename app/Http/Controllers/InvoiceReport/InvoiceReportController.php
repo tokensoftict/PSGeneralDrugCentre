@@ -88,14 +88,12 @@ class InvoiceReportController extends Controller
             'subtitle' => 'View Report By Date Range and Product',
             'filters' => [
                 'stock' => Stock::find(1),
-                'status_id' => 1,
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
                 'stock_id' => 1,
                 'filters' => [
                     'between.invoices.invoice_date' => monthlyDateRange(),
                     'stock_id' => 1,
-                    'status_id' => 1,
                 ]
             ]
         ];
@@ -106,7 +104,7 @@ class InvoiceReportController extends Controller
             $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
             $data['filters']['filters']['between.invoices.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
-            $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
+
 
         }
         return setPageContent('reports.invoice.invoiceitem', $data);
