@@ -25,7 +25,7 @@ class InvoiceitemDatatable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return Invoiceitem::query()->select('*')->where('invoice.status_id','!=',status('Deleted'))->filterdata($this->filters);
+        return Invoiceitem::query()->select('*')->where('invoices.status_id','!=',status('Deleted'))->filterdata($this->filters);
     }
 
     public static function  mountColumn() : array
