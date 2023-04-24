@@ -24,7 +24,7 @@ class InvoiceDataTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return Invoice::query()->select('*')->where('status_id','<>',status('Deleted'))->filterdata($this->filters);
+        return Invoice::query()->select('*')->where('invoicees.status_id','<>',status('Deleted'))->filterdata($this->filters);
 
     }
 
