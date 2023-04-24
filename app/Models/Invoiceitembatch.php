@@ -65,7 +65,7 @@ class Invoiceitembatch extends Model
 
     public function getAvQtyAttribute()
     {
-        return $this->stockbatch->{$this->department};
+        return $this->stockbatch->{$this->department} ?? 0;
     }
 
 	public function invoice()

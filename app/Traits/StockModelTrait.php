@@ -418,7 +418,7 @@ trait StockModelTrait
 
     public function totalBalance()
     {
-        return  $this->wholesales + $this->bulksales + $this->quantity + abs(round($this->retail/$this->box));
+        return  $this->wholesales + $this->bulksales + $this->quantity + ($this->retail === 0 || $this->box === 0) ? 0 : abs(round($this->retail/$this->box));
     }
 
     public function newonlinePush()
