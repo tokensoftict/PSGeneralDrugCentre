@@ -45,7 +45,7 @@ class FetchNewOrder extends Command
      */
     public function handle()
     {
-        dd('under maintainance');
+
         $baseurl = onlineBase();
         $errors = [];
         Auth::loginUsingId(1);
