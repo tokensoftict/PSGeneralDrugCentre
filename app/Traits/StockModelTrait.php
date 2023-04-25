@@ -120,8 +120,8 @@ trait StockModelTrait
                 'stockbatch_id' => $item->stockbatch_id,
                 'to_department' => $item->department,
                 'comment' => $comment,
-                'balance' => $item->stock->totalBalance(),
-                'department_balance' => $item->stock->{$item->department}
+                'balance' => $item->stock()->totalBalance(),
+                'department_balance' => $item->stock()->{$item->department}
             ];
         });
 
