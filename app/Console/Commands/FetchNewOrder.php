@@ -76,6 +76,9 @@ class FetchNewOrder extends Command
                     Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete();
 
                     CustomerLedger::where('payment_id', $invoice->payment_id )->delete();
+
+                    $invoice->customer->updateCreditBalance();
+
                     $invoice->payment->delete();
                 }
                 CustomerLedger::where('invoice_id', $invoice->id)->delete();

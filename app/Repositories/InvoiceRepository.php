@@ -341,6 +341,8 @@ class InvoiceRepository
         {
             Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete(); // delete credit payment logs
 
+            $invoice->customer->updateCreditBalance();
+
             $invoice->payment()->delete();
 
             $invoice->payment_id = NULL;
