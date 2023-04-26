@@ -8,6 +8,7 @@ use App\Http\Livewire\InvoiceAndSales\InvoiceFormComponent;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushStockUpdateToServer;
+use App\Models\Creditpaymentlog;
 use App\Models\Invoice;
 use App\Models\Invoiceitem;
 use App\Models\Invoiceitembatch;
@@ -338,6 +339,8 @@ class InvoiceRepository
 
         if($invoice->payment_id !== NULL)
         {
+            Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete(); // delete credit payment logs
+
             $invoice->payment()->delete();
 
             $invoice->payment_id = NULL;
