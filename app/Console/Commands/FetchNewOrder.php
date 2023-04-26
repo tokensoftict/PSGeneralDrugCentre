@@ -6,6 +6,7 @@ use App\Http\Livewire\InvoiceAndSales\InvoiceFormComponent;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushStockUpdateToServerFromDeletedFetchInvoice;
+use App\Models\Creditpaymentlog;
 use App\Models\CustomerLedger;
 use App\Models\Invoice;
 use App\Models\Onlineordertotal;
@@ -71,6 +72,9 @@ class FetchNewOrder extends Command
                 $this->warn('Already exist in local database '.$order['invoice_no']);
 
                 if( $invoice->payment_id && $invoice->payment()->exists()){
+
+                    Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete();
+
                     CustomerLedger::where('payment_id', $invoice->payment_id )->delete();
                     $invoice->payment->delete();
                 }
