@@ -325,6 +325,10 @@ class InvoiceRepository
 
         $this->calculateInvoiceTotal($invoiceData, array_column($results['results'], 'item'));
 
+        Arr::forget($invoiceData, ['created_by']);
+
+        $invoiceData['last_updated_by'] = auth()->id();
+
         $invoice->update($invoiceData);
 
         $invoiceItems = array_column($results['results'], 'item');
