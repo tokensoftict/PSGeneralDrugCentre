@@ -16,10 +16,10 @@ class InvoiceReportController extends Controller
             'title' => 'Invoice Report By Date',
             'subtitle' => 'View Invoice Report By Date Range',
             'filters' => [
-                'from' =>monthlyDateRange()[0],
-                'to'=>monthlyDateRange()[1],
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
                 'filters' => [
-                    'between.invoice_date' => monthlyDateRange(),
+                    'between.invoice_date' => [todaysDate(),todaysDate()],
                 ]
             ]
         ];
@@ -37,11 +37,11 @@ class InvoiceReportController extends Controller
             'title' => 'Invoice Report By Customer',
             'subtitle' => 'View Invoice Report By Customer',
             'filters' => [
-                'from' =>monthlyDateRange()[0],
-                'to'=>monthlyDateRange()[1],
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
                 'customer_id' => 1,
                 'filters' => [
-                    'between.invoice_date' => monthlyDateRange(),
+                    'between.invoice_date' =>[todaysDate(),todaysDate()],
                     'customer_id' => 1
                 ]
             ]
@@ -62,11 +62,11 @@ class InvoiceReportController extends Controller
             'title' => 'Invoice Report By User',
             'subtitle' => 'View Invoice Report By System User',
             'filters' => [
-                'from' =>monthlyDateRange()[0],
-                'to'=>monthlyDateRange()[1],
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
                 'created_by' => 1,
                 'filters' => [
-                    'between.invoice_date' => monthlyDateRange(),
+                    'between.invoice_date' => [todaysDate(),todaysDate()],
                     'created_by' => 1
                 ]
             ]
@@ -88,11 +88,11 @@ class InvoiceReportController extends Controller
             'subtitle' => 'View Report By Date Range and Product',
             'filters' => [
                 'stock' => Stock::find(1),
-                'from' =>monthlyDateRange()[0],
-                'to'=>monthlyDateRange()[1],
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
                 'stock_id' => 1,
                 'filters' => [
-                    'between.invoices.invoice_date' => monthlyDateRange(),
+                    'between.invoices.invoice_date' =>[todaysDate(),todaysDate()],
                     'stock_id' => 1,
                 ]
             ]
@@ -117,11 +117,11 @@ class InvoiceReportController extends Controller
             'title' => 'Invoice Report By Status',
             'subtitle' => 'View Report By Date Range and System Status',
             'filters' => [
-                'from' =>monthlyDateRange()[0],
-                'to'=>monthlyDateRange()[1],
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
                 'status_id' => 1,
                 'filters' => [
-                    'between.invoice_date' => monthlyDateRange(),
+                    'between.invoice_date' => [todaysDate(),todaysDate()],
                     'status_id' => 1
                 ]
             ]
