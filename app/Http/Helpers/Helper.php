@@ -1079,7 +1079,7 @@ function numberTowords($num)
 
 
 function logActivity($invoice_id, $invoice_number, $activities){
-    /*
+
      \App\Models\Invoiceactivitylog::create([
          'invoice_id'=>$invoice_id,
          'invoice_number'=>$invoice_number,
@@ -1088,7 +1088,7 @@ function logActivity($invoice_id, $invoice_number, $activities){
          'activity_date'=>date('Y-m-d'),
          'activity_time'=>Carbon::now()->toTimeString()
      ]);
-    */
+
 }
 
 function isLogAvailable($invoice_id){
