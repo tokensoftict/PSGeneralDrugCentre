@@ -60,6 +60,9 @@ class InvoiceitemDatatable extends DataTableComponent
                 ->sortable(),
             Column::make("Quantity", "quantity")
                 ->format(fn($value, $row, Column $column)=> money($row->quantity))
+                ->footer(function($rows){
+                    return money($rows->sum('quantity'));
+                })
                 ->sortable(),
             Column::make("Discount", "discount_amount")
                 ->format(fn($value, $row, Column $column)=> money($row->discount_amount))
