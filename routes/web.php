@@ -384,6 +384,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'bin', ['as' => 'bincard_report', 'uses' => 'ProductReportController@bincard_report', 'custom_label'=>'Product Bincard Report']);
 
+                Route::match(['get','post'],'nearoutofstock', ['as' => 'nearoutofstock', 'uses' => 'ProductReportController@nearoutofstock', 'custom_label'=>'Near Out Of Stock']);
             });
 
 

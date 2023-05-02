@@ -41,4 +41,16 @@ class ProductReportController extends Controller
         return view('reports.product.bincard', $data);
     }
 
+
+    public function nearoutofstock()
+    {
+        $data = [
+            'title' => 'Product Near OS Report',
+            'subtitle' => 'View Product that is almost out of stock and require purchasing',
+        ];
+
+        return view('reports.product.nearos', $data);
+    }
+
+
 }

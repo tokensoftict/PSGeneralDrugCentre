@@ -9,6 +9,7 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
     @yield('css')
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/tailwind.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
@@ -244,6 +245,10 @@
 
 <!-- JAVASCRIPT -->
 <script defer src="{{ asset('js/alpine.min.js') }}"></script>
+<script defer src="{{ asset('js/focus.min.js') }}"></script>
+
+@livewire('livewire-ui-modal')
+
 <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('libs/metismenu/metisMenu.min.js') }}"></script>

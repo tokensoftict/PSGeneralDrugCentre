@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property Purchaseitem|null $purchaseitem
  * @property Stock $stock
+ * @property Stockgroup $stockgroup
  * @property Supplier|null $supplier
  *
  * @package App\Models
@@ -86,4 +87,9 @@ class Nearoutofstock extends Model
 	{
 		return $this->belongsTo(Supplier::class);
 	}
+
+    public function stockgroup()
+    {
+        return $this->belongsTo(Stockgroup::class);
+    }
 }
