@@ -163,4 +163,70 @@ class Stock extends Model
 		return $this->hasMany(Stocktransferitem::class);
 	}
 
+
+    public function stockOpenings()
+    {
+        return $this->hasMany(Stockopening::class);
+    }
+
+    public function stockOpening()
+    {
+        return $this->stockOpenings()->where('date_added',date('Y-m-d'));
+    }
+
+
+    public function nearOsOne()
+    {
+        return $this->hasOne(Nearoutofstock::class);
+    }
+
+
+    public function invoiceitembatches()
+    {
+        return $this->hasMany(Invoiceitembatch::class);
+    }
+
+    public function invoiceitems()
+    {
+        return $this->hasMany(Invoiceitem::class);
+    }
+
+
+    public function movingstocks()
+    {
+        return $this->hasMany(Movingstock::class);
+    }
+
+    public function nearoutofstocks()
+    {
+        return $this->hasMany(Nearoutofstock::class);
+    }
+
+
+    public function promoitems()
+    {
+        return $this->hasMany(Promoitem::class);
+    }
+
+    public function purchaseitems()
+    {
+        return $this->hasMany(Purchaseitem::class);
+    }
+
+    public function retailnearoutofstocks()
+    {
+        return $this->hasMany(Retailnearoutofstock::class);
+    }
+
+
+    public function stockbincards()
+    {
+        return $this->hasMany(Stockbincard::class);
+    }
+
+    public function batchstocks()
+    {
+        return $this->hasMany(Batchstock::class);
+    }
+
 }
