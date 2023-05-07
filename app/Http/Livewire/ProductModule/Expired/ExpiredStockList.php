@@ -20,7 +20,7 @@ use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
-final class NearExpirationStockList extends PowerGridComponent
+final class ExpiredStockList extends PowerGridComponent
 {
     use PowerGridComponentTrait;
 
@@ -49,8 +49,8 @@ final class NearExpirationStockList extends PowerGridComponent
 
         return Stockbatch::with(['stock'])->select(
             'stock_id',
-            DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(bulksales) as bs'),
+            DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(quantity) as ms'),
             DB::raw( 'SUM(retail) as rt'),
             DB::raw( 'COUNT(stock_id) as tt_batch'),
@@ -66,9 +66,8 @@ final class NearExpirationStockList extends PowerGridComponent
                     ->orWhere('quantity',">",0);
             })
             ->orderBy('id','DESC')
-            ->whereBetween('expiry_date',[$from,$to])
-            ->groupBy('stock_id')
-            ->filterdata($this->filters);
+            ->where('expiry_date',"<=",date('Y-m-d'))
+            ->groupBy('stock_id');
     }
 
     /*
@@ -122,12 +121,15 @@ final class NearExpirationStockList extends PowerGridComponent
                 return money($average_cost_price);
             })
             ->addColumn('av_cost_price',function(Stockbatch $stockbatch){
-                $average_cost_price = @(round(abs(($stockbatch->total_cost_price / ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box)))))));
+                $average_cost_price = @(round(abs(( divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
+                ));
                 return number_format($average_cost_price,2);
             })
             ->addColumn('tt_av_cost_price',function(Stockbatch $stockbatch){
-                $average_cost_price = @(round(abs(($stockbatch->total_cost_price / ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box)))))));
-                return number_format(($average_cost_price * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box))))),2);
+                $average_cost_price = @(round(abs((
+                    divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
+                ));
+                return number_format(($average_cost_price * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))),2);
             })
             ->addColumn('tt_av_rt_cost_price',function(Stockbatch $stockbatch){
                 $average_cost_price =  abs((($stockbatch->total_retail_cost_price / (max($stockbatch->rt, 1)))*(max($stockbatch->rt, 1))));

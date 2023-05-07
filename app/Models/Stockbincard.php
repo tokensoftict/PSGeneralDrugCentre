@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int|null $stock_id
  * @property string $bin_card_type
- * @property Carbon|null $bin_card_date
+ * @property string $bin_card_date
  * @property int|null $user_id
  * @property int $in_qty
  * @property int $out_qty
@@ -50,7 +50,6 @@ class Stockbincard extends Model
 
 	protected $casts = [
 		'stock_id' => 'int',
-		'bin_card_date' => 'datetime',
 		'user_id' => 'int',
 		'in_qty' => 'int',
 		'out_qty' => 'int',

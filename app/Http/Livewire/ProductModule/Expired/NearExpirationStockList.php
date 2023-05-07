@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Livewire\ProductModule\Balance;
+namespace App\Http\Livewire\ProductModule\Expired;
 
+use App\Classes\Settings;
 use App\Models\Stockbatch;
 use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
-final class StockBalanceBySupplier extends PowerGridComponent
+final class NearExpirationStockList extends PowerGridComponent
 {
     use PowerGridComponentTrait;
 
@@ -41,13 +42,20 @@ final class StockBalanceBySupplier extends PowerGridComponent
      */
     public function datasource(): Builder
     {
+        $countDays = app(Settings::class)->store()->near_expiry_days;
+
+        $to = date('Y-m-d', strtotime(' + '.$countDays.' days'));
+        $from = date('Y-m-d');
+
         return Stockbatch::with(['stock'])->select(
             'stock_id',
             DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(bulksales) as bs'),
             DB::raw( 'SUM(quantity) as ms'),
             DB::raw( 'SUM(retail) as rt'),
-            DB::raw( 'COUNT(retail) as tt_batch')
+            DB::raw( 'COUNT(stock_id) as tt_batch'),
+            DB::raw( 'SUM(cost_price) as total_cost_price'),
+            DB::raw( 'SUM(retail_cost_price) as total_retail_cost_price')
         )->whereHas('stock', function ($q) {
             $q->where('status','1');
         })
@@ -57,8 +65,9 @@ final class StockBalanceBySupplier extends PowerGridComponent
                     ->orWhere('retail',">",0)
                     ->orWhere('quantity',">",0);
             })
-            ->groupBy('stock_id')
-            ->filterdata($this->filters);
+            ->orderBy('id','DESC')
+            ->whereBetween('expiry_date',[$from,$to])
+            ->groupBy('stock_id');
     }
 
     /*
@@ -97,11 +106,37 @@ final class StockBalanceBySupplier extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
+            ->addColumn('box', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->box;
+            })
             ->addColumn('name', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->name;
             })
-            ->addColumn('box', function(Stockbatch $stockbatch){
-                return $stockbatch->stock->box;
+            ->addColumn('carton', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->carton;
+            })
+            ->addColumn('av_cost_price_rt', function(Stockbatch $stockbatch){
+                $average_cost_price =  abs((($stockbatch->total_retail_cost_price / (max($stockbatch->rt, 1)))*(max($stockbatch->rt, 1))));
+
+                return money($average_cost_price);
+            })
+            ->addColumn('av_cost_price',function(Stockbatch $stockbatch){
+                $average_cost_price = @(round(abs(( divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
+                ));
+                return number_format($average_cost_price,2);
+            })
+            ->addColumn('tt_av_cost_price',function(Stockbatch $stockbatch){
+                $average_cost_price = @(round(abs((
+                        divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
+                ));
+                return number_format(($average_cost_price * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))),2);
+            })
+            ->addColumn('tt_av_rt_cost_price',function(Stockbatch $stockbatch){
+                $average_cost_price =  abs((($stockbatch->total_retail_cost_price / (max($stockbatch->rt, 1)))*(max($stockbatch->rt, 1))));
+                return number_format(($average_cost_price * $stockbatch->rt) ,2);
+            })
+            ->addColumn('carton', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->carton;
             })
             ->addColumn('ws')
             ->addColumn('bs')
@@ -131,11 +166,17 @@ final class StockBalanceBySupplier extends PowerGridComponent
         return [
             Column::make('SN' ,'')->index(),
             Column::make('Name', 'name')->sortable()->searchable(),
+            Column::make('Box', 'box'),
+            Column::make('Carton', 'carton'),
             Column::make('Wholesales', 'ws'),
             Column::make('Bulksales', 'bs'),
             Column::make('Retail', 'rt'),
             Column::make('Main Store', 'ms'),
             Column::make('Total', 'total'),
+            Column::make('Av Cost Price', 'av_cost_price'),
+            Column::make('Av. Retail Cost Price', 'av_cost_price_rt'),
+            Column::make('Total Retail Cost', 'tt_av_rt_cost_price'),
+            Column::make('Total Cost', 'tt_av_cost_price'),
         ];
     }
 

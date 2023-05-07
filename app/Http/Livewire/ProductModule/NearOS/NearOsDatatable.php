@@ -5,6 +5,7 @@ namespace App\Http\Livewire\ProductModule\NearOS;
 use App\Classes\Settings;
 use App\Models\Nearoutofstock;
 use App\Models\Stock;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use PowerComponents\LivewirePowerGrid\{Button,
@@ -23,8 +24,9 @@ use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
 final class NearOsDatatable extends PowerGridComponent
 {
-    use ActionButton;
-    use WithExport;
+    use PowerGridComponentTrait;
+
+    public $key = 'nearoutofstocks.id';
 
     /*
     |--------------------------------------------------------------------------
@@ -41,37 +43,7 @@ final class NearOsDatatable extends PowerGridComponent
         ]);
     }
 
-    public function setUp(): array
-    {
-        $this->showCheckBox();
-        $this->primaryKey = "nearoutofstocks.id";
 
-        return [
-            Exportable::make('export')
-                ->type(
-                    Exportable::TYPE_XLS,
-                    Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage(100, Settings::$perPageAccepted)
-                ->showRecordCount(),
-        ];
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    |  Datasource
-    |--------------------------------------------------------------------------
-    | Provides data to your Table using a Model or Collection
-    |
-    */
-
-    /**
-     * PowerGrid datasource.
-     *
-     * @return Builder<\App\Models\Nearoutofstock>
-     */
     public function datasource(): Builder
     {
         return Nearoutofstock::query()
@@ -79,6 +51,9 @@ final class NearOsDatatable extends PowerGridComponent
                 [
                     'nearoutofstocks.*',
                     'stocks.name as stock_name',
+                    'stocks.box as box',
+                    'stocks.carton as carton',
+                    'categories.name as category_name',
                     'suppliers.name as supplier_name',
                     'stockgroups.name as group_name',
                     DB::raw('(CASE
@@ -90,6 +65,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->leftJoin('stocks', function ($stocks) {
                 $stocks->on('nearoutofstocks.stock_id', '=', 'stocks.id');
             })
+            ->leftJoin('categories', 'stocks.category_id', '=', 'categories.id')
             ->leftJoin('stockgroups', function ($stockgroups) {
                 $stockgroups->on('nearoutofstocks.stockgroup_id', '=', 'stockgroups.id');
             })
@@ -143,7 +119,9 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('threshold_type', function(Nearoutofstock $nearoutofstock){
                 return $nearoutofstock->threshold_type == "" ? "THRESHOLD" : $nearoutofstock->threshold_type;
             })
-
+            ->addColumn('box')
+            ->addColumn('carton')
+            ->addColumn('category_name')
             ->addColumn('os_type')
             ->addColumn('qty_to_buy')
             ->addColumn('supplier_name')
@@ -197,7 +175,11 @@ final class NearOsDatatable extends PowerGridComponent
     {
         return [
             Column::make('SN', '')->index(),
+            Column::make('Product ID', 'id'),
             Column::make('Name', 'name','name')->searchable()->sortable(),
+            Column::make('Box', 'box','box')->sortable(),
+            Column::make('Carton', 'carton','carton')->sortable(),
+            Column::make('Category Name', 'category_name','category_name')->sortable(),
             Column::make('Qty to Buy', 'qty_to_buy')->sortable(),
             Column::make('Supplier', 'supplier_name', 'supplier_name')->sortable()->searchable(),
             Column::make('Threshold type', 'threshold_type')->sortable(),

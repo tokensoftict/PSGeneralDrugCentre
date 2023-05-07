@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
@@ -100,10 +101,23 @@ class ProductController extends Controller
         return setPageContent('product.index', $data);
     }
 
+    public function non_reorder()
+    {
+        $data = [];
+
+        $filter = ['reorder' => 0];
+
+        $data['filters'] = $filter;
+
+        return view('product.index', $data);
+    }
+
 
     public function expired()
     {
+        $data = [];
 
+        return view('product.expired', $data);
     }
 
     public function changeSellingPrice()
@@ -122,7 +136,7 @@ class ProductController extends Controller
         $data = [];
 
         $data['departments'] = departments(true)->filter(function($item){
-            return $item->id == 1 ||  $item->id == 2 || $item->id == 3 || $item->id == 4;
+            return in_array($item->id, [1,2,3,4]);
         });
         $data['selectedDepartment'] = "";
         $data['stock_id'] = "";
@@ -133,6 +147,61 @@ class ProductController extends Controller
         }
 
         return view('product.stockbatch', $data);
+    }
+
+
+
+    public function stock_balance_by_supplier(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Balance By Supplier',
+            'subtitle' => 'View All Stock Balance by Supplier',
+            'filters' => [
+                'supplier_id' => 1,
+                'filters' => [
+                    'supplier_id' => 1
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['supplier_id'] = $data['filters']['supplier_id'];
+
+        }
+        return view('product.balance_by_supplier', $data);
+    }
+
+
+
+    public function near_expired()
+    {
+        $data = [];
+
+        return view('product.nearexpired', $data);
+    }
+
+
+    public function batched_stock_list(Request $request)
+    {
+        $data = [
+            'title' => 'Batched Stock List',
+            'subtitle' => 'View Batched Stock List',
+            'filters' => [
+                'department'=> 'quantity',
+                'filters' => [
+                    'department'=> 'quantity',
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['department'] = $data['filters']['department'];
+        }
+
+        return view('product.batched_stock_list', $data);
     }
 
 }

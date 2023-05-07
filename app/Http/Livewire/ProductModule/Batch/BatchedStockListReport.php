@@ -2,7 +2,8 @@
 
 namespace App\Http\Livewire\ProductModule\Batch;
 
-use App\Models\Batchstock;
+use App\Models\Stock;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
@@ -12,8 +13,13 @@ use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Heade
 
 final class BatchedStockListReport extends PowerGridComponent
 {
-    use ActionButton;
-    use WithExport;
+    use PowerGridComponentTrait;
+
+    public $key = 'id';
+
+    public array $filters;
+
+    public $quantity_col = "";
 
     /*
     |--------------------------------------------------------------------------
@@ -22,20 +28,7 @@ final class BatchedStockListReport extends PowerGridComponent
     | Setup Table's general features
     |
     */
-    public function setUp(): array
-    {
-        $this->showCheckBox();
 
-        return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage()
-                ->showRecordCount(),
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +45,41 @@ final class BatchedStockListReport extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Batchstock::query();
+        $filter_stock = [
+            'wholesales',
+            'retail',
+            'bulksales'
+        ];
+
+        $price_column = [
+            'wholesales'=>'whole_price',
+            'retail'=>'retail_price',
+            'bulksales'=> 'bulk_price'
+        ];
+
+        $quantity_column = [
+            'wholesales'=>'wholesales',
+            'retail'=>'retail',
+            'bulksales'=> 'bulksales',
+            'quantity'=> 'quantity',
+        ];
+
+        $this->quantity_col = $quantity_column[$this->filters['department']];
+
+
+        $stocks =  Stock::query()
+            ->with(['batchstock'])
+            ->whereHas('batchstock', function ($batchedstock){
+                $batchedstock->where($this->quantity_col, '=', 0);
+            })->where('status', 1);
+
+        if($this->filters['department'] == "quantity"){
+            $stocks->where($price_column['wholesales'],">",0);
+        }
+
+        $stocks->orderBy('batched','ASC');
+
+        return $stocks;
     }
 
     /*
@@ -88,16 +115,16 @@ final class BatchedStockListReport extends PowerGridComponent
     {
         return PowerGrid::eloquent()
             ->addColumn('id')
-            ->addColumn('stock_id')
-            ->addColumn('quantity')
+            ->addColumn('name')
+            ->addColumn('retail_price', fn(Stock $stock) => money($stock->retail_price))
+            ->addColumn('bulk_price' , fn(Stock $stock) => money($stock->bulk_price))
+            ->addColumn('whole_price', fn(Stock $stock) => money($stock->whole_price))
             ->addColumn('wholesales')
             ->addColumn('bulksales')
             ->addColumn('retail')
-            ->addColumn('quantity_user_id')
-            ->addColumn('bulk_user_id')
-            ->addColumn('wholsale_user_id')
-            ->addColumn('retail_user_id')
-            ->addColumn('created_at_formatted', fn (Batchstock $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('quantity')
+            ->addColumn('box')
+            ->addColumn('carton');
     }
 
     /*
@@ -116,21 +143,19 @@ final class BatchedStockListReport extends PowerGridComponent
       */
     public function columns(): array
     {
-        return [
-            Column::make('Id', 'id'),
-            Column::make('Stock id', 'stock_id'),
-            Column::make('Quantity', 'quantity'),
-            Column::make('Wholesales', 'wholesales'),
-            Column::make('Bulksales', 'bulksales'),
-            Column::make('Retail', 'retail'),
-            Column::make('Quantity user id', 'quantity_user_id'),
-            Column::make('Bulk user id', 'bulk_user_id'),
-            Column::make('Wholsale user id', 'wholsale_user_id'),
-            Column::make('Retail user id', 'retail_user_id'),
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
+        $cols =  [
+            Column::make('Name', 'name')->searchable(),
+            Column::make('Retail Price', 'retail_price'),
+            Column::make('Ws Price', 'whole_price'),
+            Column::make('Bulk Price', 'bulksales'),
         ];
+
+        $cols[] =  Column::add()->title('Quantity')->field('quantity');
+
+        return array_merge($cols, [
+            Column::make('Box', 'box'),
+            Column::make('Carton', 'carton'),
+        ]);
     }
 
     /**
@@ -141,7 +166,7 @@ final class BatchedStockListReport extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::datetimepicker('created_at'),
+
         ];
     }
 

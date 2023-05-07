@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use App\Traits\ModelFilterTraits;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -72,4 +73,35 @@ class Stockbatch extends Model
 	{
 		return $this->belongsTo(Supplier::class);
 	}
+
+    public function quantityColumnChanges()
+    {
+        if ($this->isDirty('quantity')) {
+            //changes to main store
+            $update = ['quantity' => 0, 'quantity_user_id' => Auth::id()];
+            Batchstock::updateOrCreate(['stock_id' => $this->stock->id], $update);
+        }
+
+        if ($this->isDirty('wholesales')) {
+            //changes to main store
+            $update = ['wholesales' => 0, 'wholsale_user_id' => Auth::id()];
+            Batchstock::updateOrCreate(['stock_id' => $this->stock->id], $update);
+        }
+
+        if ($this->isDirty('bulksales')) {
+            //changes to bulksales
+            $update = ['bulksales' => 0, 'bulk_user_id' => Auth::id()];
+            Batchstock::updateOrCreate(['stock_id' => $this->stock->id], $update);
+        }
+
+        if ($this->isDirty('retail')) {
+            //changes to retail
+            $update = ['retail' => 0, 'retail_user_id' => Auth::id()];
+            Batchstock::updateOrCreate(['stock_id' => $this->stock->id], $update);
+        }
+
+        $this->stock->batched = time();
+        $this->stock->update();
+    }
+
 }

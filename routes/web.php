@@ -180,7 +180,16 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/otherinfo', ['as' => 'otherinfo', 'uses' => 'ProductController@otherinfo', 'visible' => true,'custom_label'=>'List Other info']);
                 Route::get('create', ['as' => 'create', 'uses' => 'ProductController@create','visible' => true, 'custom_label'=>'Add Stock']);
                 Route::get('expired', ['as' => 'expired', 'uses' => 'ProductController@expired','visible' => true]);
-                Route::get('disable', ['as' => 'disable', 'uses' => 'ProductController@disabled','visible' => true,'vue'=>'/stock/disabled','custom_label'=>'List Disabled Stock']);
+                Route::get('near_expired', ['as' => 'near_expired', 'uses' => 'ProductController@near_expired','visible' => true,
+                    'custom_label'=>'Near Expiration Stock']);
+                Route::get('disable', ['as' => 'disable', 'uses' => 'ProductController@disabled','visible' => true,'custom_label'=>'List Disabled Stock']);
+                Route::get('non_reorder', ['as' => 'non_reorder', 'uses' => 'ProductController@non_reorder','visible' => true,'custom_label'=>'Non Re-order List']);
+                Route::match(['post', 'get'],'stock_balance_by_supplier', ['as' => 'stock_balance_by_supplier', 'uses' => 'ProductController@stock_balance_by_supplier','visible' => true,'custom_label'=>'Stock Balance By Supplier']);
+
+                Route::match(['post', 'get'],'stock_balance_by_supplier', ['as' => 'stock_balance_by_supplier', 'uses' => 'ProductController@stock_balance_by_supplier','visible' => true,'custom_label'=>'Stock Balance By Supplier']);
+
+                Route::match(['post', 'get'],'batched_stock_list', ['as' => 'batched_stock_list', 'uses' => 'ProductController@batched_stock_list','visible' => true,'custom_label'=>'Batched Stock List']);
+
                 Route::get('export', ['as' => 'export', 'uses' => 'ProductController@export']);
                 Route::get('{stock}/edit', ['as' => 'edit', 'uses' => 'ProductController@edit','custom_label'=>'Edit Product']);
                 Route::get('{stock}/toggle', ['as' => 'toggle', 'uses' => 'ProductController@toggle','custom_label'=>'Toggle Product']);
@@ -367,7 +376,11 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'StockTransferReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
 
+                Route::match(['get','post'],'transfer_summary', ['as' => 'transfer_summary', 'uses' => 'StockTransferReportController@transfer_summary', 'custom_label'=>'Transfer Summary Report']);
+
             });
+
+
 
 
             Route::prefix('customerReport')->as('customerReport.')->namespace('CustomerReport')->group(function(){
@@ -385,6 +398,18 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['get','post'],'bin', ['as' => 'bincard_report', 'uses' => 'ProductReportController@bincard_report', 'custom_label'=>'Product Bincard Report']);
 
                 Route::match(['get','post'],'nearoutofstock', ['as' => 'nearoutofstock', 'uses' => 'ProductReportController@nearoutofstock', 'custom_label'=>'Near Out Of Stock']);
+
+                Route::match(['get','post'],'retailnearoutofstock', ['as' => 'retailnearoutofstock', 'uses' => 'ProductReportController@retailnearoutofstock', 'custom_label'=>'Retail Near Out Of Stock']);
+
+                Route::match(['get','post'],'stockpriceanalysis', ['as' => 'stockpriceanalysis', 'uses' => 'ProductReportController@stockpriceanalysis', 'custom_label'=>'Stock Price Analysis']);
+
+                Route::match(['get','post'],'movingstocksreport', ['as' => 'movingstocksreport', 'uses' => 'ProductReportController@movingstocksreport', 'custom_label'=>'Moving Stocks Report']);
+
+                Route::match(['get','post'],'view_stock_batch_product', ['as' => 'view_stock_batch_product', 'uses' => 'ProductReportController@view_stock_batch_product', 'custom_label'=>'Stock Batch Update Report']);
+
+                Route::match(['get','post'],'balance_stock_worth', ['as' => 'balance_stock_worth', 'uses' => 'ProductReportController@balance_stock_worth', 'custom_label'=>'Balance Stock Worth Report']);
+
+
             });
 
 

@@ -78,6 +78,15 @@ trait ModelFilterTraits
 
         });
 
+        self::updating(function($model){
+
+            if(method_exists($model, 'quantityColumnChanges'))
+            {
+                $model->quantityColumnChanges();
+            }
+
+        });
+
     }
 
 

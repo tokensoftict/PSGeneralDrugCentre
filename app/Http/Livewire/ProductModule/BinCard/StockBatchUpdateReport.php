@@ -1,19 +1,32 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\ProductModule\BinCard;
 
+use App\Classes\Settings;
 use App\Models\Stockbincard;
-use Illuminate\Support\Carbon;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use Illuminate\Support\Carbon;
+use PowerComponents\LivewirePowerGrid\{Button,
+    Column,
+    Exportable,
+    Footer,
+    Header,
+    PowerGrid,
+    PowerGridComponent,
+    PowerGridEloquent};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
+use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
 final class StockBatchUpdateReport extends PowerGridComponent
 {
-    use ActionButton;
-    use WithExport;
+
+    use PowerGridComponentTrait;
+
+    public $key = "id";
+
+    public array  $filters;
 
     /*
     |--------------------------------------------------------------------------
@@ -22,20 +35,6 @@ final class StockBatchUpdateReport extends PowerGridComponent
     | Setup Table's general features
     |
     */
-    public function setUp(): array
-    {
-        $this->showCheckBox();
-
-        return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage()
-                ->showRecordCount(),
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +51,13 @@ final class StockBatchUpdateReport extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Stockbincard::query();
+        $date = $this->filters['between.stockbincards.bin_card_date'];
+
+        return Stockbincard::query()->with(['stock','user'])->whereBetween('bin_card_date',$date)
+            ->where(function($q) use(&$request){
+                $q->orwhere('bin_card_type',"APP//BATCH_UPDATE");
+            })
+            ->orderBy('id','DESC');
     }
 
     /*
@@ -70,7 +75,11 @@ final class StockBatchUpdateReport extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'stock' => [
+                'name',
+            ]
+        ];
     }
 
     /*
@@ -89,28 +98,37 @@ final class StockBatchUpdateReport extends PowerGridComponent
         return PowerGrid::eloquent()
             ->addColumn('id')
             ->addColumn('stock_id')
-            ->addColumn('bin_card_type')
-
-           /** Example of custom column using a closure **/
-            ->addColumn('bin_card_type_lower', fn (Stockbincard $model) => strtolower(e($model->bin_card_type)))
-
-            ->addColumn('bin_card_date_formatted', fn (Stockbincard $model) => Carbon::parse($model->bin_card_date)->format('d/m/Y'))
+            ->addColumn('name', function(Stockbincard $stockbincard){
+                return $stockbincard->stock->name;
+            })
+            ->addColumn('bin_card_type', function (Stockbincard $stockbincard){
+                return ProductBincard::$bincardType[$stockbincard->bin_card_type];
+            })
             ->addColumn('user_id')
+            ->addColumn('by', function(Stockbincard $stockbincard){
+                return $stockbincard->user->name;
+            })
             ->addColumn('in_qty')
             ->addColumn('out_qty')
             ->addColumn('sold_qty')
             ->addColumn('return_qty')
             ->addColumn('stockbatch_id')
-            ->addColumn('to_department')
-            ->addColumn('from_department')
+            ->addColumn('to_department', function (Stockbincard $stockbincard){
+                return Settings::$department[$stockbincard->to_department];
+            })
+            ->addColumn('from_department', function (Stockbincard $stockbincard){
+                return Settings::$department[$stockbincard->from_department];
+            })
             ->addColumn('supplier_id')
             ->addColumn('invoice_id')
             ->addColumn('stocktransfer_id')
             ->addColumn('purchase_id')
             ->addColumn('balance')
             ->addColumn('comment')
-            ->addColumn('department_balance')
-            ->addColumn('created_at_formatted', fn (Stockbincard $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('bin_card_date', function (Stockbincard $stockbincard){
+                return eng_str_date($stockbincard->bin_card_date);
+            })
+            ->addColumn('department_balance');
     }
 
     /*
@@ -130,44 +148,19 @@ final class StockBatchUpdateReport extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Stock id', 'stock_id'),
-            Column::make('Bin card type', 'bin_card_type')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Bin card date', 'bin_card_date_formatted', 'bin_card_date')
-                ->sortable(),
-
-            Column::make('User id', 'user_id'),
-            Column::make('In qty', 'in_qty'),
-            Column::make('Out qty', 'out_qty'),
-            Column::make('Sold qty', 'sold_qty'),
-            Column::make('Return qty', 'return_qty'),
-            Column::make('Stockbatch id', 'stockbatch_id'),
-            Column::make('To department', 'to_department')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('From department', 'from_department')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Supplier id', 'supplier_id'),
-            Column::make('Invoice id', 'invoice_id'),
-            Column::make('Stocktransfer id', 'stocktransfer_id'),
-            Column::make('Purchase id', 'purchase_id'),
-            Column::make('Balance', 'balance'),
+            Column::add()->index()->title('SN')->visibleInExport(false),
+            Column::make('Name', 'name'),
+            Column::make('Type', 'bin_card_type'),
+            Column::make('From', 'from_department'),
+            Column::make('To', 'to_department'),
+            Column::make('In Qty', 'in_qty'),
+            Column::make('Out Qty', 'out_qty'),
+            Column::make('Sold Qty', 'sold_qty'),
+            Column::make('Return Qty', 'return_qty'),
+            Column::make('Balance', 'department_balance'),
+            Column::make('Grand Balance', 'balance'),
+            Column::make('Date', 'bin_card_date'),
             Column::make('Comment', 'comment')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Department balance', 'department_balance')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
 
         ];
     }
@@ -180,11 +173,7 @@ final class StockBatchUpdateReport extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::inputText('bin_card_type')->operators(['contains']),
-            Filter::datepicker('bin_card_date'),
-            Filter::inputText('to_department')->operators(['contains']),
-            Filter::inputText('from_department')->operators(['contains']),
-            Filter::datetimepicker('created_at'),
+
         ];
     }
 

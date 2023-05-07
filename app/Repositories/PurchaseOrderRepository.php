@@ -156,18 +156,13 @@ class PurchaseOrderRepository
 
         dispatch(new AddLogToProductBinCard($bincards));
 
-        DB::transaction(function() use($batchInsert, $stockUpdate, &$purchase)  {
+        DB::table('stockbatches')->insert($batchInsert);
 
-            DB::table('stockbatches')->insert($batchInsert);
-
-            Stock::upsert(
-                $stockUpdate,
-                ['id'],
-                [ cost_price_column(department_by_quantity_column($purchase->department)->id)]
-            );
-
-
-        });
+        Stock::upsert(
+            $stockUpdate,
+            ['id'],
+            [ cost_price_column(department_by_quantity_column($purchase->department)->id)]
+        );
 
         Stock::whereIn('id', Arr::pluck($batchInsert, 'stock_id'))->get()->each->updateQuantity();
 

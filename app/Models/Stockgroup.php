@@ -65,7 +65,7 @@ class Stockgroup extends Model
      */
     public function nearOs()
     {
-        return $this->hasMany(Nearoutofstock::class, 'group_id');
+        return $this->hasMany(Nearoutofstock::class, 'stockgroup_id');
     }
 
 
@@ -119,6 +119,16 @@ class Stockgroup extends Model
         return 'N/A';
     }
 
+
+    public function lastpoItem(){
+        $stocks = $this->stocks->pluck('id')->toArray();
+       return $this->hasOne(Purchaseitem::with(['purchase'])->whereIn('stock_id', $stocks)
+           ->whereHas('purchase', function ($item){
+               $item->where('status_id','6');
+           })->latest()->first());
+    }
+
+
     public function getlastpo_item(){
         $stocks = $this->stocks()->get();
         if($stocks->count() == 0) return 'N/A';
@@ -153,13 +163,13 @@ class Stockgroup extends Model
         foreach($stocks as $stock){
             $st[] = $stock->id;
         }
-        $sup = Purchaseitem::with(['purchase'])->wherein('stock_id',$st)
+        $sup = Purchaseitem::with(['purchase'])->whereIn('stock_id',$st)
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
             })->orderBy('id','DESC')->get();
 
         foreach($sup as $s){
-            if($s && $s->po->supplier_id != "172" && $s->po->supplier_id != "195"){
+            if($s && $s->purchase->supplier_id != "172" && $s->purchase->supplier_id != "195"){
                 return $s;
             }
         }
@@ -327,7 +337,7 @@ class Stockgroup extends Model
         if($this->stocks()->exists()) {
             $total = 0;
             foreach($this->stocks()->get() as $stocks){
-                $total+=round(abs(($stocks->retail/$stocks->box)));
+                $total+=round(abs((divide($stocks->retail,$stocks->box))));
             }
             return $total;
         }

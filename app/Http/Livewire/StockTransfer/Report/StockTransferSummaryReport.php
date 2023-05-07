@@ -17,6 +17,8 @@ final class StockTransferSummaryReport extends PowerGridComponent
    use PowerGridComponentTrait;
 
    public array $filters;
+
+   public $key = 'stock_id';
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -32,17 +34,17 @@ final class StockTransferSummaryReport extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Stocktransferitem::query()->select(
+        return Stocktransferitem::query()->with(['stock'])->select(
             'stock_id',
             DB::raw( 'SUM(quantity * selling_price) as total_sub_total'),
             DB::raw( 'SUM(selling_price) as cost'),
             DB::raw( 'SUM(quantity) as total_qty')
         )->whereHas('stocktransfer', function ($query){
-            $query->where('to',$request->get('department'))
-                ->whereBetween('transfer_date',[$request->get('from'),$request->get('to')])
-                ->where('status',$request->status)
+            $query->where('to',$this->filters['department'])
+                ->whereBetween('transfer_date', $this->filters['between.transfer_date'])
+                ->where('status_id',$this->filters['status_id'])
                 ->orderBy("id","DESC");
-        });
+        })->groupBy('stock_id');;
     }
 
     /*
@@ -77,15 +79,11 @@ final class StockTransferSummaryReport extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('id')
-            ->addColumn('stocktransfer_id')
-            ->addColumn('stock_id')
-            ->addColumn('quantity')
-            ->addColumn('selling_price')
-            ->addColumn('cost_price')
-            ->addColumn('stockbatch_id')
-            ->addColumn('user_id')
-            ->addColumn('rem_quantity');
+            ->addColumn('name', fn(Stocktransferitem $stocktransferitem) => $stocktransferitem->stock->name)
+            ->addColumn('total_qty')
+            ->addColumn('total_sub_total', fn(Stocktransferitem $stocktransferitem) => money($stocktransferitem->total_sub_total))
+            ->addColumn('cost', fn(Stocktransferitem $stocktransferitem) => money($stocktransferitem->cost));
+
     }
 
     /*
@@ -105,24 +103,11 @@ final class StockTransferSummaryReport extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Stocktransfer id', 'stocktransfer_id'),
-            Column::make('Stock id', 'stock_id'),
-            Column::make('Quantity', 'quantity'),
-            Column::make('Selling price', 'selling_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Cost price', 'cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Stockbatch id', 'stockbatch_id'),
-            Column::make('User id', 'user_id'),
-            Column::make('Rem quantity', 'rem_quantity'),
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
+            Column::add()->index()->title('SN')->visibleInExport(false),
+            Column::make('Name', 'name'),
+            Column::make('Quantity', 'total_qty'),
+            Column::make('Cost Price', 'cost')->withSum(),
+            Column::make('Total Cost Price', 'total_sub_total')
         ];
     }
 

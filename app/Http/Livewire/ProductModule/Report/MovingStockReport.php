@@ -1,42 +1,28 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\ProductModule\Report;
 
 use App\Models\Movingstock;
-use Illuminate\Support\Carbon;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use Illuminate\Support\Carbon;
+use PowerComponents\LivewirePowerGrid\{Button,
+    Column,
+    Exportable,
+    Footer,
+    Header,
+    PowerGrid,
+    PowerGridComponent,
+    PowerGridEloquent};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
+use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
 final class MovingStockReport extends PowerGridComponent
 {
-    use ActionButton;
-    use WithExport;
+  use PowerGridComponentTrait;
 
-    /*
-    |--------------------------------------------------------------------------
-    |  Features Setup
-    |--------------------------------------------------------------------------
-    | Setup Table's general features
-    |
-    */
-    public function setUp(): array
-    {
-        $this->showCheckBox();
-
-        return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage()
-                ->showRecordCount(),
-        ];
-    }
-
+  public $key = "id";
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -52,7 +38,7 @@ final class MovingStockReport extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Movingstock::query();
+        return Movingstock::query()->with(['stock', 'stock.category']);
     }
 
     /*
@@ -88,6 +74,9 @@ final class MovingStockReport extends PowerGridComponent
     {
         return PowerGrid::eloquent()
             ->addColumn('id')
+            ->addColumn('category', function (Movingstock $movingstock) {
+                return $movingstock->stock->category->name ?? "";
+            })
             ->addColumn('stock_id')
             ->addColumn('supplier_id')
             ->addColumn('stockgroup_id')
@@ -102,10 +91,6 @@ final class MovingStockReport extends PowerGridComponent
             ->addColumn('lastpurchase_days')
             ->addColumn('moving_stocks_constant2')
             ->addColumn('name')
-
-           /** Example of custom column using a closure **/
-            ->addColumn('name_lower', fn (Movingstock $model) => strtolower(e($model->name)))
-
             ->addColumn('box')
             ->addColumn('threshold')
             ->addColumn('cartoon')
@@ -116,7 +101,10 @@ final class MovingStockReport extends PowerGridComponent
             ->addColumn('all_qty')
             ->addColumn('tt_av_cost_price')
             ->addColumn('tt_av_rt_cost_price')
-            ->addColumn('created_at_formatted', fn (Movingstock $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('last_supply_date', function(Movingstock $movingstock){
+                return $movingstock->last_supply_date != NULL ? eng_str_date($movingstock->last_supply_date) : "N/A";
+            })
+            ->addColumn('last_supply_quantity');
     }
 
     /*
@@ -136,82 +124,25 @@ final class MovingStockReport extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Stock id', 'stock_id'),
-            Column::make('Supplier id', 'supplier_id'),
-            Column::make('Stockgroup id', 'stockgroup_id'),
-            Column::make('Retail qty', 'retail_qty')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('No qty sold', 'no_qty_sold')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Daily qty sold', 'daily_qty_sold')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Average inventory', 'average_inventory')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Turn over rate', 'turn_over_rate')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Group os id', 'group_os_id'),
-            Column::make('Is grouped', 'is_grouped'),
-            Column::make('Turn over rate2', 'turn_over_rate2')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Lastpurchase days', 'lastpurchase_days'),
-            Column::make('Moving stocks constant2', 'moving_stocks_constant2')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Name', 'name')
-                ->sortable()
-                ->searchable(),
-
+            Column::make('SN', '')->index(),
+            Column::make('Name', 'name') ->sortable()->searchable(),
+            Column::make('Category', 'category'),
             Column::make('Box', 'box'),
-            Column::make('Threshold', 'threshold')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Cartoon', 'cartoon'),
-            Column::make('Supplier name', 'supplier_name')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Av cost price', 'av_cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Av rt cost price', 'av_rt_cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Rt qty', 'rt_qty')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('All qty', 'all_qty')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Tt av cost price', 'tt_av_cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Tt av rt cost price', 'tt_av_rt_cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
+            Column::make('Carton', 'carton'),
+            Column::make('Threshold', 'threshold'),
+            Column::make('Av.Cost price', 'av_cost_price'),
+            Column::make('Av. Rt .Cost price', 'av_rt_cost_price'),
+            Column::make('Rt Qty', 'rt_qty'),
+            Column::make('WS,MS,BS Qty', 'all_qty'),
+            Column::make('Daily Qty Sold', 'daily_qty_sold'),
+            Column::make('Av. Inventory', 'average_inventory'),
+            Column::make('Turn Over rate', 'turn_over_rate'),
+            Column::make('Turn Over rate2', 'turn_over_rate2'),
+            Column::make('Worth', 'tt_av_cost_price'),
+            Column::make('RT Worth', 'tt_av_rt_cost_price'),
+            Column::make('Last Supplier', 'supplier_name'),
+            Column::make('Last Sup. Date', 'last_supply_date'),
+            Column::make('Last Sup. Qty', 'last_supply_quantity'),
         ];
     }
 
@@ -223,15 +154,7 @@ final class MovingStockReport extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::inputText('name')->operators(['contains']),
-            Filter::inputText('supplier_name')->operators(['contains']),
-            Filter::inputText('av_cost_price')->operators(['contains']),
-            Filter::inputText('av_rt_cost_price')->operators(['contains']),
-            Filter::inputText('rt_qty')->operators(['contains']),
-            Filter::inputText('all_qty')->operators(['contains']),
-            Filter::inputText('tt_av_cost_price')->operators(['contains']),
-            Filter::inputText('tt_av_rt_cost_price')->operators(['contains']),
-            Filter::datetimepicker('created_at'),
+
         ];
     }
 

@@ -4,6 +4,7 @@ namespace App\Traits;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushDataServer;
 use App\Models\Invoice;
+use App\Models\Purchaseitem;
 use App\Models\Stock;
 use App\Models\Stockbatch;
 use App\Models\Stocktransfer;
@@ -307,6 +308,8 @@ trait StockModelTrait
             $b->update();
             $b->stock->updateQuantity();
 
+            $stocktransfer->stocktransferitems()->where('stock_id', $b->stock->id)->update(['stockbatch_id' => $batch['id']]);
+
             $bincards[] = [
                 'bin_card_type'=>'APP//TRANSFER',
                 'bin_card_date'=>todaysDate(),
@@ -435,6 +438,7 @@ trait StockModelTrait
             dispatch(new PushDataServer(['action' => 'update', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
         }
     }
+
 
 
 

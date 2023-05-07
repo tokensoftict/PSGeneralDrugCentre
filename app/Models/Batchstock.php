@@ -58,10 +58,26 @@ class Batchstock extends Model
 		'retail_user_id'
 	];
 
-	public function user()
+	public function wholsale_user()
 	{
 		return $this->belongsTo(User::class, 'wholsale_user_id');
 	}
+
+    public function quantity_user()
+    {
+        return $this->belongsTo(User::class, 'quantity_user_id');
+    }
+
+    public function bulk_user()
+    {
+        return $this->belongsTo(User::class, 'bulk_user_id');
+    }
+
+
+    public function retail_user()
+    {
+        return $this->belongsTo(User::class, 'retail_user_id');
+    }
 
 	public function stock()
 	{

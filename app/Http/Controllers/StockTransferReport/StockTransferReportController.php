@@ -78,9 +78,36 @@ class StockTransferReportController extends Controller
             $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
 
         }
-        return setPageContent('reports.stocktransfer.index', $data);
+        return view('reports.stocktransfer.index', $data);
     }
 
 
+    public function transfer_summary(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Transfer Summary Report',
+            'subtitle' => 'View Stock Transfer Summary Report',
+            'filters' => [
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'status_id' => 1,
+                'department'=> 'quantity',
+                'filters' => [
+                    'between.transfer_date' => monthlyDateRange(),
+                    'status_id' => 1,
+                    'department'=> 'quantity',
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.transfer_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
+            $data['filters']['filters']['department'] = $data['filters']['department'];
+
+        }
+        return view('reports.stocktransfer.transfer_summary', $data);
+    }
 
 }

@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\ProductModule\Batch;
 
 use App\Models\Stockbatch;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
@@ -13,29 +15,10 @@ use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Heade
 
 final class StockPriceAnalysis extends PowerGridComponent
 {
-    use ActionButton;
+    use PowerGridComponentTrait;
 
-    /*
-    |--------------------------------------------------------------------------
-    |  Features Setup
-    |--------------------------------------------------------------------------
-    | Setup Table's general features
-    |
-    */
-    public function setUp(): array
-    {
-        $this->showCheckBox();
 
-        return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage()
-                ->showRecordCount(),
-        ];
-    }
+    public $key = 'stock_id';
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +35,19 @@ final class StockPriceAnalysis extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Stockbatch::query();
+        return Stockbatch::with(['stock'])->select(
+            'stockbatches.stock_id',
+            //DB::raw('sb.supplier_id'),
+            DB::raw( 'SUM(stockbatches.wholesales) as ws'),
+            DB::raw( 'SUM(stockbatches.bulksales) as bs'),
+            DB::raw( 'SUM(stockbatches.quantity) as ms'),
+            DB::raw( 'SUM(stockbatches.retail) as rt'),
+            DB::raw( 'COUNT(stockbatches.retail) as tt_batch'),
+            DB::raw( 'SUM((stockbatches.wholesales+stockbatches.bulksales+stockbatches.quantity) * (stockbatches.cost_price)) as total_cost_total'),
+            DB::raw( 'SUM(stockbatches.retail * (stockbatches.retail_cost_price)) as total_rt_cost_total')
+        )
+           // ->join('stockbatches as sb', 'stockbatches.stock_id','=','sb.stock_id')
+            ->groupBy('stock_id');
     }
 
     /*
@@ -87,12 +82,46 @@ final class StockPriceAnalysis extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('id')
-            ->addColumn('name')
-            ->addColumn('name_lower', fn (Stockbatch $model) => strtolower(e($model->name)))
-            ->addColumn('created_at')
-            ->addColumn('created_at_formatted', fn (Stockbatch $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
-    }
+
+            ->addColumn('stock_id')
+            ->addColumn('supplier', function(Stockbatch $stockbatch){
+                return $stockbatch->last_supplier->name ?? "N/A";
+            })
+            ->addColumn('name', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->name;
+            })
+            ->addColumn('box', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->box;
+            })
+            ->addColumn('selling_price', function(Stockbatch $stockbatch){
+                return money($stockbatch->stock->whole_price);
+            })
+            ->addColumn('retail_selling_price', function(Stockbatch $stockbatch){
+                return money($stockbatch->stock->retail_price);
+            })
+            ->addColumn('tt_qty', function(Stockbatch $stockbatch){
+                return $stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box)));
+            })
+            ->addColumn('ws')
+            ->addColumn('av_retail_cost_price', function(Stockbatch $stockbatch){
+                if($stockbatch->total_rt_cost_total == 0) return  number_format(0,2);
+               return money((abs( $stockbatch->total_rt_cost_total/($stockbatch->rt))));
+            })
+            ->addColumn('av_cost', function(Stockbatch $stockbatch){
+                if($stockbatch->total_cost_total == 0) return  number_format(0,2);
+               return  money((abs( $stockbatch->total_cost_total/($stockbatch->ms+$stockbatch->bs+$stockbatch->ws))));
+            })
+            ->addColumn('bs')
+            ->addColumn('ms')
+            ->addColumn('rt')
+            ->addColumn('rtbox', function(Stockbatch $stockbatch){
+                return $stockbatch->rt == 0 ?   0 : $stockbatch->rt/$stockbatch->stock->box;
+            })
+            ->addColumn('tt_batch')
+            ->addColumn('total_cost_total')
+            ->addColumn('total_rt_cost_total');
+
+   }
 
     /*
     |--------------------------------------------------------------------------
@@ -111,19 +140,19 @@ final class StockPriceAnalysis extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('ID', 'id')
-                ->searchable()
-                ->sortable(),
-
-            Column::make('Name', 'name')
-                ->searchable()
-                ->sortable(),
-
-            Column::make('Created at', 'created_at')
-                ->hidden(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->searchable()
+            Column::make('SN', '')->index(),
+            Column::make('Name', 'name')->searchable(),
+            Column::make('Box', 'box'),
+            Column::make('Retail Qty', 'rt'),
+            Column::make('Retail Qty(Box)', 'rtbox'),
+            Column::make('Ws Qty', 'ws'),
+            Column::make('MS Qty', 'ms'),
+            Column::make('Total Qty', 'tt_qty'),
+            Column::make('Selling Price', 'selling_price'),
+            Column::make('Retail Selling Price', 'retail_selling_price'),
+            Column::make('Av. Rt. Cost Price', 'av_retail_cost_price'),
+            Column::make('Av. Cost Price', 'av_cost'),
+            Column::make('Last Supplier', 'supplier'),
         ];
     }
 
@@ -135,8 +164,9 @@ final class StockPriceAnalysis extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::inputText('name'),
-            Filter::datepicker('created_at_formatted', 'created_at'),
+            'stock' => [
+                'name',
+            ]
         ];
     }
 

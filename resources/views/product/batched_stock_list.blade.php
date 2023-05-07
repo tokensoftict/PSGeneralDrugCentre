@@ -37,6 +37,6 @@
 
 @section('content')
     <div class="table-responsive">
-
+        <livewire:product-module.batch.batched-stock-list-report :filters="$filters['filters']"/>
     </div>
 @endsection

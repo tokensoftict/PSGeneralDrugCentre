@@ -4,6 +4,7 @@ namespace App\Http\Livewire\ProductModule\NearOS;
 
 use App\Classes\Settings;
 use App\Models\Nearoutofstock;
+use App\Models\Retailnearoutofstock;
 use App\Models\Stock;
 use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,11 +23,11 @@ use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
-final class NearOsDatatable extends PowerGridComponent
+final class RetailNearOsDatatable extends PowerGridComponent
 {
     use PowerGridComponentTrait;
 
-    public $key = 'nearoutofstocks.id';
+    public $key = 'retailnearoutofstock.id';
 
     /*
     |--------------------------------------------------------------------------
@@ -46,10 +47,10 @@ final class NearOsDatatable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Nearoutofstock::query()
+        return Retailnearoutofstock::query()
             ->select(
                 [
-                    'nearoutofstocks.*',
+                    'retailnearoutofstock.*',
                     'stocks.name as stock_name',
                     'stocks.box as box',
                     'stocks.carton as carton',
@@ -57,20 +58,20 @@ final class NearOsDatatable extends PowerGridComponent
                     'suppliers.name as supplier_name',
                     'stockgroups.name as group_name',
                     DB::raw('(CASE
-                        WHEN nearoutofstocks.stockgroup_id IS NOT NULL THEN stockgroups.name
+                        WHEN retailnearoutofstock.stockgroup_id IS NOT NULL THEN stockgroups.name
                         ELSE stocks.name
                     END) AS name')
                 ]
             )
             ->leftJoin('stocks', function ($stocks) {
-                $stocks->on('nearoutofstocks.stock_id', '=', 'stocks.id');
+                $stocks->on('retailnearoutofstock.stock_id', '=', 'stocks.id');
             })
             ->leftJoin('categories', 'stocks.category_id', '=', 'categories.id')
             ->leftJoin('stockgroups', function ($stockgroups) {
-                $stockgroups->on('nearoutofstocks.stockgroup_id', '=', 'stockgroups.id');
+                $stockgroups->on('retailnearoutofstock.stockgroup_id', '=', 'stockgroups.id');
             })
             ->leftJoin('suppliers', function ($suppliers) {
-                $suppliers->on('nearoutofstocks.supplier_id', '=', 'suppliers.id');
+                $suppliers->on('retailnearoutofstock.supplier_id', '=', 'suppliers.id');
             });
         //->whereNotNull('stocks.name');
     }
@@ -116,7 +117,7 @@ final class NearOsDatatable extends PowerGridComponent
         return PowerGrid::eloquent()
             ->addColumn('id')
             ->addColumn('name')
-            ->addColumn('threshold_type', function(Nearoutofstock $nearoutofstock){
+            ->addColumn('threshold_type', function(Retailnearoutofstock $nearoutofstock){
                 return $nearoutofstock->threshold_type == "" ? "THRESHOLD" : $nearoutofstock->threshold_type;
             })
             ->addColumn('box')
@@ -131,7 +132,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('group_os_id')
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
-            ->addColumn('last_purchase_date_formatted', fn (Nearoutofstock $model) => Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
+            ->addColumn('last_purchase_date_formatted', fn (Retailnearoutofstock $model) => Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
             ->addColumn('purchaseitem_id');
 
     }
@@ -175,6 +176,7 @@ final class NearOsDatatable extends PowerGridComponent
     {
         return [
             Column::make('SN', '')->index(),
+            Column::make('Product ID', 'id'),
             Column::make('Name', 'name','name')->searchable()->sortable(),
             Column::make('Box', 'box','box')->sortable(),
             Column::make('Carton', 'carton','carton')->sortable(),

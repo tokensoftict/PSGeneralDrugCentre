@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ProductModule\Batch;
 
 use App\Jobs\AddLogToProductBinCard;
+use App\Models\Batchstock;
 use App\Models\Stock;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -88,7 +89,34 @@ class StockBatch extends Component
 
         batch::upsert($this->batches,['id'], array_keys($this->batches[0]));
 
+        $user_col_map = [
+            'quantity'=>'quantity_user_id',
+            'bulksales'=>'bulk_user_id',
+            'wholesales'=>'wholsale_user_id',
+            'retail'=>'retail_user_id',
+        ];
+
         $this->stock->updateQuantity();
+
+        if(isset($this->stock->batchstock->stock_id)){
+            $col = $user_col_map[$this->selectedDepartment];
+            $this->stock->batchstock->{$this->selectedDepartment} = 1;
+            $this->stock->batchstock->$col  = auth()->id();
+            $this->stock->batchstock->update();
+        }else{
+            $c = [
+                'stock_id'=>$this->stock->id,
+                'quantity'=>0,
+                'wholesales'=>0,
+                'bulksales'=>0,
+                'retail'=>0,
+            ];
+            $c[$this->selectedDepartment] = 1;
+
+            $c[$user_col_map[$this->selectedDepartment]] = \auth()->id();
+
+            $this->stock->batchstock->save(new Batchstock($c));
+        }
 
         $bincards[] =  [
             'bin_card_type'=>'APP//BATCH_UPDATE',

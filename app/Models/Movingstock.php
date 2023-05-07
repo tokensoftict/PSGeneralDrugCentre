@@ -37,6 +37,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $all_qty
  * @property string|null $tt_av_cost_price
  * @property string|null $tt_av_rt_cost_price
+ * @property string $last_supply_date
+ * @property int $last_supply_quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * 
@@ -66,7 +68,8 @@ class Movingstock extends Model
 		'moving_stocks_constant2' => 'float',
 		'box' => 'int',
 		'threshold' => 'float',
-		'cartoon' => 'int'
+		'cartoon' => 'int',
+		'last_supply_quantity' => 'int'
 	];
 
 	protected $fillable = [
@@ -93,7 +96,9 @@ class Movingstock extends Model
 		'rt_qty',
 		'all_qty',
 		'tt_av_cost_price',
-		'tt_av_rt_cost_price'
+		'tt_av_rt_cost_price',
+		'last_supply_date',
+		'last_supply_quantity'
 	];
 
 	public function stock()

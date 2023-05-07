@@ -33,6 +33,6 @@
 
 @section('content')
     <div class="table-responsive">
-    <livewire:stock-transfer.datatable.stock-transfer-datatable :filters="$filters['filters']"/>
+        <livewire:stock-transfer.report.stock-transfer-summary-report :filters="$filters['filters']"/>
     </div>
 @endsection

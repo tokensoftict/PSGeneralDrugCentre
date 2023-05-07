@@ -18,6 +18,6 @@
 
 @section('content')
     <div class="table-responsive">
-        <livewire:product-module.near-o-s.near-os-datatable/>
+        <livewire:product-module.near-o-s.retail-near-os-datatable/>
     </div>
 @endsection

@@ -1,42 +1,31 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\ProductModule\Balance;
 
 use App\Models\Stockbatch;
-use Illuminate\Support\Carbon;
+use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use Illuminate\Support\Carbon;
+use PowerComponents\LivewirePowerGrid\{Button,
+    Column,
+    Exportable,
+    Footer,
+    Header,
+    PowerGrid,
+    PowerGridComponent,
+    PowerGridEloquent};
+use Illuminate\Support\Facades\DB;
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
+use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 
 final class StockBalanceBySupplier extends PowerGridComponent
 {
-    use ActionButton;
-    use WithExport;
+    use PowerGridComponentTrait;
 
-    /*
-    |--------------------------------------------------------------------------
-    |  Features Setup
-    |--------------------------------------------------------------------------
-    | Setup Table's general features
-    |
-    */
-    public function setUp(): array
-    {
-        $this->showCheckBox();
+    public array $filters;
 
-        return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
-                ->showPerPage()
-                ->showRecordCount(),
-        ];
-    }
-
+    public $key = 'stock_id';
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -52,7 +41,24 @@ final class StockBalanceBySupplier extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Stockbatch::query();
+        return Stockbatch::with(['stock'])->select(
+            'stock_id',
+            DB::raw( 'SUM(wholesales) as ws'),
+            DB::raw( 'SUM(bulksales) as bs'),
+            DB::raw( 'SUM(quantity) as ms'),
+            DB::raw( 'SUM(retail) as rt'),
+            DB::raw( 'COUNT(retail) as tt_batch')
+        )->whereHas('stock', function ($q) {
+            $q->where('status','1');
+        })
+            ->where(function($q){
+                $q->orWhere('wholesales',">",0)
+                    ->orWhere('bulksales',">",0)
+                    ->orWhere('retail',">",0)
+                    ->orWhere('quantity',">",0);
+            })
+            ->groupBy('stock_id')
+            ->filterdata($this->filters);
     }
 
     /*
@@ -70,7 +76,11 @@ final class StockBalanceBySupplier extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'stock' => [
+                'name',
+            ]
+        ];
     }
 
     /*
@@ -87,18 +97,22 @@ final class StockBalanceBySupplier extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('id')
-            ->addColumn('received_date_formatted', fn (Stockbatch $model) => Carbon::parse($model->received_date)->format('d/m/Y'))
-            ->addColumn('expiry_date_formatted', fn (Stockbatch $model) => Carbon::parse($model->expiry_date)->format('d/m/Y'))
-            ->addColumn('wholesales')
-            ->addColumn('bulksales')
-            ->addColumn('retail')
-            ->addColumn('quantity')
-            ->addColumn('cost_price')
-            ->addColumn('retail_cost_price')
-            ->addColumn('stock_id')
-            ->addColumn('supplier_id')
-            ->addColumn('created_at_formatted', fn (Stockbatch $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('name', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->name;
+            })
+            ->addColumn('box', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->box;
+            })
+            ->addColumn('carton', function(Stockbatch $stockbatch){
+                return $stockbatch->stock->carton;
+            })
+            ->addColumn('ws')
+            ->addColumn('bs')
+            ->addColumn('ms')
+            ->addColumn('rt')
+            ->addColumn('total', function(Stockbatch $stockbatch){
+                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs($stockbatch->rt/ $stockbatch->stock->box));
+            });
     }
 
     /*
@@ -118,30 +132,15 @@ final class StockBalanceBySupplier extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Received date', 'received_date_formatted', 'received_date')
-                ->sortable(),
-
-            Column::make('Expiry date', 'expiry_date_formatted', 'expiry_date')
-                ->sortable(),
-
-            Column::make('Wholesales', 'wholesales'),
-            Column::make('Bulksales', 'bulksales'),
-            Column::make('Retail', 'retail'),
-            Column::make('Quantity', 'quantity'),
-            Column::make('Cost price', 'cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Retail cost price', 'retail_cost_price')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Stock id', 'stock_id'),
-            Column::make('Supplier id', 'supplier_id'),
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
+            Column::make('SN' ,'')->index(),
+            Column::make('Name', 'name')->sortable()->searchable(),
+            Column::make('Box', 'box'),
+            Column::make('Carton', 'carton'),
+            Column::make('Wholesales', 'ws'),
+            Column::make('Bulksales', 'bs'),
+            Column::make('Retail', 'rt'),
+            Column::make('Main Store', 'ms'),
+            Column::make('Total', 'total'),
         ];
     }
 
@@ -153,9 +152,7 @@ final class StockBalanceBySupplier extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::datepicker('received_date'),
-            Filter::datepicker('expiry_date'),
-            Filter::datetimepicker('created_at'),
+
         ];
     }
 

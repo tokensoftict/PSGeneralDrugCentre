@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('pageHeaderTitle1','Product  List')
+@section('pageHeaderTitle1','Product List')
 @section('pageHeaderDescription','Manage all Finished Product')
 
 @section('pageHeaderAction')

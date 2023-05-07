@@ -229,4 +229,9 @@ class Stock extends Model
         return $this->hasMany(Batchstock::class);
     }
 
+    public function batchstock()
+    {
+        return $this->hasOne(Batchstock::class);
+    }
+
 }

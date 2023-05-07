@@ -8,6 +8,7 @@ use App\Models\Nearoutofstock;
 use App\Models\Purchaseitem;
 use App\Models\Stock;
 use App\Models\Stockgroup;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -43,9 +44,6 @@ class NearOSCommand extends Command
      */
     public function handle(Settings $settings)
     {
-        $department = 'others';
-
-        $departments = self::$department[$department];
 
         $store = $settings->store();
 
@@ -65,114 +63,129 @@ class NearOSCommand extends Command
         $to = todaysDate();
 
 
-        Stock::where('status',"1")->where('reorder',1)->chunk(200,function($stocks) use(&$day,&$supply_days,&$threshold_day,&$from,&$to, &$departments, &$department){
-            foreach ($stocks as $stock) {
-                $qty = 0;
-                $_product = Invoiceitembatch::select(
-                    'stock_id',
-                    DB::raw('SUM(quantity) as qty')
-                )
-                    ->whereIn('department',  $departments)
-                    ->where('stock_id', $stock->id)
-                    ->whereHas('invoice', function ($q) use (&$from, $to) {
-                        $q->whereBetween('invoice_date', [$from, $to]);
-                    })
-                    ->groupBy('stock_id')
-                    ->get();
-                if ($_product->count() > 0) {
-                    $p = $_product->first()->toArray();
-                    $qty+=$p['qty'];
-                }
 
 
 
-                if($_product->count() > 0) {
-                    $p = $_product->first()->toArray();
-                    $qty+=round(abs($p['qty']/$_product->first()->stock->box));
-                }
-                $thresholad_score = round(abs(($qty/$day) * $supply_days));
-
-                $now_qty = $stock->totalBalance();
-
-                $po = Purchaseitem::where('stock_id',$stock->id)->whereHas('purchase',function($q){
-                    $q->where('status_id','6');
+        $stocks = Stock::where('status',"1")->where('reorder',1)->get();
+        foreach($stocks as $stock){
+            $qty = 0;
+            $_product =   Invoiceitembatch::select(
+                'stock_id',
+                DB::raw( 'SUM(quantity) as qty')
+            )
+                ->where('department',"!=","retail")
+                ->where('stock_id',$stock->id)
+                ->whereHas('invoice',function($q) use(&$from,$to){
+                    $q->whereBetween('invoice_date',[$from,$to]);
                 })
-                    ->orderBy('id','DESC')
-                    ->limit(1)->first();
-
-
-                $last_supplier = $stock->stockBatches()->orderBy('id','DESC')->limit(1)->first();
-
-
-                if($thresholad_score > $now_qty){
-                    $qty_to_buy = $qty * $threshold_day;
-                    //trigger insertion
-                    $insert = [
-                        'stock_id'=>$stock->id,
-                        'threshold_type'=>"THRESHOLD",
-                        'os_type'=>'SINGLE',
-                        'last_qty_purchased'=>($po->qty ?? NULL),
-                        'last_purchase_date'=>($po->po->date_completed ?? NULL),
-                        'qty_to_buy'=> $qty_to_buy,
-                        'current_sold'=>$qty,
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
-                        'group_os_id'=>$stock->stockgroup_id,
-                        'last_po_batch'=>($po->id ?? NULL),
-                        'threshold_value'=> $thresholad_score,
-                        'current_qty'=> $stock->totalBalance(),
-                        'supplier_id'=> $last_supplier->supplier_id ?? NULL
-                    ];
-                    Nearoutofstock::create($insert);
-                    continue;
-                }else if($now_qty < 2){
-                    $qty_to_buy = $qty * $threshold_day;
-                    $insert = [
-                        'stock_id'=>$stock->id,
-                        'threshold_type'=>"NORMAL",
-                        'os_type'=>'SINGLE',
-                        'last_qty_purchased'=>($po->qty ?? NULL),
-                        'last_purchase_date'=>($po->po->date_completed ?? NULL),
-                        'qty_to_buy'=> $qty_to_buy,
-                        'current_sold'=>$qty,
-                        'last_po_batch'=>($po->id ?? NULL),
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
-                        'group_os_id'=>$stock->stockgroup_id,
-                        'threshold_value'=> $thresholad_score,
-                        'current_qty'=> $stock->totalBalance(),
-                        'supplier_id'=>  $last_supplier->supplier_id ?? NULL
-                    ];
-
-                    Nearoutofstock::create($insert);
-                    continue;
-                }else{
-                    //remember you did not create migration for this
-                    //threshold_type to be NOT-NORMAL
-                    // You add it has a quick fix to your logic
-                    $qty_to_buy = $qty * $threshold_day;
-                    $insert = [
-                        'stock_id'=>$stock->id,
-                        'threshold_type'=>"NOT-NORMAL",
-                        'os_type'=>'SINGLE',
-                        'last_qty_purchased'=>($po->qty ?? NULL),
-                        'last_purchase_date'=>($po->po->date_completed ?? NULL),
-                        'qty_to_buy'=> $qty_to_buy,
-                        'current_sold'=>$qty,
-                        'last_po_batch'=>($po->id ?? NULL),
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
-                        'group_os_id'=>$stock->stockgroup_id,
-                        'threshold_value'=> $thresholad_score,
-                        'current_qty'=> $stock->totalBalance(),
-                        'supplier_id'=>  $last_supplier->supplier_id ?? NULL
-                    ];
-                   Nearoutofstock::create($insert);
-                    continue;
-                }
+                ->groupBy('stock_id')
+                ->get();
+            if($_product->count() > 0) {
+                $p = $_product->first()->toArray();
+                $qty+=$p['qty'];
             }
-        });
+
+            //for retail department
+            $_product =   Invoiceitembatch::select(
+                'stock_id',
+                DB::raw( 'SUM(quantity) as qty')
+            )
+                ->where('department',"retail")
+                ->where('stock_id',$stock->id)
+                ->whereHas('stock',function($q){
+                    //$q->whereNull('stockgroup_id');
+                })
+                ->whereHas('invoice',function($q) use(&$from,$to){
+                    $q->whereBetween('invoice_date',[$from,$to]);
+                })
+                ->groupBy('stock_id')
+                ->get();
+            if($_product->count() > 0) {
+                $p = $_product->first()->toArray();
+                $qty+=round(abs(divide($p['qty'], $_product->first()->stock->box)));
+            }
+            $thresholad_score = round(abs(($qty/$day) * $supply_days));
+
+            $now_qty = $stock->totalBalance();
+
+            //for last qty purchased
+            $po = Purchaseitem::where('stock_id',$stock->id)->whereHas('purchase',function($q){
+                $q->where('status_id',status('Complete'));
+            })
+                ->orderBy('id','DESC')
+                ->limit(1)->first();
+
+            if($thresholad_score > $now_qty){
+                $qty_to_buy = $qty * $threshold_day;
+                $last_supplier = $stock->stockBatches()->orderBy('id','DESC')->get()->first();
+                //trigger insertion
+                $insert = [
+                    'stock_id'=>$stock->id,
+                    'threshold_type'=>"THRESHOLD",
+                    'os_type'=>'SINGLE',
+                    'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
+                    'last_purchase_date'=>(isset($po->po->date_completed) ? $po->purchase->date_completed : NULL),
+                    'qty_to_buy'=> $qty_to_buy,
+                    'current_sold'=>$qty,
+                    'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                    'group_os_id'=>$stock->stockgroup_id,
+                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
+                    'threshold_value'=> $thresholad_score,
+                    'current_qty'=> $stock->totalBalance(),
+                    'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
+                ];
+               Nearoutofstock::create($insert);
+                continue;
+            }else if($now_qty < 2){
+                $qty_to_buy = $qty * $threshold_day;
+                $last_supplier = $stock->stockBatches()->orderBy('id','DESC')->get()->first();
+                $insert = [
+                    'stock_id'=>$stock->id,
+                    'threshold_type'=>"NORMAL",
+                    'os_type'=>'SINGLE',
+                    'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
+                    'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
+                    'qty_to_buy'=> $qty_to_buy,
+                    'current_sold'=>$qty,
+                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
+                    'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                    'group_os_id'=>$stock->stockgroup_id,
+                    'threshold_value'=> $thresholad_score,
+                    'current_qty'=> $stock->totalBalance(),
+                    'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
+                ];
+                Nearoutofstock::create($insert);
+                continue;
+            }else{
+                //remember you did not create migration for this
+                //threshold_type to be NOT-NORMAL
+                // You add it has a quick fix to your logic
+                $qty_to_buy = $qty * $threshold_day;
+                $last_supplier = $stock->stockBatches()->orderBy('id','DESC')->get()->first();
+                $insert = [
+                    'stock_id'=>$stock->id,
+                    'threshold_type'=>"NOT-NORMAL",
+                    'os_type'=>'SINGLE',
+                    'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
+                    'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
+                    'qty_to_buy'=> $qty_to_buy,
+                    'current_sold'=>$qty,
+                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
+                    'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                    'group_os_id'=>$stock->stockgroup_id,
+                    'threshold_value'=> $thresholad_score,
+                    'current_qty'=> $stock->totalBalance(),
+                    'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
+                ];
+                Nearoutofstock::create($insert);
+                continue;
+            }
+        }
 
 
 
-        $groups = Stockgroup::where('status',"1")->get();
+        //query product by group
+        $groups =Stockgroup::where('status',"1")->get();
         foreach($groups as $group) {
             //if (\App\RetailNearOs::where('group_os_id', $group->id)->get()->count() > 0) {
             $qty = 0;
@@ -196,6 +209,26 @@ class NearOSCommand extends Command
                 }
             }
 
+            //for retail department
+            $_product = DB::table('invoiceitembatches as batch_item')
+                ->select(DB::raw('SUM(batch_item.quantity/st.box) as qty'))
+                ->join('stocks as st', 'st.id', '=', 'batch_item.stock_id')
+                ->join('stockgroups as group', 'group.id', '=', 'st.stockgroup_id')
+                ->join('invoices as invoices', 'invoices.id', '=', 'batch_item.invoice_id')
+                ->where('st.stockgroup_id', '=', $group->id)
+                ->where('st.status', '=', 1)
+                ->where('st.reorder', '=', 1)
+                ->where('batch_item.department', "retail")
+                ->whereBetween('invoices.invoice_date', [$from, $to])
+                ->groupBy('st.stockgroup_id')
+                ->get();
+
+            if ($_product->count() > 0) {
+                foreach ($_product as $_prod) {
+                    $qty += $_prod->qty;
+                    //$now_qty += $group->totalRetailBalance();
+                }
+            }
 
             $thresholad_score = round(abs(($qty / $day) * $supply_days));
 
@@ -204,9 +237,8 @@ class NearOSCommand extends Command
             if ($thresholad_score > $now_qty) {
                 $qty_to_buy = $qty * $threshold_day;
                 $insert = [
-                    'stock_id' => NULL,
                     'stockgroup_id' => $group->id,
-                    'last_po_batch' =>($poItem->id ?? NULL),
+                    'last_po_batch' =>(isset($poItem->id) ? $poItem->id : NULL),
                     'threshold_type' => "THRESHOLD",
                     'os_type' => 'GROUP',
                     'qty_to_buy' => $qty_to_buy,
@@ -221,11 +253,10 @@ class NearOSCommand extends Command
             if ($now_qty < 2) {
                 $qty_to_buy = $qty * $threshold_day;
                 $insert = [
-                    'stock_id' => NULL,
                     'stockgroup_id' => $group->id,
                     'threshold_type' => "NORMAL",
                     'os_type' => 'GROUP',
-                    'last_po_batch' =>($poItem->id ?? NULL),
+                    'last_po_batch' =>(isset($poItem->id) ? $poItem->id : NULL),
                     'qty_to_buy' => $qty_to_buy,
                     'current_sold' => $qty,
                     'threshold_value' => $thresholad_score,
@@ -237,6 +268,7 @@ class NearOSCommand extends Command
         }
 
         $settings->put('nearos_status', 'okay');
+        $settings->put('nearos_last_run', Carbon::now()->toDateTimeLocalString());
 
         return Command::SUCCESS;
     }
