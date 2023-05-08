@@ -124,7 +124,7 @@ final class MovingStockReport extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('SN', '')->index(),
+            Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Name', 'name') ->sortable()->searchable(),
             Column::make('Category', 'category'),
             Column::make('Box', 'box'),

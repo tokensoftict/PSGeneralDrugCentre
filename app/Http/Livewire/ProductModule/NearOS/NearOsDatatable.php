@@ -174,7 +174,7 @@ final class NearOsDatatable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('SN', '')->index(),
+            Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Product ID', 'id'),
             Column::make('Name', 'name','name')->searchable()->sortable(),
             Column::make('Box', 'box','box')->sortable(),
