@@ -411,17 +411,23 @@ trait StockModelTrait
 
     public function getOnlineQuantity()
     {
-        return $this->wholesales + $this->bulksales + $this->quantity;
+        return $this->stockbatches()->sum('bulksales') +
+            $this->stockbatches()->sum('quantity') +
+            $this->stockbatches()->sum('wholesales') ;
     }
 
     public function getCurrentlevel($department)
     {
-        return $this->{$department};
+        return $this->stockbatches()->sum($department);
     }
 
     public function totalBalance()
     {
-        return  $this->wholesales + $this->bulksales + $this->quantity + ($this->retail === 0 || $this->box === 0) ? 0 : abs(round($this->retail/$this->box));
+        return
+            $this->stockbatches()->sum('bulksales') +
+            $this->stockbatches()->sum('quantity') +
+            $this->stockbatches()->sum('wholesales') +
+           divide($this->stockbatches()->sum('retail') , $this->box);
     }
 
     public function newonlinePush()
