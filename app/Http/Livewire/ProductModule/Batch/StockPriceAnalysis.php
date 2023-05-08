@@ -18,7 +18,7 @@ final class StockPriceAnalysis extends PowerGridComponent
     use PowerGridComponentTrait;
 
 
-    public $key = 'stock_id';
+    public $key = 'stockbatches.stock_id';
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,11 @@ final class StockPriceAnalysis extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'stock' => [
+                'name',
+            ]
+        ];
     }
 
     /*
@@ -100,7 +104,7 @@ final class StockPriceAnalysis extends PowerGridComponent
                 return money($stockbatch->stock->retail_price);
             })
             ->addColumn('tt_qty', function(Stockbatch $stockbatch){
-                return $stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs(($stockbatch->rt/$stockbatch->stock->box)));
+                return $stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box))));
             })
             ->addColumn('ws')
             ->addColumn('av_retail_cost_price', function(Stockbatch $stockbatch){
@@ -115,7 +119,7 @@ final class StockPriceAnalysis extends PowerGridComponent
             ->addColumn('ms')
             ->addColumn('rt')
             ->addColumn('rtbox', function(Stockbatch $stockbatch){
-                return $stockbatch->rt == 0 ?   0 : $stockbatch->rt/$stockbatch->stock->box;
+                return divide($stockbatch->rt,$stockbatch->stock->box);
             })
             ->addColumn('tt_batch')
             ->addColumn('total_cost_total')
@@ -164,9 +168,7 @@ final class StockPriceAnalysis extends PowerGridComponent
     public function filters(): array
     {
         return [
-            'stock' => [
-                'name',
-            ]
+
         ];
     }
 
