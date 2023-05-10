@@ -52,16 +52,16 @@
                                 </li>
 
                                 @if($this->onlineinvoice !== "")
-                                        <li>
-                                            <a target="_new" href="{{ $this->onlineinvoice }}" class="dropdown-item print">Print Online Invoice</a>
-                                        </li>
+                                    <li>
+                                        <a target="_new" href="{{ $this->onlineinvoice }}" class="dropdown-item print">Print Online Invoice</a>
+                                    </li>
                                 @endif
 
-                                    @if($this->onlinewaybill !== "")
-                                        <li>
-                                            <a target="_new" href="{{ $this->onlinewaybill }}" class="dropdown-item print">Print Online Waybill</a>
-                                        </li>
-                                    @endif
+                                @if($this->onlinewaybill !== "")
+                                    <li>
+                                        <a target="_new" href="{{ $this->onlinewaybill }}" class="dropdown-item print">Print Online Waybill</a>
+                                    </li>
+                                @endif
 
                             @endcan
                             @can('printThermal', $this->invoice)
@@ -206,14 +206,14 @@
                                     </tr>
                                 @endforeach
                             @else
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <th class="text-right">Sub Total</th>
-                                <th class="text-right">{{ money($invoice->sub_total) }}</th>
-                            </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <th class="text-right">Sub Total</th>
+                                    <th class="text-right">{{ money($invoice->sub_total) }}</th>
+                                </tr>
                             @endif
                             <tr>
                                 <td></td>
@@ -250,7 +250,7 @@
                     Request For Discount    <span wire:loading wire:target="requestForDiscount" class="spinner-border spinner-border-sm me-2" role="status"></span>
                 </button>
 
-              @endif
+            @endif
         </div>
 
 
@@ -265,29 +265,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-
-                    <table class="table table-bordered datanew" id="table">
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Action</th>
-                            <th>By</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($invoice->invoiceactivitylogs->sortByDesc('id') as $logs)
+                    <div class="table-responsive">
+                        <table class="table table-bordered datanew" id="table">
+                            <thead>
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ convert_date($logs->activity_date) }}</td>
-                                <td>{{ twelveHourClock($logs->activity_time) }}</td>
-                                <td>{{ $logs->activity }}</td>
-                                <td>{{ $logs->user->name }}</td>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>By</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            @foreach($invoice->invoiceactivitylogs->sortByDesc('id') as $logs)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ convert_date($logs->activity_date) }}</td>
+                                    <td>{{ twelveHourClock($logs->activity_time) }}</td>
+                                    <td>{{ $logs->activity }}</td>
+                                    <td>{{ $logs->user->name }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
