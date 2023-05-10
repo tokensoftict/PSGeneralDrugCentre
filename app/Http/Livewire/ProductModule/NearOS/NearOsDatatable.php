@@ -50,6 +50,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->select(
                 [
                     'nearoutofstocks.*',
+                    'stocks.id as stock_id',
                     'stocks.name as stock_name',
                     'stocks.box as box',
                     'stocks.carton as carton',
@@ -117,7 +118,7 @@ final class NearOsDatatable extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('id')
+            ->addColumn('stock_id')
             ->addColumn('name')
             ->addColumn('threshold_type', function(Nearoutofstock $nearoutofstock){
                 return $nearoutofstock->threshold_type == "" ? "THRESHOLD" : $nearoutofstock->threshold_type;
@@ -185,7 +186,7 @@ final class NearOsDatatable extends PowerGridComponent
     {
         return [
             Column::add()->index()->title('SN')->visibleInExport(false),
-            Column::make('Product ID', 'id'),
+            Column::make('Product ID', 'stock_id'),
             Column::make('Name', 'name','name')->searchable()->sortable(),
             Column::make('Box', 'box','box')->sortable(),
             Column::make('Carton', 'carton','carton')->sortable(),
