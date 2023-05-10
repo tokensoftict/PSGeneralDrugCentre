@@ -139,7 +139,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('group_os_id')
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
-            ->addColumn('last_purchase_date_formatted', fn (Nearoutofstock $model) => Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
+            ->addColumn('last_purchase_date_formatted', fn (Nearoutofstock $model) => $model->last_purchase_date == NULL ? "" : Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
             ->addColumn('purchaseitem_id');
 
     }
@@ -156,12 +156,13 @@ final class NearOsDatatable extends PowerGridComponent
     public function actions(): array
     {
         return [
+            /*
             Button::add('view')
                 ->caption('View Stock')
                 ->class('btn btn-sm btn-primary')
                 ->openModal('product-module.near-os.view-near-os-grouped-stock', ['stockgroup' => '5']),
                 //->emit('view_stock', fn ($nearoutofstock) => ['group_id'=> $nearoutofstock->stockgroup_id])
-
+            */
         ];
     }
 
@@ -196,7 +197,7 @@ final class NearOsDatatable extends PowerGridComponent
             Column::make('Stock Quantity', 'current_qty')->sortable(),
             Column::make('Total Sold', 'current_sold')->sortable(),
             Column::make('Last Qty Pur.', 'last_qty_purchased'),
-            Column::make('Last Date Pur.', 'last_purchase_date', 'last_purchase_date')->sortable(),
+            Column::make('Last Date Pur.', 'last_purchase_date_formatted', 'last_purchase_date')->sortable(),
         ];
     }
 

@@ -135,7 +135,7 @@ final class RetailNearOsDatatable extends PowerGridComponent
             ->addColumn('group_os_id')
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
-            ->addColumn('last_purchase_date_formatted', fn (Retailnearoutofstock $model) => Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
+            ->addColumn('last_purchase_date_formatted', fn (Retailnearoutofstock $model) => $model->last_purchase_date == NULL ? "" : Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
             ->addColumn('purchaseitem_id');
 
     }
@@ -152,22 +152,25 @@ final class RetailNearOsDatatable extends PowerGridComponent
     public function actions(): array
     {
         return [
+            /*
             Button::add('edit')
                 ->caption('View Stock')
                 ->class('btn btn-sm btn-primary')
                 ->emit('view_stock', fn ($nearoutofstock) => ['group_id'=> $nearoutofstock->stockgroup_id])
-
+        */
         ];
     }
 
     public function actionRules(): array
     {
+        /*
         return [
             Rule::button('edit')
                 ->when(fn ($nearoutofstock) => $nearoutofstock->stockgroup_id == NULL)
                 ->hide()
 
         ];
+        */
     }
 
     /**
