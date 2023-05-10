@@ -91,7 +91,7 @@ class RetailNearOSCommand extends Command
 
             //for last qty purchased
             //for last qty purchased
-            $po = Purchaseitem::where('stock_id',$stock->id)->whereHas('purchase',function($q){
+            $po = Purchaseitem::with(['purchase'])->where('stock_id',$stock->id)->whereHas('purchase',function($q){
                 $q->where('status_id',status('Complete'));
             })
                 ->orderBy('id','DESC')

@@ -109,11 +109,12 @@ class NearOSCommand extends Command
             $now_qty = $stock->totalBalance();
 
             //for last qty purchased
-            $po = Purchaseitem::where('stock_id',$stock->id)->whereHas('purchase',function($q){
+            $po = Purchaseitem::with(['purchase'])->where('stock_id',$stock->id)->whereHas('purchase',function($q){
                 $q->where('status_id',status('Complete'));
             })
                 ->orderBy('id','DESC')
                 ->limit(1)->first();
+
 
             if($thresholad_score > $now_qty){
                 $qty_to_buy = $qty * $threshold_day;
