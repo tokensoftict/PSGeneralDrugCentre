@@ -96,6 +96,9 @@ final class NearOsDatatable extends PowerGridComponent
             ],
             'stock' => [
                 'name',
+            ],
+            'supplier' => [
+                'name'
             ]
         ];
     }
@@ -119,8 +122,13 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('threshold_type', function(Nearoutofstock $nearoutofstock){
                 return $nearoutofstock->threshold_type == "" ? "THRESHOLD" : $nearoutofstock->threshold_type;
             })
+            ->addColumn('box', function(Nearoutofstock $nearoutofstock){
+                return $nearoutofstock->stock->box ?? $nearoutofstock->stockgroup->getLastBox();
+            })
             ->addColumn('box')
-            ->addColumn('carton')
+            ->addColumn('carton', function(Nearoutofstock $nearoutofstock){
+                return $nearoutofstock->stock->carton ?? $nearoutofstock->stockgroup->getLastCarton();
+            })
             ->addColumn('category_name')
             ->addColumn('os_type')
             ->addColumn('qty_to_buy')
@@ -148,7 +156,7 @@ final class NearOsDatatable extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::add('edit')
+            Button::add('view')
                 ->caption('View Stock')
                 ->class('btn btn-sm btn-primary')
                 ->emit('view_stock', fn ($nearoutofstock) => ['group_id'=> $nearoutofstock->stockgroup_id])
@@ -210,6 +218,5 @@ final class NearOsDatatable extends PowerGridComponent
             'stocks' => $this->datasource()->where('nearoutofstocks.stockgroup_id', $data['group_id'])->get()->toArray()
         ]);
     }
-
 
 }

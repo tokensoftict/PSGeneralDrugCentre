@@ -110,11 +110,11 @@ class Stockgroup extends Model
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
             })->orderBy('id','DESC')->limit(1)->get()->first();
-        if(isset($sup->po->date_completed)){
-            if($sup->po->date_completed =='1970/01/01'){
+        if(isset($sup->purchase->date_completed)){
+            if($sup->purchase->date_completed =='1970/01/01'){
                 return false;
             }
-            return $sup->po->date_completed;
+            return $sup->purchase->date_completed;
         }
         return 'N/A';
     }
@@ -141,7 +141,7 @@ class Stockgroup extends Model
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
             })->orderBy('id','DESC')->limit(1)->get()->first();
-        if(isset($sup->po->date_completed)){
+        if(isset($sup->purchase->date_completed)){
             return $sup;
         }
         return 'N/A';

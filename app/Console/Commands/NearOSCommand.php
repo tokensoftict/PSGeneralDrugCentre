@@ -124,7 +124,7 @@ class NearOSCommand extends Command
                     'threshold_type'=>"THRESHOLD",
                     'os_type'=>'SINGLE',
                     'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
-                    'last_purchase_date'=>(isset($po->po->date_completed) ? $po->purchase->date_completed : NULL),
+                    'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
                     'qty_to_buy'=> $qty_to_buy,
                     'current_sold'=>$qty,
                     'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
@@ -243,6 +243,7 @@ class NearOSCommand extends Command
                     'os_type' => 'GROUP',
                     'qty_to_buy' => $qty_to_buy,
                     'current_sold' => $qty,
+                    'box' => $group->getLastBox(),
                     'threshold_value' => $thresholad_score,
                     'current_qty' => $now_qty,
                 ];

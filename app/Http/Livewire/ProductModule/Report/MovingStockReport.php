@@ -126,7 +126,7 @@ final class MovingStockReport extends PowerGridComponent
         return [
             Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Name', 'name') ->sortable()->searchable(),
-            Column::make('Category', 'category'),
+            Column::make('Category', 'category') ->sortable()->searchable(),
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
             Column::make('Threshold', 'threshold'),
@@ -140,7 +140,7 @@ final class MovingStockReport extends PowerGridComponent
             Column::make('Turn Over rate2', 'turn_over_rate2'),
             Column::make('Worth', 'tt_av_cost_price'),
             Column::make('RT Worth', 'tt_av_rt_cost_price'),
-            Column::make('Last Supplier', 'supplier_name'),
+            Column::make('Last Supplier', 'supplier_name') ->sortable()->searchable(),
             Column::make('Last Sup. Date', 'last_supply_date'),
             Column::make('Last Sup. Qty', 'last_supply_quantity'),
         ];

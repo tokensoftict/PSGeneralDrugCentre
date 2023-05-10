@@ -97,6 +97,9 @@ final class RetailNearOsDatatable extends PowerGridComponent
             ],
             'stock' => [
                 'name',
+            ],
+            'supplier' => [
+                'name'
             ]
         ];
     }
