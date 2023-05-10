@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\ProductModule\NearOs;
 
+use App\Models\Stockgroup;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use LivewireUI\Modal\ModalComponent;
 
-class ViewNearOsGroupedStock extends ModalComponent
+
+class ViewNearOsGroupedStock extends Component
 {
     use LivewireAlert;
-
 
     public function boot()
     {
