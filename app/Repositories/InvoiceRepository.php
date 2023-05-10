@@ -303,20 +303,31 @@ class InvoiceRepository
                 'department' => $item['department']
             ];
 
+            /*
             $reverseItemsBatches[] = [
                 'id' => $item['stockbatch_id'],
                 $item['department'] =>  $item['av_qty'], //- $item['quantity']
                 'department' => $item['department']
             ];
+            */
         });
 
         Stock::returnStocks($invoice, $invoiceItemsBatches, array_unique($columns));
-
 
         $results =  $this->validateInvoiceItems($items, $invoiceData['department']);
 
 
         if($results['status'] === false) {
+
+            $invoice->invoiceitembatches()->get()->map->only(['stockbatch_id', 'department', 'av_qty', 'quantity'])->each(function($item, $key)use (&$invoiceItemsBatches, &$reverseItemsBatches, &$columns) {
+
+                $reverseItemsBatches[] = [
+                    'id' => $item['stockbatch_id'],
+                    $item['department'] =>  $item['av_qty'] - $item['quantity'],
+                    'department' => $item['department']
+                ];
+
+            });
 
             Stock::removeSaleableBatches($invoice, $reverseItemsBatches, array_unique($columns));
 

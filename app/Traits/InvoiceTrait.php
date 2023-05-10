@@ -60,7 +60,7 @@ trait InvoiceTrait
             $pdf->getMpdf()->AddPage('P', '', '', '', '', 0, 0, 0, 0, 0, 0);
             $pdf->getMpdf()->WriteHTML(view('print.pos', $data));
         }
-        logActivity($invoice->id, $invoice->invoice_number,"Print POS Invoice Status : ".$invoice->status);
+        logActivity($invoice->id, $invoice->invoice_number,"Print POS Invoice Status : ".$invoice->status->name);
 
         return $pdf->stream('document.pdf');
     }

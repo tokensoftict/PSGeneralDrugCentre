@@ -244,10 +244,10 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('invoiceandsales')->namespace('InvoiceAndSales')->group(function () {
             Route::prefix('invoice')->as('invoiceandsales.')->group(function () {
                 Route::get('create', ['as' => 'create', 'uses' => 'InvoiceController@create', 'custom_label'=>'New Invoice', 'visible'=>true]);
-                Route::get('', ['as' => 'draft', 'uses' => 'InvoiceController@draft', 'visible' => true, 'custom_label'=>'Draft Invoice']);
-                Route::get('discount', ['as' => 'discount', 'uses' => 'InvoiceController@discount', 'visible' => true, 'custom_label'=>'Discount Invoice']);
-                Route::get('paid', ['as' => 'paid', 'uses' => 'InvoiceController@paid', 'visible' => true, 'custom_label'=>'Paid Invoice']);
-                Route::get('dispatched', ['as' => 'dispatched', 'uses' => 'InvoiceController@dispatched', 'visible' => true, 'custom_label'=>'Completed Invoice']);
+                Route::match(['get','post'],'', ['as' => 'draft', 'uses' => 'InvoiceController@draft', 'visible' => true, 'custom_label'=>'Draft Invoice']);
+                Route::match(['get','post'],'discount', ['as' => 'discount', 'uses' => 'InvoiceController@discount', 'visible' => true, 'custom_label'=>'Discount Invoice']);
+                Route::match(['get','post'],'paid', ['as' => 'paid', 'uses' => 'InvoiceController@paid', 'visible' => true, 'custom_label'=>'Paid Invoice']);
+                Route::match(['get','post'],'dispatched', ['as' => 'dispatched', 'uses' => 'InvoiceController@dispatched', 'visible' => true, 'custom_label'=>'Completed Invoice']);
 
                 Route::get('editInvoiceDate', ['as' => 'editInvoiceDate', 'uses' => 'InvoiceController@editInvoiceDate', 'custom_label'=>'Edit Invoice Date']);
 
@@ -277,9 +277,9 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::get('create', ['as' => 'create', 'uses' => 'RetailSalesController@create', 'custom_label'=>'New Retail Sales', 'visible'=>true]);
 
-                Route::get('', ['as' => 'sales', 'uses' => 'RetailSalesController@sales', 'visible' => true, 'custom_label'=>'Sales List',]);
+                Route::match(['get', 'post'],'', ['as' => 'sales', 'uses' => 'RetailSalesController@sales', 'visible' => true, 'custom_label'=>'Sales List',]);
 
-                Route::get('draft', ['as' => 'draft', 'uses' => 'RetailSalesController@draft', 'visible' => true, 'custom_label'=>'Draft Sales List',]);
+                Route::match(['get', 'post'],'draft', ['as' => 'draft', 'uses' => 'RetailSalesController@draft', 'visible' => true, 'custom_label'=>'Draft Sales List']);
 
                 Route::get('{invoice}/edit', ['as' => 'edit', 'uses' => 'RetailSalesController@edit']);
 

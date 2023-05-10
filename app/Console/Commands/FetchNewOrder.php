@@ -89,7 +89,7 @@ class FetchNewOrder extends Command
                     $columns[] = $item->department;
                     $returnBatches[] = array_merge([
                         'id' => $item->stockbatch_id,
-                        $item->department=> $item['av_qty'] + $item->quantity,
+                        $item->department=> $item->av_qty + $item->quantity,
                         'department' => $item->department
                     ], addOtherDepartment($item->stockbatch, $item->department ));
 

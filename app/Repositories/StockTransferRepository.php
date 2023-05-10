@@ -139,9 +139,9 @@ class StockTransferRepository
 
         if(count($errors) > 0) return $errors;
 
-        dispatch(new PushStockUpdateToServerFromTransfer(array_column($items->toArray(), 'stock_id')));
-
         Stock::completeTransfer($batches, $stocktransfer);
+
+        dispatch(new PushStockUpdateToServerFromTransfer(array_column($items->toArray(), 'stock_id')));
 
         $stocktransfer->status_id = status('Approved');
 

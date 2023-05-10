@@ -122,7 +122,7 @@ trait StockModelTrait
                 'to_department' => $item->department,
                 'comment' => $comment,
                 'balance' => $item->stock->totalBalance(),
-                'department_balance' => $item->stock->{$item->department}
+                'department_balance' => $item->stock->getCurrentlevel($item->department)
             ];
         });
 

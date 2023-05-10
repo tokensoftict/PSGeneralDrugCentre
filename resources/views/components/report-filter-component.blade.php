@@ -12,6 +12,15 @@
                 </div>
             @endif
 
+                @if(isset($filters['invoice_date']))
+                    <div class="col-auto">
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="text" value="{{ $filters['invoice_date'] }}" class="form-control datepicker-basic" name="filter[invoice_date]" id="datepicker-basic">
+                        </div>
+                    </div>
+                @endif
+
             @if(isset($filters['to']))
                 <div class="col-auto">
                     <div class="mb-3">

@@ -31,24 +31,54 @@ class RetailSalesController extends Controller
         return view('invoiceandsales.form', $data);
     }
 
-    public function sales()
+    public function sales(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
-        $data['title'] = "Today's Completed Invoice(s)";
-        $data['subtitle'] = 'List of Completed Invoice - '.todaysDate();
-        $data['filters'] = ['in_department'=>'retail' ,'status_id'=>status('Complete'), 'invoice_date'=>todaysDate()];
+        $data['title'] = 'Dispatched Invoice(s)';
+        $data['subtitle'] = 'List of Completely Dispatched Invoice - '.$data['filters']['filters']['invoice_date'];
+
+        $data['filters']['filters']['in_department'] = 'retail';
+
+        $data['filters']['filters']['status_id'] = status('Complete');
 
         return setPageContent('invoiceandsales.index', $data);
     }
 
-    public function draft()
+    public function draft(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
-        $data['title'] = "Today's Draft Invoice(s)";
-        $data['subtitle'] = 'List of Completed Invoice - '.todaysDate();
-        $data['filters'] = ['in_department'=>'retail' ,'status_id'=>status('Draft'), 'invoice_date'=>todaysDate()];
+        $data['title'] = 'Dispatched Invoice(s)';
+        $data['subtitle'] = 'List of Completely Dispatched Invoice - '.$data['filters']['filters']['invoice_date'];
+
+        $data['filters']['filters']['in_department'] = 'retail';
+
+        $data['filters']['filters']['status_id'] = status('Draft');
 
         return setPageContent('invoiceandsales.index', $data);
     }

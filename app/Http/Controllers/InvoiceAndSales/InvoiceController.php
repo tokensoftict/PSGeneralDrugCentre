@@ -34,93 +34,152 @@ class InvoiceController extends Controller
         return setPageContent('invoiceandsales.form', $data);
     }
 
-    public function draft()
+    public function draft(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
         $data['title'] = 'Draft Invoice(s)';
-        $data['subtitle'] = 'List of Unpaid Invoice - '.todaysDate();
+        $data['subtitle'] = 'List of Unpaid Invoice - '.$data['filters']['filters']['invoice_date'];
 
-        if(auth()->user()->department_id === 5) {
-            $data['filters'] = ['status_id'=>status('Draft'), 'invoice_date'=>todaysDate()];
-        }else{
+        if(auth()->user()->department_id !== 5) {
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
-            $data['filters'] = ['status_id'=>status('Draft'), 'invoice_date'=>todaysDate(),'in_department'=>$dpt];
+            $data['filters']['filters']['in_department'] = $dpt;
         }
+
+        $data['filters']['filters']['status_id'] = status('Draft');
 
         return setPageContent('invoiceandsales.index', $data);
     }
 
-    public function discount()
+    public function discount(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
         $data['title'] = 'Discount Invoice(s)';
-        $data['subtitle'] = 'List of Waiting for Discount Invoice - '.todaysDate();
+        $data['subtitle'] = 'List of Waiting for Discount Invoice - '.$data['filters']['filters']['invoice_date'];
 
-        if(auth()->user()->department_id === 5) {
-            $data['filters'] = ['status_id'=>status('Discount'), 'invoice_date'=>todaysDate()];
-        }else{
+        if(auth()->user()->department_id !== 5) {
+
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
+            $data['filters']['filters']['in_department'] = $dpt;
 
-            $data['filters'] = ['status_id'=>status('Discount'), 'invoice_date'=>todaysDate(),'in_department'=>$dpt];
         }
+
+        $data['filters']['filters']['status_id'] = status('Discount');
+
         return setPageContent('invoiceandsales.index', $data);
     }
 
 
-    public function paid()
+    public function paid(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
         $data['title'] = 'Paid Invoice(s)';
-        $data['subtitle'] = 'List of Paid Invoice - '.todaysDate();
+        $data['subtitle'] = 'List of Paid Invoice - '.$data['filters']['filters']['invoice_date'];
 
-        if(auth()->user()->department_id === 5) {
-            $data['filters'] = ['status_id'=>status('Paid'), 'invoice_date'=>todaysDate()];
-        }else{
+        if(auth()->user()->department_id !== 5) {
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
-
-            $data['filters'] = ['status_id'=>status('Paid'), 'invoice_date'=>todaysDate(),'in_department'=>$dpt];
+            $data['filters']['filters']['in_department'] = $dpt;
         }
 
+        $data['filters']['filters']['status_id'] = status('Paid');
 
         return setPageContent('invoiceandsales.index', $data);
     }
 
 
-    public function dispatched()
+    public function dispatched(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
         $data['title'] = 'Dispatched Invoice(s)';
-        $data['subtitle'] = 'List of Completely Dispatched Invoice - '.todaysDate();
+        $data['subtitle'] = 'List of Completely Dispatched Invoice - '.$data['filters']['filters']['invoice_date'];
 
-        if(auth()->user()->department_id === 5) {
-            $data['filters'] = ['status_id'=>status('Complete'), 'invoice_date'=>todaysDate()];
-
-        }else{
+        if(auth()->user()->department_id !== 5) {
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
-            $data['filters'] = ['status_id'=>status('Complete'), 'invoice_date'=>todaysDate(),'in_department'=>$dpt];
+            $data['filters']['filters']['in_department'] = $dpt;
         }
+
+        $data['filters']['filters']['status_id'] = status('Complete');
 
         return setPageContent('invoiceandsales.index', $data);
     }
 
-    public function deleted()
+    public function deleted(Request $request)
     {
-        $data = [];
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
 
         $data['title'] = 'Deleted Invoice(s)';
-        $data['subtitle'] = 'List of  Deleted Invoice - '.todaysDate();
+        $data['subtitle'] = 'List of  Deleted Invoice - '. $data['filters']['filters']['invoice_date'];
 
-        if(auth()->user()->department_id === 5) {
-            $data['filters'] = ['status_id'=>status('Deleted'), 'invoice_date'=>todaysDate()];
-
-        }else{
+        if(auth()->user()->department_id !== 5) {
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
-            $data['filters'] = ['status_id'=>status('Deleted'), 'invoice_date'=>todaysDate(),'in_department'=>$dpt];
+            $data['filters']['filters']['in_department'] = $dpt;
         }
+
+        $data['filters']['filters']['status_id'] = status('Deleted');
+
         return setPageContent('invoiceandsales.index', $data);
     }
 
