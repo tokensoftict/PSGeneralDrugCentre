@@ -9,7 +9,6 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
     @yield('css')
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('css/tailwind.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
@@ -244,10 +243,9 @@
 <div class="rightbar-overlay"></div>
 
 <!-- JAVASCRIPT -->
-<script defer src="{{ asset('js/alpine.min.js') }}"></script>
 <script defer src="{{ asset('js/focus.min.js') }}"></script>
+<script defer src="{{ asset('js/alpine.min.js') }}"></script>
 
-@livewire('livewire-ui-modal')
 
 <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -265,6 +263,34 @@
 
 <script src="{{ asset('js/sweetalert2.js') }}"></script>
 
+<livewire:modals/>
+<script>
+
+    let modalsElement = document.getElementById('livewire-bootstrap-modal');
+
+    modalsElement.addEventListener('hidden.bs.modal', () => {
+
+        Livewire.emit('resetModal');
+
+    });
+
+    Livewire.on('showBootstrapModal', () => {
+        var myModal = new bootstrap.Modal(document.getElementById('livewire-bootstrap-modal'), {
+            keyboard: false
+        })
+
+        myModal.show()
+    });
+
+    Livewire.on('hideModal', () => {
+        var myModal = new bootstrap.Modal(document.getElementById('livewire-bootstrap-modal'), {
+            keyboard: false
+        })
+
+        myModal.hide()
+    });
+
+</script>
 <x-livewire-alert::scripts />
 
 </body>

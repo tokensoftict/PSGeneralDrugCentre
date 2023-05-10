@@ -10,6 +10,8 @@ use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 /**
  * Class Stockgroup
@@ -19,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
+ * @protected Nearoutofstock[] $nearoutofstock
  * @package App\Models
  */
 class Stockgroup extends Model
@@ -98,6 +100,11 @@ class Stockgroup extends Model
         return $this->hasMany(Stock::class, 'stockgroup_id');
     }
 
+    public function oneStock()
+    {
+        return new HasOne($this->stocks()->latest()->getQuery(), $this,'stockgroup_id', 'id');
+    }
+
     public function getLastPurchaseDate(){
         $stocks = $this->stocks()->get();
         if($stocks->count() == 0) return 'N/A';
@@ -130,17 +137,13 @@ class Stockgroup extends Model
 
 
     public function getlastpo_item(){
-        $stocks = $this->stocks()->get();
-        if($stocks->count() == 0) return 'N/A';
-        $st = [];
-        foreach($stocks as $stock){
-            $st[] = $stock->id;
-        }
+        $stocks = $this->stocks->pluck('id');
+        if(count($stocks) == 0) return 'N/A';
 
-        $sup = Purchaseitem::with(['purchase'])->wherein('stock_id',$st)
+        $sup = Purchaseitem::with(['purchase'])->whereIn('stock_id', $stocks )
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
-            })->orderBy('id','DESC')->limit(1)->get()->first();
+            })->latest()->limit(1)->first();
         if(isset($sup->purchase->date_completed)){
             return $sup;
         }
@@ -158,36 +161,30 @@ class Stockgroup extends Model
     }
 
     public function getLastSupplier(){
-        $stocks = $this->stocks()->where('status',"1")->get();
-        $st = [];
-        foreach($stocks as $stock){
-            $st[] = $stock->id;
-        }
-        $sup = Purchaseitem::with(['purchase'])->whereIn('stock_id',$st)
+        $stocks = $this->stocks->pluck('id');
+        $sup = Purchaseitem::with(['purchase'])->whereIn('stock_id',$stocks)
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
-            })->orderBy('id','DESC')->get();
+            })->latest()->first();
 
-        foreach($sup as $s){
-            if($s && $s->purchase->supplier_id != "172" && $s->purchase->supplier_id != "195"){
-                return $s;
-            }
+        if($sup && $sup->purchase->supplier_id != "172" && $sup->purchase->supplier_id != "195"){
+            return $sup;
         }
         return false;
     }
 
 
     public function getLastCategory(){
-        $stocks = $this->stocks()->where('status',"1")->orderBy('id')->limit(1)->get()->first();
-        $po = $stocks;
-        if(isset($po->productCategory)){
-            return $po->productCategory->name;
+        $stocks = $this->stocks()->where('status',"1")->first();
+
+        if(isset($stocks->productCategory)){
+            return $stocks->productCategory->name;
         }
         return 'N/A';
     }
 
     public function getLastBox(){
-        $po =$this->stocks()->where('status',"1")->orderBy('id')->limit(1)->get()->first();
+        $po =$this->stocks()->where('status',"1")->orderBy('id')->first();
         if(isset($po->box)){
             return $po->box;
         }
@@ -195,7 +192,7 @@ class Stockgroup extends Model
     }
 
     public function getLastCarton(){
-        $po = $this->stocks()->where('status',"1")->orderBy('id')->limit(1)->get()->first();
+        $po =$this->stocks()->where('status',"1")->orderBy('id')->first();
         if(isset($po->cartoon)){
             return $po->cartoon;
         }
@@ -444,8 +441,10 @@ class Stockgroup extends Model
     }
 
 
-
-
+    public function nearoutofstock()
+    {
+        return $this->belongsToMany(Nearoutofstock::class, 'stockgroup_id');
+    }
 
 
 }
