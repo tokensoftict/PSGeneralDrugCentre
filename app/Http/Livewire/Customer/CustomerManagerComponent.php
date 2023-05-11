@@ -144,6 +144,14 @@ class CustomerManagerComponent extends Component
 
         $this->customer = Customer::where('phone_number',  $this->phone_number)->where('status',1)->get()->first();
 
+        if(!$this->customer)
+        {
+            if($this->modelId)
+            {
+                $this->customer = Customer::find($this->modelId);
+            }
+        }
+
         if(!$this->customer) {
             $status = $this->save();
             $message = "Customer has been created successfully";
