@@ -134,6 +134,7 @@ class StockBatch extends Component
                                   Wholesale : ".$this->stock->wholesales.", Bulk : ".$this->stock->bulksales.", Retail : ".$this->stock->retail.", Main Store : ".$this->stock->quantity."
                                 ",
             'balance'=>$this->stock->totalBalance(),
+            'department_balance' => $this->stock->getCurrentlevel($this->selectedDepartment)
         ];
 
 

@@ -44,7 +44,7 @@ final class StockTransferSummaryReport extends PowerGridComponent
                 ->whereBetween('transfer_date', $this->filters['between.transfer_date'])
                 ->where('status_id',$this->filters['status_id'])
                 ->orderBy("id","DESC");
-        })->groupBy('stock_id');;
+        })->groupBy('stock_id');
     }
 
     /*
@@ -106,7 +106,7 @@ final class StockTransferSummaryReport extends PowerGridComponent
             Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Name', 'name'),
             Column::make('Quantity', 'total_qty'),
-            Column::make('Cost Price', 'cost')->withSum(),
+            Column::add()->field('cost')->title('Cost Price')->withSum(false, true,2),
             Column::make('Total Cost Price', 'total_sub_total')
         ];
     }
