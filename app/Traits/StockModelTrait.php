@@ -448,5 +448,133 @@ trait StockModelTrait
 
 
 
+    public function checkifStockcanTransfer($qty,$from,$to){
+        $batch_ids = [];
+        foreach($this->stockbatches()->where($from, ">","0")->orderBy("expiry_date","ASC")->get() as $batch){
+            if($batch->$from - $qty < 0){
+                $qty = $qty - $batch->$from;
+                $batch->$to =  $batch->$from;
+                $batch_ids[$batch->id] =$batch->$from;
+                $batch->$from = 0;
+            }else{
+                $batch->$from = $batch->$from - $qty;
+                $batch->$to = $qty;
+                $batch_ids[$batch->id] = $qty;
+                $qty = 0;
+            }
+            if($qty === 0){
+                return $batch_ids;
+            }
+        }
+        return false;
+    }
+
+
+
+    public function transfer_stock($qty,$from,$to,$transfer){
+        $batch_ids = [];
+        $bincards = [];
+        foreach($this->stockbatches()->where($from, ">","0")->orderBy("expiry_date","ASC")->get() as $batch){
+            if($batch->$from - $qty < 0){
+                $ini = $batch->$from;
+                $qty = $qty - $batch->$from;
+                $batch_ids[$batch->id] =$batch->$from;
+
+                if($to == "retail"){
+                    $col = selling_price_column(department_by_quantity_column($from)->id);
+                    $batch->retail_cost_price = round(abs(divide($batch->stock->$col , $batch->stock->box)));
+                    $batch->$to =  $batch->$to + ($this->box * $batch->$from);
+                    $batch->$from = 0;
+                }else{
+                    $batch->$to =   ($batch->$to+$batch->$from);
+                    $batch->$from = 0;
+                }
+                $batch->update();
+
+
+                $bincards[] = [
+                    'bin_card_type'=>'APP//TRANSFER',
+                    'bin_card_date'=>todaysDate(),
+                    'user_id'=>\auth()->id(),
+                    'out_qty'=>$ini,
+                    'stock_id'=>$this->id,
+                    'stockbatch_id'=>$batch->id,
+                    'to_department'=>$to,
+                    'from_department'=>$from,
+                    'stocktransfer_id'=>$transfer->id,
+                    'comment'=>"Stock Transfer Transfer ID : ".$transfer->id." by ".Auth::user()->name,
+                    'balance'=>$this->totalBalance(),
+                    'department_balance'=>$this->getCurrentlevel($from)
+                ];
+
+                $bincards[] = [
+                    'bin_card_type'=>'APP//RECEIVED',
+                    'bin_card_date'=>date('Y-m-d'),
+                    'user_id'=>\auth()->id(),
+                    'in_qty'=>$ini,
+                    'stock_id'=>$this->id,
+                    'stockbatch_id'=>$batch->id,
+                    'to_department'=>$to,
+                    'from_department'=>$from,
+                    'stocktransfer_id'=>$transfer->id,
+                    'comment'=>"Stock Received Transfer ID : ".$transfer->id." by ".Auth::user()->name,
+                    'balance'=>$this->totalBalance(),
+                    'department_balance'=>$this->getCurrentlevel($to)
+                ];
+            }else{
+                $batch_ids[$batch->id] = $qty;
+                if($to == "retail"){
+                    $batch->$from = $batch->$from - $qty;
+                    $col = selling_price_column(department_by_quantity_column($from)->id);
+                    $batch->retail_cost_price = round(abs(divide($batch->stock->$col , $batch->stock->box)));
+                    $batch->$to =  $batch->$to + ($batch->stock->box * $qty);
+                }else{
+                    $batch->$from = $batch->$from - $qty;
+                    $batch->$to = $batch->$to+ $qty;
+                }
+                $batch->update();
+
+                $bincards[] = [
+                    'bin_card_type'=>'APP//TRANSFER',
+                    'bin_card_date'=>date('Y-m-d'),
+                    'user_id'=>Auth::id(),
+                    'out_qty'=>$qty,
+                    'stockbatch_id'=>$batch->id,
+                    'stock_id'=>$this->id,
+                    'to_department'=>$to,
+                    'from_department'=>$from,
+                    'stocktransfer_id'=>$transfer->id,
+                    'comment'=>"Stock Transfer Transfer ID : ".$transfer->id." by ".Auth::user()->name,
+                    'balance'=>$this->totalBalance(),
+                    'department_balance'=>$this->getCurrentlevel($from)
+                ];
+
+                $bincards[] = [
+                    'bin_card_type'=>'APP//RECEIVED',
+                    'bin_card_date'=>date('Y-m-d'),
+                    'user_id'=>Auth::id(),
+                    'in_qty'=>$qty,
+                    'stock_id'=>$this->id,
+                    'stockbatch_id'=>$batch->id,
+                    'to_department'=>$to,
+                    'from_department'=>$from,
+                    'stocktransfer_id'=>$transfer->id,
+                    'comment'=>"Stock Received Transfer ID : ".$transfer->id." by ".Auth::user()->name,
+                    'balance'=>$this->totalBalance(),
+                    'department_balance'=>$this->getCurrentlevel($to)
+                ];
+                $qty = 0;
+            }
+
+
+            $batch->stock->updateQuantity();
+
+            if($qty === 0){
+                dispatch(new AddLogToProductBinCard($bincards));
+                return $batch_ids;
+            }
+        }
+    }
+
 
 }

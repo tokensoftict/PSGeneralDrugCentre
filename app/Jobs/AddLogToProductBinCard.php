@@ -41,9 +41,13 @@ class AddLogToProductBinCard //implements ShouldQueue
             return $item;
         })->toArray();
 
-        DB::transaction(function(){
-            DB::table('stockbincards') ->insert($this->bincards);
-        });
+       // DB::transaction(function(){
+            foreach ($this->bincards as $bin)
+            {
+                Stockbincard::create($bin);
+            }
+            //DB::table('stockbincards') ->insert($this->bincards);
+       // });
 
 
     }

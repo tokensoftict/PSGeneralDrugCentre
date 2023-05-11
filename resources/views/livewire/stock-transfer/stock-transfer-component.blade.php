@@ -63,7 +63,7 @@
                             </td>
                             <td class="text-center" x-text="item.location"></td>
                             <td class="text-center" x-text="item.label_qty"></td>
-                            <td class="text-end" x-text="money(item.cost_price)"></td>
+                            <td class="text-end" x-text="money(item.cost_price ?? item.selling_price)"></td>
                             <td class="text-end" x-text="money(item.total)"></td>
                             <td><button class="btn btn-sm btn-primary" x-on:click="deleteItem(item.stock_id)">Delete</button></td>
                         </tr>
@@ -208,6 +208,11 @@
 
             completeTransfer()
             {
+                if( this.stocktransferitems.length == 0)
+                {
+                    alert("Please add atleast one item to transfer");
+                    return false;
+                }
                 this.errors = {};
                 let obj = this;
                 @this.set('data.status_id', '{{ status("Complete") }}', true);
@@ -232,16 +237,29 @@
 
             draftTransfer()
             {
+                if( this.stocktransferitems.length == 0)
+                {
+                    alert("Please add atleast one item to transfer");
+                    return false;
+                }
                 this.errors = {};
+                let obj = this;
                 @this.set('data.status_id', '{{ status("Draft") }}', true);
                 @this.set('data.user_id', '{{ auth()->id() }}', true);
                 @this.set('data.transfer_date', '{{ todaysDate() }}', true);
                 @this.set('data.stocktransferitems',this.stocktransferitems, true);
 
-                @this.draftTransfer().then(function(){
-                    setTimeout(()=>{
+                @this.draftTransfer().then(function(resp){
+
+                if(resp.status !== true)
+                {
+                    obj.errors = resp.errors;
+
+                }else {
+                    setTimeout(() => {
                         window.location.href = '{{ route('transfer.index') }}';
-                    },1100);
+                    }, 1100);
+                }
                 })
             }
 

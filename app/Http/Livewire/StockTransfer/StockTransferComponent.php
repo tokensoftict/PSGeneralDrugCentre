@@ -49,19 +49,37 @@ class StockTransferComponent extends Component
 
     public function draftTransfer()
     {
-        $this->stocktransfer = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
-        $this->alert(
-            "success",
-            "Stock Transfer",
-            [
-                'position' => 'center',
-                'timer' => 6000,
-                'toast' => false,
-                'text' =>  "Stock Transfer has been drafted successfully!.",
-            ]
-        );
+        $draft = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
 
-        return ['status'=>true];
+        if(is_array($draft))
+        {
+            $this->alert(
+                "error",
+                "Stock Transfer",
+                [
+                    'position' => 'center',
+                    'timer' => 12000,
+                    'toast' => false,
+                    'text' =>  "An error occurred while drafting this transfer, please check and adjust need items",
+                ]
+            );
+
+            return ['errors' =>  $draft, 'status'=>false];
+
+        }else {
+            $this->alert(
+                "success",
+                "Stock Transfer",
+                [
+                    'position' => 'center',
+                    'timer' => 6000,
+                    'toast' => false,
+                    'text' => "Stock Transfer has been drafted successfully!.",
+                ]
+            );
+
+            return ['status' => true];
+        }
 
     }
 
@@ -69,10 +87,8 @@ class StockTransferComponent extends Component
     public function completeTransfer()
     {
 
-        $this->stocktransfer = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
-
-        $completed = $this->stockTransferRepository->complete($this->stocktransfer);
-
+        $completed = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
+        $this->stocktransfer =  $completed;
         if(is_array($completed))
         {
 
@@ -90,23 +106,25 @@ class StockTransferComponent extends Component
             return ['errors' =>  $completed, 'status'=>false];
 
         }else {
+
+            $completed = $this->stockTransferRepository->complete($this->stocktransfer);
+
             $this->stocktransfer = $completed;
+
+            $this->alert(
+                "success",
+                "Stock Transfer",
+                [
+                    'position' => 'center',
+                    'timer' => 6000,
+                    'toast' => false,
+                    'text' =>  "Stock Transfer has been completed successfully!.",
+                ]
+            );
+
+
+            return ['status'=>true];
         }
-
-
-        $this->alert(
-            "success",
-            "Stock Transfer",
-            [
-                'position' => 'center',
-                'timer' => 6000,
-                'toast' => false,
-                'text' =>  "Stock Transfer has been completed successfully!.",
-            ]
-        );
-
-
-        return ['status'=>true];
 
     }
 

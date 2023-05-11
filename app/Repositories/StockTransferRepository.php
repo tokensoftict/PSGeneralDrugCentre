@@ -26,8 +26,9 @@ class StockTransferRepository
                 'selling_price' => $item->selling_price,
                 'cost_price' => $item->cost_price,
                 'stockbatch_id' => $item->stockbatch_id,
+                'label_qty' => $item->stocktransfer->to === "retail" ? ($item->quantity."(".$item->quantity * $item->stock->box.")") : $item->quantity,
                 'user_id' => $item->user_id,
-                'total' => $item->quantity * $item->quantity
+                'total' => $item->quantity * $item->selling_price
             ];
         }else{
             return [
@@ -38,8 +39,9 @@ class StockTransferRepository
                 'location' => "",
                 'cost_price' => "",
                 'stockbatch_id' => "",
+                'label_qty' => "",
                 'user_id' => auth()->id(),
-                'total' => $item->quantity * $item->quantity
+                'total' => $item->quantity * $item->selling_price
             ];
         }
 
@@ -66,89 +68,196 @@ class StockTransferRepository
                 'to' => $stocktransfer->to,
                 'status_id' =>$stocktransfer->status_id,
                 'note' => "",
-                'stocktransferitems' => $stocktransfer->stocktransferitems->map->only(array_keys(self::stockTransferItems(new Stocktransferitem())))->toJson()
+                'stocktransferitems' => json_encode(self::parseTransferItems($stocktransfer->stocktransferitems))
             ];
         }
 
     }
 
-    private function prepareStockTransfer($items)
+    public static function parseTransferItems($items)
     {
-        $stockItems = [];
-
+        $transferItems = [];
         foreach ($items as $item)
         {
-            \Arr::forget($item, ['name','location','total']);
-
-            $item['selling_price'] =  $item['cost_price'];
-
-            $item['stockbatch_id'] = NULL;
-
-            $stockItems[] = new Stocktransferitem($item);
+            $transferItems[] = self::stockTransferItems($item);
         }
 
-        return $stockItems;
+        return $transferItems;
     }
 
-    public function saveTransfer(Stocktransfer $stocktransfer,$data) : Stocktransfer
+
+    public function saveTransfer(Stocktransfer $transfer, array $data) : Stocktransfer | array
     {
+        $transfer_item = [];
+
         $items = $data['stocktransferitems'];
 
         unset($data['stocktransferitems']);
 
-        if(isset($stocktransfer->id)){
+        $errors = [];
 
-            $stocktransfer->update($data);
+        foreach ($items as $stock)
+        {
+            $sk = Stock::find($stock['stock_id']);
+            $batch = $sk->checkifStockcanTransfer( $stock['quantity'],$data['from'],$data['to']);
 
-            $stocktransfer->stocktransferitems()->delete();
+            if($batch === false)
+            {
+                $errors[$stock['stock_id']] = "Insufficient quantity for ".$sk->name." Available qty is ".$sk->getCurrentlevel($data['from']);
+                continue ;
+            }
 
-            $stocktransfer->stocktransferitems()->saveMany($this->prepareStockTransfer($items));
+            $price_column = department_by_quantity_column($data['from'])->price_column;
 
-        }else {
+            $qty_ =0;
 
-            $stocktransfer = Stocktransfer::create($data);
+            foreach($batch as $batch_id=>$qty_trans) {
+                $b_id = $batch_id;
+                $qty_+=$qty_trans;
+            }
+            $item = [
+                "stock_id" => $sk->id,
+                "quantity" => $qty_,
+                "selling_price"=>$sk->{$price_column},
+                "cost_price" => $sk->{cost_price_column(department_by_quantity_column($data['from'])->id)},
+                "batch_id" =>$b_id,
+                "added_by"=>auth()->id()
+            ];
 
-            $stocktransfer->stocktransferitems()->saveMany($this->prepareStockTransfer($items));
+            $transfer_item[] = new Stocktransferitem($item);
         }
 
-        return $stocktransfer;
+        if(count($errors) > 0) return $errors;
+
+        if(isset($transfer->id)){
+            $transfer->update(
+                [
+                    "transfer_date" => $data['transfer_date'],
+                    "user_id" => auth()->id(),
+                    "status_id" => status('Draft'),
+                    "from" => $data['from'],
+                    "to" => $data['to'],
+                    "note" => " "
+                ]
+            );
+
+            $trans = $transfer;
+
+        }else {
+            $trans = StockTransfer::create(
+                [
+                    "transfer_date" => $data['transfer_date'],
+                    "user_id" => auth()->id(),
+                    "status_id" => status('Draft'),
+                    "from" => $data['from'],
+                    "to" => $data['to'],
+                    "note" => " "
+                ]
+            );
+        }
+
+        if(isset($transfer->id)){
+            $transfer->stocktransferitems()->delete();
+        }
+
+        $trans->stocktransferitems()->saveMany($transfer_item);
+
+        return $trans;
+
     }
 
 
     public function complete(Stocktransfer $stocktransfer) : Stocktransfer|array
     {
+        $to = $stocktransfer->to;
+
+        $from = $stocktransfer->from;
+
+        if($stocktransfer->status_id == status("Approved")){
+
+            $from = ucwords(($from == "quantity" ? "Main Store" : $from));
+            $to = ucwords($to);
+            return $stocktransfer;
+        }
+
+        $wrap_it = [];
+
+        $__stocks = $stocktransfer->stocktransferitems()->get()->toArray();
+
+        foreach($__stocks as $stock){
+            $pro =$stocktransfer->stocktransferitems()->where("stock_id",$stock['stock_id'])->get();
+            $qty_ = 0;
+            if($pro->count() > 1){
+                foreach ($pro->toArray() as $p){
+                    $qty_+=$p['quantity'];
+                }
+            }else{
+                $qty_ = $stock['quantity'];
+            }
+
+            $wrap_it[] = [
+                "selling_price"=>$stock['selling_price'],
+                "quantity"=>$qty_,
+                "stock_id"=>$stock['stock_id']
+            ];
+
+        }
+
+        //after gathering the necessary data delete the old transfer items
+
+        $transfer_item = [];
+
+        //validate the transfer before proceeding
         $errors = [];
 
-        $items = $stocktransfer->stocktransferitems;
-
-        $batches = [];
-
-        foreach ($items as $item)
-        {
-            $neededBatches = $item->stock->pingTransferStock($stocktransfer->from, $stocktransfer->to, $item->quantity);
-            if ($neededBatches === false)
-            {
-                $errors[$item->stock_id] = "Insufficient quantity for ".$item->stock->name." Available qty is ".$item->stock->{$stocktransfer->from};
-
-            }else {
-                foreach ($neededBatches as $batch) {
-                    $batches[] = $batch;
-                }
+        foreach($wrap_it as $transfer){
+            $sk =Stock::find($transfer['stock_id']);
+            $batch = $sk->checkifStockcanTransfer($transfer['quantity'],$from,$to);
+            if(count($batch) == 0 ){
+                $errors[$sk->id] = $sk->name." can not be transfer because the available quantity is not enough, Total available quantity is ".$sk->getCurrentlevel( $transfer->from);
             }
         }
 
         if(count($errors) > 0) return $errors;
 
-        Stock::completeTransfer($batches, $stocktransfer);
+        foreach ($wrap_it as $transfer) {
 
-        dispatch(new PushStockUpdateToServerFromTransfer(array_column($items->toArray(), 'stock_id')));
+            $sk = Stock::find($transfer['stock_id']);
+
+            $batch = $sk->transfer_stock($transfer['quantity'], $from, $to, $stocktransfer);
+
+            $price_column = selling_price_column(department_by_quantity_column($from)->id);
+
+            foreach ($batch as $batch_id => $qty_trans) {
+                $b_id = $batch_id;
+            }
+
+            $item = [
+                "stock_id" => $transfer['stock_id'],
+                "quantity" => $transfer['quantity'],
+                "selling_price" => $transfer['selling_price'],
+                "rem_quantity"=>$sk->getCurrentlevel($stocktransfer->from),
+                "batch_id" => $b_id,
+                "added_by" => auth()->id()
+            ];
+
+            $transfer_item[] = new StockTransferItem($item);
+
+        }
+
+        $stocktransfer->stockTransferItems()->delete();
+
+        $stocktransfer->stockTransferItems()->saveMany($transfer_item);
 
         $stocktransfer->status_id = status('Approved');
 
         $stocktransfer->update();
 
+        dispatch(new PushStockUpdateToServerFromTransfer(array_column($stocktransfer->stockTransferItems->toArray(), 'stock_id')));
+
         return $stocktransfer;
     }
+
 
     public function delete(Stocktransfer $stocktransfer)
     {
