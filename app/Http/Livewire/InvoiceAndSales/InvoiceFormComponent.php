@@ -220,6 +220,8 @@ class InvoiceFormComponent extends Component
         }
         if(!isset($this->invoice->id))
         {
+            $this->invoiceData['invoice_number'] = time();
+
             $response  = (new invoiceRepository())->createInvoice($this->invoiceData);
         }
         else {

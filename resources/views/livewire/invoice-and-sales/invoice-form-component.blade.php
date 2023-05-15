@@ -526,7 +526,7 @@
                 }else {
                     setTimeout(() => {
                         window.location.href = '{{ route('invoiceandsales.create') }}';
-                    }, 1100);
+                    }, 1000);
                 }
 
             });

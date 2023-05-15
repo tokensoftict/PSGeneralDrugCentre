@@ -115,7 +115,7 @@ class StockBatch extends Component
 
             $c[$user_col_map[$this->selectedDepartment]] = \auth()->id();
 
-            $this->stock->batchstock->save(new Batchstock($c));
+            Batchstock::create($c);
         }
 
         $bincards[] =  [

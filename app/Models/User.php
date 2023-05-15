@@ -43,6 +43,8 @@ class User extends Authenticatable
         'remember_token'
     ];
 
+    public static array $profile_fields = ['department', 'name', 'email', 'username', 'password',  'salary', 'status', 'group_id'];
+
     //protected $with = ['department', 'usergroup'];
 
     public function department()
