@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('orders:refresh')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/orderrefresh.txt');
 
-        $schedule->command('queue:work --sansdaemon --tries=3 --timeout=0')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/queuework.txt');
+        //$schedule->command('queue:work --sansdaemon --tries=3 --timeout=0')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/queuework.txt');
 
         $schedule->command('backup:run --only-db')->dailyAt('00:00')->appendOutputTo('storage/app/backup.txt');
 
