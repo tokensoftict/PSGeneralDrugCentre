@@ -106,7 +106,7 @@ final class StockTransferSummaryReport extends PowerGridComponent
             Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Name', 'name'),
             Column::make('Quantity', 'total_qty'),
-            Column::add()->field('cost')->title('Cost Price')->withSum(false, true,2),
+            Column::add()->field('cost')->title('Cost Price'),
             Column::make('Total Cost Price', 'total_sub_total')
         ];
     }

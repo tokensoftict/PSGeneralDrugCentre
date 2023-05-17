@@ -30,7 +30,7 @@ function _GET($endpoint, $payload = []) : array|bool
     $response = Http::timeout(120)->get(onlineBase() . 'api/data/' . $endpoint);
     if($response->status() == 200 )
     {
-        return json_decode($response->body(), true);
+        return json_decode($response->body(), true) ??  true;
     }
     return false;
 }
@@ -41,7 +41,7 @@ function _FETCH($url) : array|bool
 
     if($response->status() == 200 )
     {
-        return json_decode($response->body(), true);
+        return json_decode($response->body(), true) ??  true;
     }
     return false;
 }
@@ -52,7 +52,7 @@ function _POST($endpoint, $payload = []) : array|bool
 
     if($response->status() == 200 )
     {
-        return json_decode($response->body(), true);
+        return json_decode($response->body(), true) ??  true;
     }
     return false;
 }
