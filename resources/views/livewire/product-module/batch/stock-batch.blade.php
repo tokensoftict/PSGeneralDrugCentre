@@ -1,5 +1,6 @@
 <div x-data="batch()" x-init="initDatePicker()">
     <h3>Batch List</h3>
+
     <table class="table table-bordered table-striped table-condensed">
         <thead>
         <tr>
@@ -18,9 +19,13 @@
                 <td>{{ $this->stock->name }}</td>
                 <td><input type="text"  wire:model.defer="batches.{{ $key}}.expiry_date" class="form-control datepicker-basic"/> </td>
                 <td><input type="number" wire:model.defer="batches.{{ $key}}.{{ $selectedDepartment }}" class="form-control"> </td>
-                <td><input type="number" step="0.0000001" wire:model.defer="batches.{{ $key}}.{{ cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) }}" class="form-control"> </td>
+                <td><input type="number" step="0.0000001" wire:model.defer="batches.{{ $key}}.{{ cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) }}" class="form-control">
+                @if(isset($batch['error']))
+                    <span class="font-size-13 text-danger">{{ $batch['error'] }}</span>
+                 @endif
+                </td>
                 <td><select wire:model.defer="batches.{{ $key}}.supplier_id" class="form-control">
-                        @foreach($this->suppliers as $supplier)
+                        @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                         @endforeach
                     </select>

@@ -13,9 +13,8 @@ class StockBatch extends Component
 {
 
     public Stock $stock;
-    public array $batches = [];
 
-    public $suppliers;
+    public array $batches = [];
 
     public string $selectedDepartment;
 
@@ -31,44 +30,22 @@ class StockBatch extends Component
 
     public function mount()
     {
-        if($this->stock->activeBatches->count() > 2)
-        {
-            foreach ($this->stock->activeBatches as $batch)
-            {
-                $this->batches[] = $batch->toArray();
-            }
-        }else {
-            foreach ($this->stock->minimumBatches as $batch)
-            {
-                $this->batches[] = [
-                    'id' => $batch->id,
-                    'received_date' => $batch->received_date,
-                    'expiry_date' => $batch->expiry_date,
-                    $this->selectedDepartment => $batch->{$this->selectedDepartment},
-                    cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) => $batch->{cost_price_column(department_by_quantity_column($this->selectedDepartment)->id)},
-                    'stock_id' => $batch->stock_id,
-                    'supplier_id' => $batch->supplier_id
-                ];
-            }
+
+        $batches = batch::where("stock_id", $this->stock->id)
+            ->where(function($q){
+                $q->orwhere("wholesales",">",0)
+                    ->orwhere("bulksales",">",0)
+                    ->orwhere("retail",">",0)
+                    ->orwhere("quantity",">",0);
+            })
+
+            ->get();
+
+        if($batches->count() == 0){
+            $batches = batch::where("stock_id",$this->stock->id)->orderBy('id','DESC')->limit(1)->get();
         }
 
-        if(count($this->batches) == 0)
-        {
-            foreach ($this->stock->stockbatches()->orderBy('received_date', 'DESC')->limit(3)->get() as $batch)
-            {
-                $this->batches[] = [
-                    'id' => $batch->id,
-                    'received_date' => $batch->received_date,
-                    'expiry_date' => $batch->expiry_date,
-                    $this->selectedDepartment => $batch->{$this->selectedDepartment},
-                    cost_price_column(department_by_quantity_column($this->selectedDepartment)->id) => $batch->{cost_price_column(department_by_quantity_column($this->selectedDepartment)->id)},
-                    'stock_id' => $batch->stock_id,
-                    'supplier_id' => $batch->supplier_id
-                ];
-            }
-        }
-
-        $this->suppliers = suppliers(true);
+        $this->batches = $batches->toArray();
 
         $this->dept = department_by_quantity_column($this->selectedDepartment)->label;
 
@@ -76,81 +53,105 @@ class StockBatch extends Component
 
     public function render()
     {
-        return view('livewire.product-module.batch.stock-batch');
+        $data = [
+           'suppliers' =>  suppliers(true)
+        ];
+        return view('livewire.product-module.batch.stock-batch', $data);
     }
 
     public function batchStock()
     {
+        $error = false;
 
-        $b_whole = $this->stock->wholesales;
-        $b_retail = $this->stock->retail;
-        $b_quantity = $this->stock->quantity;
-        $b_bulksales = $this->stock->bulksales;
+        foreach ($this->batches as $key=>$batch)
+        {
+            unset( $this->batches[$key]['error']);
 
-        batch::upsert($this->batches,['id'], array_keys($this->batches[0]));
+            if($batch[cost_price_column(department_by_quantity_column($this->selectedDepartment)->id)] == NULL || $batch[cost_price_column(department_by_quantity_column($this->selectedDepartment)->id)] < 1)
+            {
+                $this->batches[$key]['error'] = "Please update this cost price to adjust quantity";
 
-        $user_col_map = [
-            'quantity'=>'quantity_user_id',
-            'bulksales'=>'bulk_user_id',
-            'wholesales'=>'wholsale_user_id',
-            'retail'=>'retail_user_id',
-        ];
-
-        $this->stock->updateQuantity();
-
-        if(isset($this->stock->batchstock->stock_id)){
-            $col = $user_col_map[$this->selectedDepartment];
-            $this->stock->batchstock->{$this->selectedDepartment} = 1;
-            $this->stock->batchstock->$col  = auth()->id();
-            $this->stock->batchstock->update();
-        }else{
-            $c = [
-                'stock_id'=>$this->stock->id,
-                'quantity'=>0,
-                'wholesales'=>0,
-                'bulksales'=>0,
-                'retail'=>0,
-            ];
-            $c[$this->selectedDepartment] = 1;
-
-            $c[$user_col_map[$this->selectedDepartment]] = \auth()->id();
-
-            Batchstock::create($c);
+                $error = true;
+            }
         }
 
-        $bincards[] =  [
-            'bin_card_type'=>'APP//BATCH_UPDATE',
-            'bin_card_date'=>date('Y-m-d'),
-            'user_id'=>auth()->id(),
-            'stock_id'=> $this->stock->id,
-            'out_qty'=>0,
-            'comment'=>"Stock Batch Update was made
+        if($error === false) {
+            $b_whole = $this->stock->wholesales;
+            $b_retail = $this->stock->retail;
+            $b_quantity = $this->stock->quantity;
+            $b_bulksales = $this->stock->bulksales;
+
+            //batch::upsert($this->batches,['id'], array_keys($this->batches[0]));
+
+            foreach ($this->batches as $key => $batch) {
+                $b = batch::find($batch['id']);
+                $b->update($batch);
+            }
+
+
+            $user_col_map = [
+                'quantity' => 'quantity_user_id',
+                'bulksales' => 'bulk_user_id',
+                'wholesales' => 'wholsale_user_id',
+                'retail' => 'retail_user_id',
+            ];
+
+            $this->stock->updateQuantity();
+
+            if (isset($this->stock->batchstock->stock_id)) {
+                $col = $user_col_map[$this->selectedDepartment];
+                $this->stock->batchstock->{$this->selectedDepartment} = 1;
+                $this->stock->batchstock->$col = auth()->id();
+                $this->stock->batchstock->update();
+            } else {
+                $c = [
+                    'stock_id' => $this->stock->id,
+                    'quantity' => 0,
+                    'wholesales' => 0,
+                    'bulksales' => 0,
+                    'retail' => 0,
+                ];
+                $c[$this->selectedDepartment] = 1;
+
+                $c[$user_col_map[$this->selectedDepartment]] = \auth()->id();
+
+                Batchstock::create($c);
+            }
+
+            $bincards[] = [
+                'bin_card_type' => 'APP//BATCH_UPDATE',
+                'bin_card_date' => date('Y-m-d'),
+                'user_id' => auth()->id(),
+                'stock_id' => $this->stock->id,
+                'out_qty' => 0,
+                'comment' => "Stock Batch Update was made
                                 <br/>-----BEFORE UPDATE------<br/>
                                 Wholesale : $b_whole, Bulk : $b_bulksales
                                 , Retail : $b_retail
                                 , Main Store : $b_quantity
                                 <br/>
                                 <br/>-----AFTER UPDATE------<br/>
-                                  Wholesale : ".$this->stock->wholesales.", Bulk : ".$this->stock->bulksales.", Retail : ".$this->stock->retail.", Main Store : ".$this->stock->quantity."
+                                  Wholesale : " . $this->stock->wholesales . ", Bulk : " . $this->stock->bulksales . ", Retail : " . $this->stock->retail . ", Main Store : " . $this->stock->quantity . "
                                 ",
-            'balance'=>$this->stock->totalBalance(),
-            'department_balance' => $this->stock->getCurrentlevel($this->selectedDepartment)
-        ];
+                'balance' => $this->stock->totalBalance(),
+                'department_balance' => $this->stock->getCurrentlevel($this->selectedDepartment)
+            ];
 
 
-        dispatch(new AddLogToProductBinCard($bincards));
+            dispatch(new AddLogToProductBinCard($bincards));
 
-        $this->alert(
-            "success",
-            "Quick Adjust Quantity",
-            [
-                'position' => 'center',
-                'timer' => 6000,
-                'toast' => false,
-                'text' =>  "Stock Quantity has been updated successfully!",
-            ]
-        );
+            $this->alert(
+                "success",
+                "Quick Adjust Quantity",
+                [
+                    'position' => 'center',
+                    'timer' => 6000,
+                    'toast' => false,
+                    'text' => "Stock Quantity has been updated successfully!",
+                ]
+            );
 
-        return redirect()->route('product.balance_stock');
+            return redirect()->route('product.balance_stock');
+        }
     }
 }
