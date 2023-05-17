@@ -208,7 +208,7 @@ class InvoiceController extends Controller
         $pdf = PDF::loadView("print.pos_afour_waybill",$data);
         $pdf->getMpdf()->SetWatermarkText(strtoupper($invoice->status->name));
         $pdf->getMpdf()->showWatermarkText = true;
-        return $pdf->stream('document.pdf');
+        return $pdf->stream('documentwaybill.pdf');
     }
 
     public function print_afour(Invoice $invoice)
@@ -221,7 +221,7 @@ class InvoiceController extends Controller
         $pdf->getMpdf()->SetWatermarkText(strtoupper($invoice->status->name));
         $pdf->getMpdf()->showWatermarkText = true;
 
-        return $pdf->stream('document.pdf');
+        return $pdf->stream('documenta4.pdf');
     }
 
     public function applyInvoiceDiscount(Invoice $invoice)
