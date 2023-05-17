@@ -103,9 +103,12 @@ class ProductRepository
             'retail' => 'retail_cost_price',
         };
 
-        return DB::table('stocks')->select('id', $cost_price, $selling_price, 'name', 'box', 'location', 'name as text')->where(function($query) use(&$name){
+        return DB::table('stocks')
+            ->select('id', $cost_price, $selling_price, 'name', 'box', 'location', 'name as text',
+            DB::raw('ROUND((((retail/box) + wholesales + quantity + bulksales)),0) as allqty')
+            )->where(function($query) use(&$name){
             foreach ($name as $char) {
-                $query->where('name', 'LIKE', "%$char%");
+                $query->where('stocks.name', 'LIKE', "%$char%");
             }
         })->get()->toJson();
 

@@ -10,6 +10,12 @@
             </div>
         </div>
 
+        <div class="col-sm-1">
+            <div class="mb-3">
+                <label style="white-space: nowrap;">Av. Quantity</label>
+                <input type="number" readonly class="form-control" x-model="allqty" id="av_qty"/>
+            </div>
+        </div>
 
         <div class="col-sm-2">
             <div class="mb-3">
@@ -137,6 +143,7 @@
                 department : @this.get('data.department') ? @this.get('data.department') : "",
                 stock_id : "",
                 cost_price : "",
+                allqty : 0,
                 quantity : "",
                 expiry_date: "",
                 selectStock : {},
@@ -174,6 +181,7 @@
                             obj.quantity = 1;
                             obj.name = data.name;
                             obj.selectStock = data[0];
+                            obj.allqty = data[0].allqty
                         }
                     });
 
