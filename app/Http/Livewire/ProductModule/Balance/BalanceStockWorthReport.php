@@ -142,7 +142,7 @@ final class BalanceStockWorthReport extends PowerGridComponent
                 $join->on('st_out.stock_id','=','stocks.id');
             })
             ->where($price_column,'>',0)
-            ->whereIn('stocks.id',[2686,3609, 4389,1088])
+            //->whereIn('stocks.id',[2686,3609, 4389,1088])
             ->groupBy('stocks.id')->get();
 
          return $report;
