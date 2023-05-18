@@ -31,7 +31,7 @@ final class BalanceStockWorthReport extends PowerGridComponent
     | Provides data to your Table using a Model or Collection
     |
     */
-    public function datasource(): ?Collection
+    public function datasource(): ? Collection
     {
         $date = $this->filters['filter_date'];
 
@@ -144,6 +144,7 @@ final class BalanceStockWorthReport extends PowerGridComponent
             ->where($price_column,'>',0)
             ->whereIn('stocks.id',[2686,3609, 4389,1088])
             ->groupBy('stocks.id')->get();
+
          return $report;
 
     }
@@ -168,6 +169,9 @@ final class BalanceStockWorthReport extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
+            ->addColumn('id')
+            ->addColumn('carton')
+            ->addColumn('box')
             ->addColumn('name')
             ->addColumn('total_stock_transfer_in')
             ->addColumn('total_stock_transfer_out')
@@ -203,7 +207,7 @@ final class BalanceStockWorthReport extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::add()->index()->title('SN')->visibleInExport(false),
+            Column::add()->index()->field('id')->title('SN')->visibleInExport(false),
             Column::make('Name', 'name'),
             Column::make('Carton', 'carton'),
             Column::make('Total Transfer In', 'total_stock_transfer_in'),
