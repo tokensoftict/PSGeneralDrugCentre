@@ -214,7 +214,7 @@ class StockTransferRepository
             $sk =Stock::find($transfer['stock_id']);
             $batch = $sk->checkifStockcanTransfer($transfer['quantity'],$from,$to);
             if($batch === false || count($batch) == 0 ){
-                $errors[$sk->id] = $sk->name." can not be transfer because the available quantity is not enough, Total available quantity is ".$sk->getCurrentlevel( $transfer->from);
+                $errors[$sk->id] = $sk->name." can not be transfer because the available quantity is not enough, Total available quantity is ".$sk->getCurrentlevel($from);
             }
         }
 
