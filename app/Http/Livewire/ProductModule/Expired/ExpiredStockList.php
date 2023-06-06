@@ -141,7 +141,7 @@ final class ExpiredStockList extends PowerGridComponent
             ->addColumn('ms')
             ->addColumn('rt')
             ->addColumn('total', function(Stockbatch $stockbatch){
-                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs($stockbatch->rt/ $stockbatch->stock->box));
+                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs(divide($stockbatch->rt, $stockbatch->stock->box)));
             });
     }
 
