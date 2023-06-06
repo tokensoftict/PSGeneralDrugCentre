@@ -44,9 +44,6 @@ final class ExpiredStockList extends PowerGridComponent
     {
         $countDays = app(Settings::class)->store()->near_expiry_days;
 
-        $to = date('Y-m-d', strtotime(' + '.$countDays.' days'));
-        $from = date('Y-m-d');
-
         return Stockbatch::with(['stock'])->select(
             'stock_id',
             DB::raw( 'SUM(bulksales) as bs'),
@@ -109,6 +106,7 @@ final class ExpiredStockList extends PowerGridComponent
             ->addColumn('box', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->box;
             })
+            ->addColumn('stock_id')
             ->addColumn('name', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->name;
             })
@@ -165,6 +163,7 @@ final class ExpiredStockList extends PowerGridComponent
     {
         return [
             Column::make('SN' ,'')->index(),
+            Column::make('Stock ID', 'stock_id'),
             Column::make('Name', 'name')->sortable()->searchable(),
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
