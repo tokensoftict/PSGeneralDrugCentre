@@ -163,6 +163,7 @@ final class RetailNearOsDatatable extends PowerGridComponent
 
     public function actionRules(): array
     {
+        return [];
         /*
         return [
             Rule::button('edit')

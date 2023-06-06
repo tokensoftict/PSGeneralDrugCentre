@@ -12,6 +12,8 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['post', 'get'], '/profile', 'Auth\LoginController@profile')->name('profile');
     Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     Route::get('/reports', 'ReportsController@index')->name('reports');
+    Route::get('/run_nearos', 'ReportsController@run_nearos')->name('run_nearos');
+    Route::get('/run_retail_nearos', 'ReportsController@run_retail_nearos')->name('run_retail_nearos');
 
     Route::prefix('ajax')->namespace('Ajax')->group(function () {
         Route::get('/findstock', ['as' => 'findstock', 'uses' => 'AjaxController@findstock']);
