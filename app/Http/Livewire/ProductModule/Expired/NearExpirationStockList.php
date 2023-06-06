@@ -109,6 +109,8 @@ final class NearExpirationStockList extends PowerGridComponent
             ->addColumn('box', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->box;
             })
+            ->addColumn('stock_id')
+
             ->addColumn('name', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->name;
             })
@@ -165,6 +167,7 @@ final class NearExpirationStockList extends PowerGridComponent
     {
         return [
             Column::make('SN' ,'')->index(),
+            Column::make('Stock ID' ,'stock_id')->sortable(),
             Column::make('Name', 'name')->sortable()->searchable(),
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
