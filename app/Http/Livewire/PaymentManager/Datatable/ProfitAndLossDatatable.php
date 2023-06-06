@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\PaymentManager\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Support\Facades\DB;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Invoiceitem;
 
-class ProfitAndLossDatatable extends DataTableComponent
+class ProfitAndLossDatatable extends ExportDataTableComponent
 {
 
     use SimpleDatatableComponentTrait;

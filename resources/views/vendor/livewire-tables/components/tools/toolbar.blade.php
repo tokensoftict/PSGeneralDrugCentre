@@ -165,7 +165,7 @@
                                     x-bind:aria-expanded="open"
                                     aria-expanded="true"
                                 >
-                                    @lang('Bulk Actions')
+                                    @lang('Export Data')
 
                                     <svg class="-mr-1 ml-2 h-5 w-5" x-description="Heroicon name: chevron-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -473,8 +473,8 @@
             @if ($component->showBulkActionsDropdown())
                 <div class="mb-3 mb-md-0">
                     <div class="dropdown d-block d-md-inline">
-                        <button class="btn dropdown-toggle d-block w-100 d-md-inline" type="button" id="{{ $component->getTableName() }}-bulkActionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @lang('Bulk Actions')
+                        <button class="btn btn-primary dropdown-toggle d-block w-100 d-md-inline" type="button" id="{{ $component->getTableName() }}-bulkActionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @lang('Export Data')
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-right w-100" aria-labelledby="{{ $component->getTableName() }}-bulkActionsDropdown">
@@ -735,8 +735,8 @@
             @if ($component->showBulkActionsDropdown())
                 <div class="mb-3 mb-md-0">
                     <div class="dropdown d-block d-md-inline">
-                        <button class="btn dropdown-toggle d-block w-100 d-md-inline" type="button" id="{{ $component->getTableName() }}-bulkActionsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @lang('Bulk Actions')
+                        <button class="btn btn-primary dropdown-toggle d-block w-100 d-md-inline" type="button" id="{{ $component->getTableName() }}-bulkActionsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @lang('Export Data')
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-end w-100" aria-labelledby="{{ $component->getTableName() }}-bulkActionsDropdown">

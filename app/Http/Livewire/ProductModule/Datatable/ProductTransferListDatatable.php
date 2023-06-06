@@ -2,18 +2,18 @@
 
 namespace App\Http\Livewire\ProductModule\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Jobs\AddLogToProductBinCard;
 use App\Models\Stockbatch;
 use App\Traits\SimpleDatatableComponentTrait;
 use Carbon\Carbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\ProductTransfer;
 use Illuminate\Database\Eloquent\Builder;
 
-class ProductTransferListDatatable extends DataTableComponent
+class ProductTransferListDatatable extends ExportDataTableComponent
 {
 
     use SimpleDatatableComponentTrait, LivewireAlert;

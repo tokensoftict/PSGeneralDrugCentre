@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\PaymentManager\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Models\Creditpaymentlog;
 use App\Models\Invoice;
@@ -10,11 +11,10 @@ use App\Repositories\PaymentRepository;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Payment;
 
-class PaymentListDatatable extends DataTableComponent
+class PaymentListDatatable extends ExportDataTableComponent
 {
     use SimpleDatatableComponentTrait, LivewireAlert;
 

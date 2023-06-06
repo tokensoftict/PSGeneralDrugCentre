@@ -2,15 +2,15 @@
 
 namespace App\Http\Livewire\PurchaseOrder\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Repositories\PurchaseOrderRepository;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Purchase;
 
-class PurchaseorderDatatable extends DataTableComponent
+class PurchaseorderDatatable extends ExportDataTableComponent
 {
     use SimpleDatatableComponentTrait;
 

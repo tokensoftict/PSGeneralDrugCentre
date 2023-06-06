@@ -2,13 +2,13 @@
 
 namespace App\Http\Livewire\PaymentManager\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Creditpaymentlog;
 
-class CreditLogs extends DataTableComponent
+class CreditLogs extends ExportDataTableComponent
 {
 
     use SimpleDatatableComponentTrait;

@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\ProductModule\BinCard;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Models\Stockbincard;
 use App\Traits\SimpleDatatableComponentTrait;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 
-class ProductBincard extends DataTableComponent
+class ProductBincard extends ExportDataTableComponent
 {
 
     use SimpleDatatableComponentTrait;

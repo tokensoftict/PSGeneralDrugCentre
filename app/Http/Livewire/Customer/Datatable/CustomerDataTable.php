@@ -2,14 +2,15 @@
 
 namespace App\Http\Livewire\Customer\Datatable;
 
+use App\Classes\BooleanColumn;
+use App\Classes\ExportDataTableComponent;
 use App\Traits\SimpleDatatableComponentTrait;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\Views\Columns\BooleanColumn;
 
-class CustomerDataTable extends DataTableComponent
+
+class CustomerDataTable extends ExportDataTableComponent
 {
     use SimpleDatatableComponentTrait;
 

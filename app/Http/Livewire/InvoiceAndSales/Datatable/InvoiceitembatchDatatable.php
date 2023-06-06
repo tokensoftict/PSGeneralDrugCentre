@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\InvoiceAndSales\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Invoiceitembatch;
 
-class InvoiceitembatchDatatable extends DataTableComponent
+class InvoiceitembatchDatatable extends ExportDataTableComponent
 {
 
 

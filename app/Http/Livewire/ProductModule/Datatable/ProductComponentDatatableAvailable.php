@@ -2,15 +2,15 @@
 
 namespace App\Http\Livewire\ProductModule\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;
 use App\Models\Stock;
-use Rappasoft\LaravelLivewireTables\Views\Columns\BooleanColumn;
+use App\Classes\BooleanColumn;
 
-class ProductComponentDatatableAvailable extends DataTableComponent
+class ProductComponentDatatableAvailable extends ExportDataTableComponent
 {
 
     use SimpleDatatableComponentTrait;

@@ -2,15 +2,15 @@
 
 namespace App\Http\Livewire\InvoiceAndSales\Datatable;
 
+use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Models\Invoice;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Classes\Column;;
 use App\Models\Invoiceitem;
 
-class InvoiceitemDatatable extends DataTableComponent
+class InvoiceitemDatatable extends ExportDataTableComponent
 {
 
     public  array $filters;
