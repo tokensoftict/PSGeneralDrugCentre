@@ -21,10 +21,7 @@ class RunRetailNearOsManually implements ShouldQueue
      */
     public function __construct()
     {
-        $settings = app(Settings::class);
 
-        $settings->put('retail_nearos_status', 'okay');
-        \Artisan::call("retailnearos:compute");
     }
 
     /**
@@ -34,6 +31,9 @@ class RunRetailNearOsManually implements ShouldQueue
      */
     public function handle()
     {
-        //
+        $settings = app(Settings::class);
+
+        $settings->put('retail_nearos_status', 'okay');
+        \Artisan::call("retailnearos:compute");
     }
 }

@@ -13,7 +13,7 @@
 @endsection
 
 @section('pageHeaderAction')
-    @if(app(\App\Classes\Settings::class)->get('m_run_nears') !== 'running')
+    @if(app(\App\Classes\Settings::class)->get('m_retail_run_nears') !== 'running')
    <div class="row">
        <div class="col-12">
            <a href="{{ route('run_retail_nearos') }}"  class="btn btn-primary float-end">Run Retail Near Os</a>

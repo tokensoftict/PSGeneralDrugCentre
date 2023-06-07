@@ -31,18 +31,19 @@ class ReportsController extends Controller
 
     public function run_nearos()
     {
-        dispatch(new RunNearOsManually());
         $this->settings->put('m_run_nears', 'running');
         Nearoutofstock::truncate();
-        return redirect()->route('run_nearos');
+        $this->dispatch(new RunNearOsManually());
+        return redirect()->route('reports.productReport.nearoutofstock');
     }
 
     public function run_retail_nearos()
     {
-        dispatch(new RunRetailNearOsManually());
         $this->settings->put('m_retail_run_nears', 'running');
-        Retailnearoutofstock::truncate();
-        return redirect()->route('run_retail_nearos');
+
+        \DB::table('retailnearoutofstock')->truncate();
+        $this->dispatch(new RunRetailNearOsManually());
+        return redirect()->route('reports.productReport.retailnearoutofstock');
     }
 
 

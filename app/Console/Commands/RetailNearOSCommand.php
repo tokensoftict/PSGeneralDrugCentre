@@ -232,6 +232,7 @@ class RetailNearOSCommand extends Command
 
 
         $settings->put('retail_nearos_status', 'okay');
+        $settings->put('m_retail_run_nears', 'okay');
         $settings->put('retail_nearos_last_run', Carbon::now()->toDateTimeLocalString());
 
         return Command::SUCCESS;

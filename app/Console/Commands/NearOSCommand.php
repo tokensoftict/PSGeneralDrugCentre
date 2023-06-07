@@ -270,6 +270,7 @@ class NearOSCommand extends Command
         }
 
         $settings->put('nearos_status', 'okay');
+        $settings->put('m_run_nears', 'okay');
         $settings->put('nearos_last_run', Carbon::now()->toDateTimeLocalString());
 
         return Command::SUCCESS;
