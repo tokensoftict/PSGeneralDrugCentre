@@ -108,7 +108,7 @@ final class StockOpeningReport extends PowerGridComponent
             ->addColumn('retail')
             ->addColumn('quantity')
             ->addColumn('supplier', function(Stockopening $stockopening){
-                return $stockopening->supplier->name;
+                return $stockopening->supplier->name ?? "NILL" ;
             })
             ->addColumn('total');
     }
