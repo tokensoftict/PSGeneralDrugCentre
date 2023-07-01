@@ -59,6 +59,9 @@ class ReportFilterComponent extends Component
             $data['departments'] = Department::where('status',1)->select('id','name','quantity_column')->get();
         }
 
+        if(isset($this->filters['custom_dropdown_id']) && isset($this->filters['items'])){
+            $data['items'] = $this->filters['items'];
+        }
 
         if(isset($this->filters['batchno'])){
             $data['batch_numbers'] = Production::select('batch_number')->where('status_id',6)->pluck('batch_number')->toArray();

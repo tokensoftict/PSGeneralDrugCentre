@@ -51,6 +51,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon|null $updated_at
  *
  * @property User|null $user
+ * @property User|null $create_by
  * @property Customer|null $customer
  * @property Status $status
  * @property Collection|CustomerLedger[] $customer_ledgers

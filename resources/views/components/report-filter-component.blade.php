@@ -12,14 +12,14 @@
                 </div>
             @endif
 
-                @if(isset($filters['invoice_date']))
-                    <div class="col-auto">
-                        <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input type="text" value="{{ $filters['invoice_date'] }}" class="form-control datepicker-basic" name="filter[invoice_date]" id="datepicker-basic">
-                        </div>
+            @if(isset($filters['invoice_date']))
+                <div class="col-auto">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="text" value="{{ $filters['invoice_date'] }}" class="form-control datepicker-basic" name="filter[invoice_date]" id="datepicker-basic">
                     </div>
-                @endif
+                </div>
+            @endif
 
             @if(isset($filters['to']))
                 <div class="col-auto">
@@ -84,18 +84,18 @@
                 </div>
             @endif
 
-                @if(isset($filters['department']))
-                    <div class="col-lg-4">
-                        <div class="mb-3">
-                            <label class="form-label">Department</label>
-                            <select class="form-control" data-trigger name="filter[department]" id="choices-single-default" placeholder="Select Department">
-                                @foreach($departments as $department)
-                                    <option {{ $filters['department'] == $department->quantity_column ? 'selected' : '' }} value="{{ $department->quantity_column }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+            @if(isset($filters['department']))
+                <div class="col-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-control" data-trigger name="filter[department]" id="choices-single-default" placeholder="Select Department">
+                            @foreach($departments as $department)
+                                <option {{ $filters['department'] == $department->quantity_column ? 'selected' : '' }} value="{{ $department->quantity_column }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                @endif
+                </div>
+            @endif
 
             @if(isset($filters['created_by']))
                 <div class="col-lg-4">
@@ -118,6 +118,19 @@
                         <select class="form-control" data-trigger name="filter[user_id]" id="choices-single-default" placeholder="Select System User">
                             @foreach($users as $user)
                                 <option {{ $filters['user_id'] == $user->id ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
+
+            @if(isset($filters['custom_dropdown_id']) && isset($filters['items']))
+                <div class="col-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label">{{ $filters['label_name'] }}</label>
+                        <select class="form-control select2"  name="filter[custom_dropdown_id]" id="choices-single-default" placeholder="Select {{ $filters['label_name'] }}">
+                            @foreach($filters['items'] as $item)
+                                <option {{ $filters['custom_dropdown_id'] ==  $item['id'] ? 'selected' : '' }} value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -153,7 +166,7 @@
 
 
 
-                @if(isset($filters['purchase_id']))
+            @if(isset($filters['purchase_id']))
                 <div class="col-lg-4">
                     <div class="mb-3">
                         <label class="form-label">Raw Material</label>
@@ -187,9 +200,9 @@
                     <div class="mb-3">
                         <label class="form-label">Search Product</label>
                         <select class="form-control select2Product" name="filter[stock_id]" id="choices-single-default" placeholder="Select Product">
-                         @if(isset($filters['stock']))
-                             <option selected value="{{ $filters['stock']->id }}">{{ $filters['stock']->name }}</option>
-                          @endif
+                            @if(isset($filters['stock']))
+                                <option selected value="{{ $filters['stock']->id }}">{{ $filters['stock']->name }}</option>
+                            @endif
                         </select>
                     </div>
                 </div>

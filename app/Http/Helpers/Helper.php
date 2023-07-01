@@ -186,6 +186,8 @@ function departments($active = false)
     return $depts;
 }
 
+
+
 function department_by_id($id)
 {
     return departments(true)->filter(function($item) use($id){

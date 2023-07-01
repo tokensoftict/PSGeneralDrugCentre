@@ -391,11 +391,15 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'customer_ledger', ['as' => 'customer_ledger', 'uses' => 'CustomerReportController@customer_ledger', 'custom_label'=>'Customer Ledger']);
 
+                Route::match(['get','post'],'customer_ranking', ['as' => 'customer_ranking', 'uses' => 'CustomerReportController@customer_ranking', 'custom_label'=>'Customer Ranking Report']);
+
 
             });
 
 
             Route::prefix('productReport')->as('productReport.')->namespace('ProductReport')->group(function(){
+
+                Route::match(['get','post'],'opening_stock', ['as' => 'opening_stock', 'uses' => 'ProductReportController@opening_stock', 'custom_label'=>'Stock Opening Report']);
 
                 Route::match(['get','post'],'bin', ['as' => 'bincard_report', 'uses' => 'ProductReportController@bincard_report', 'custom_label'=>'Product Bincard Report']);
 
@@ -411,9 +415,15 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'balance_stock_worth', ['as' => 'balance_stock_worth', 'uses' => 'ProductReportController@balance_stock_worth', 'custom_label'=>'Balance Stock Worth Report']);
 
-
             });
 
+
+            Route::prefix('staffPerformanceReport')->as('staffPerformanceReport.')->namespace('StaffPerformanceReport')->group(function(){
+
+                Route::match(['get','post'],'sales_order_performancereport', ['as' => 'sales_order_performancereport', 'uses' => 'StaffPerformanceReportController@sales_order_performancereport', 'custom_label'=>'Sales Order Performance Report']);
+                Route::match(['get','post'],'picker_and_packer', ['as' => 'picker_and_packer', 'uses' => 'StaffPerformanceReportController@picker_and_packer', 'custom_label'=>'Picker and Packer Performance Report']);
+
+            });
 
         });
 

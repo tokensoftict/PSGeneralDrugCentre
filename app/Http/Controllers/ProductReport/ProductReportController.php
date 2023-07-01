@@ -138,4 +138,28 @@ class ProductReportController extends Controller
         return view('reports.product.balancestockworth', $data);
     }
 
+
+    public function opening_stock(Request $request)
+    {
+        $data = [
+            'title' => 'Stock Opening Report',
+            'subtitle' => 'View Stock Opening Report',
+            'filters' => [
+                'from' =>dailyDate(),
+                'filters' => [
+                    'payment_date' => dailyDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['payment_date'] = $request->get('filter')['from'];
+        }
+
+
+        return view('reports.product.stockopeningreport', $data);
+    }
+
+
 }

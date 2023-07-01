@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Http\Livewire\ProductModule\Report;
+namespace App\Http\Livewire\StaffPerfomnceReport;
 
-use App\Models\Movingstock;
+use App\Classes\Settings;
+use App\Models\Invoice;
+use App\Models\Invoiceitem;
+use App\Models\User;
 use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -14,15 +17,20 @@ use PowerComponents\LivewirePowerGrid\{Button,
     PowerGrid,
     PowerGridComponent,
     PowerGridEloquent};
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
 
-final class MovingStockReport extends PowerGridComponent
+final class SalesOrderStaffPerformanceReport extends PowerGridComponent
 {
   use PowerGridComponentTrait;
 
-  public $key = "id";
+    public $key = "id";
+
+    public array $filters;
+
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -34,11 +42,32 @@ final class MovingStockReport extends PowerGridComponent
     /**
      * PowerGrid datasource.
      *
-     * @return Builder<\App\Models\Movingstock>
+     * @return Builder<\App\Models\Invoice>
      */
     public function datasource(): Builder
     {
-        return Movingstock::query()->with(['stock', 'stock.category']);
+          $group_id = [7, 6];
+
+        $users = User::whereIn('usergroup_id', $group_id)->pluck('id')->toArray();
+
+        return Invoiceitem::with(['invoice', 'user','user.usergroup','user.department'])
+            ->select(
+                "invoiceitems.added_by",
+                "invoiceitems.added_by as id",
+                DB::raw('count(DISTINCT invoice_id) as invoice_count'),
+                DB::raw('count(stock_id) as total_sub_total'),
+                DB::raw("count(stock_id) as product_count")
+            )
+            ->whereHas('invoice', function (Builder $query) use(&$users){
+                $query->where("in_department", $this->filters['filters']['custom_dropdown_id'])
+                    ->whereIn('status_id', [status("Paid"),status("Complete")])
+                    ->whereBetween('invoice_date', ['2022-01-01','2022-01-31']);
+                    //->where('invoice_date', $this->filters['filters']['between.invoice_date'])
+            })
+            ->whereIn('added_by', $users)
+            ->orderBy('product_count', 'DESC')
+            ->groupBy('invoiceitems.added_by');
+
     }
 
     /*
@@ -56,7 +85,11 @@ final class MovingStockReport extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'create_by' => [
+                'name'
+            ]
+        ];
     }
 
     /*
@@ -73,38 +106,13 @@ final class MovingStockReport extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('id')
-            ->addColumn('category', function (Movingstock $movingstock) {
-                return $movingstock->stock->category->name ?? "";
-            })
-            ->addColumn('stock_id')
-            ->addColumn('supplier_id')
-            ->addColumn('stockgroup_id')
-            ->addColumn('retail_qty')
-            ->addColumn('no_qty_sold')
-            ->addColumn('daily_qty_sold')
-            ->addColumn('average_inventory')
-            ->addColumn('turn_over_rate')
-            ->addColumn('group_os_id')
-            ->addColumn('is_grouped')
-            ->addColumn('turn_over_rate2')
-            ->addColumn('lastpurchase_days')
-            ->addColumn('moving_stocks_constant2')
-            ->addColumn('name')
-            ->addColumn('box')
-            ->addColumn('threshold')
-            ->addColumn('cartoon')
-            ->addColumn('supplier_name')
-            ->addColumn('av_cost_price')
-            ->addColumn('av_rt_cost_price')
-            ->addColumn('rt_qty')
-            ->addColumn('all_qty')
-            ->addColumn('tt_av_cost_price')
-            ->addColumn('tt_av_rt_cost_price')
-            ->addColumn('last_supply_date', function(Movingstock $movingstock){
-                return $movingstock->last_supply_date != NULL ? eng_str_date($movingstock->last_supply_date) : "N/A";
-            })
-            ->addColumn('last_supply_quantity');
+            ->addColumn('fullname', fn(Invoiceitem $invoice) => Str::title($invoice->user->name))
+            ->addColumn('group', fn(Invoiceitem $invoice) => Str::upper($invoice->user->usergroup->name))
+            ->addColumn('department', fn(Invoiceitem $invoice) =>  Str::upper($invoice->user->department->name))
+            ->addColumn('invoice_count')
+            ->addColumn('product_count');
+            //->addColumn('total_sub_total', fn(Invoiceitem $invoice) => money($invoice->total_sub_total));
+
     }
 
     /*
@@ -116,34 +124,21 @@ final class MovingStockReport extends PowerGridComponent
     |
     */
 
-     /**
-      * PowerGrid Columns.
-      *
-      * @return array<int, Column>
-      */
+    /**
+     * PowerGrid Columns.
+     *
+     * @return array<int, Column>
+     */
     public function columns(): array
     {
         return [
             Column::add()->index()->title('SN')->visibleInExport(false),
-            Column::make('Stock ID', 'stock_id')->sortable(),
-            Column::make('Name', 'name') ->sortable()->searchable(),
-            Column::make('Category', 'category') ->sortable()->searchable(),
-            Column::make('Box', 'box'),
-            Column::make('Carton', 'carton'),
-            Column::make('Threshold', 'threshold'),
-            Column::make('Av.Cost price', 'av_cost_price'),
-            Column::make('Av. Rt .Cost price', 'av_rt_cost_price'),
-            Column::make('Rt Qty', 'rt_qty'),
-            Column::make('WS,MS,BS Qty', 'all_qty'),
-            Column::make('Daily Qty Sold', 'daily_qty_sold'),
-            Column::make('Av. Inventory', 'average_inventory'),
-            Column::make('Turn Over rate', 'turn_over_rate'),
-            Column::make('Turn Over rate2', 'turn_over_rate2'),
-            Column::make('Worth', 'tt_av_cost_price'),
-            Column::make('RT Worth', 'tt_av_rt_cost_price'),
-            Column::make('Last Supplier', 'supplier_name') ->sortable()->searchable(),
-            Column::make('Last Sup. Date', 'last_supply_date'),
-            Column::make('Last Sup. Qty', 'last_supply_quantity'),
+            Column::make('Name', 'fullname'),
+            Column::make('Group', 'group'),
+            Column::make('Department', 'department'),
+            Column::make('Invoice Count', 'invoice_count'),
+            Column::make('Product Count', 'product_count')
+           // Column::make('Total', 'total_sub_total'),
         ];
     }
 
@@ -168,7 +163,7 @@ final class MovingStockReport extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Movingstock Action Buttons.
+     * PowerGrid Invoice Action Buttons.
      *
      * @return array<int, Button>
      */
@@ -179,15 +174,11 @@ final class MovingStockReport extends PowerGridComponent
        return [
            Button::make('edit', 'Edit')
                ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('movingstock.edit', function(\App\Models\Movingstock $model) {
-                    return $model->id;
-               }),
+               ->route('invoice.edit', ['invoice' => 'id']),
 
            Button::make('destroy', 'Delete')
                ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('movingstock.destroy', function(\App\Models\Movingstock $model) {
-                    return $model->id;
-               })
+               ->route('invoice.destroy', ['invoice' => 'id'])
                ->method('delete')
         ];
     }
@@ -202,7 +193,7 @@ final class MovingStockReport extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Movingstock Action Rules.
+     * PowerGrid Invoice Action Rules.
      *
      * @return array<int, RuleActions>
      */
@@ -214,7 +205,7 @@ final class MovingStockReport extends PowerGridComponent
 
            //Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($movingstock) => $movingstock->id === 1)
+                ->when(fn($invoice) => $invoice->id === 1)
                 ->hide(),
         ];
     }

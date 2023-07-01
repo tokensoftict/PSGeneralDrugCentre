@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $before_customer_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
+ * @property User|null $user
  * @property Customer|null $customer
  * @property Invoice $invoice
  * @property Stock|null $stock
@@ -84,22 +84,23 @@ class Invoiceitem extends Model
 
     public function getBoxAttribute()
     {
-        return $this->stock->box;
+        return $this->stock->box ?? 0;
     }
 
     public function getNameAttribute()
     {
-        return $this->stock->name;
+        return $this->stock->name ?? "";
     }
 
     public function getAvQtyAttribute()
     {
+        if(!$this->quantity) return 0;
         return $this->stock->{$this->department} + $this->quantity;
     }
 
     public function getCartonAttribute()
     {
-        return $this->stock->carton;
+        return $this->stock->carton ?? 0;
     }
 
     public function customer()
@@ -121,4 +122,9 @@ class Invoiceitem extends Model
 	{
 		return $this->hasMany(Invoiceitembatch::class);
 	}
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'added_by');
+    }
 }
