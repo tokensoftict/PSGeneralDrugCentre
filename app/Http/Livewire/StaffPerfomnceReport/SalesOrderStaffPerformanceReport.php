@@ -61,8 +61,8 @@ final class SalesOrderStaffPerformanceReport extends PowerGridComponent
             ->whereHas('invoice', function (Builder $query) use(&$users){
                 $query->where("in_department", $this->filters['filters']['custom_dropdown_id'])
                     ->whereIn('status_id', [status("Paid"),status("Complete")])
-                    ->whereBetween('invoice_date', ['2022-01-01','2022-01-31']);
-                    //->where('invoice_date', $this->filters['filters']['between.invoice_date'])
+                    //->whereBetween('invoice_date', ['2022-01-01','2022-01-31']);
+                    ->whereBetween('invoice_date', $this->filters['filters']['between.invoice_date'])
             })
             ->whereIn('added_by', $users)
             ->orderBy('product_count', 'DESC')
