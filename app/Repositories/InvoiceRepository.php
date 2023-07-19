@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceRepository
 {
@@ -422,79 +423,82 @@ class InvoiceRepository
 
     public function createOnlineInvoice(array $invoiceData, Collection $orderTotal) : Invoice
     {
-        $invoiceitems = collect($invoiceData['invoiceitems']);
+        return DB::transaction(function() use (&$invoiceData, &$orderTotal){
 
-        Arr::forget($invoiceData, ['invoiceitems']);
+            $invoiceitems = collect($invoiceData['invoiceitems']);
 
-        $invoice = Invoice::create($invoiceData);
+            Arr::forget($invoiceData, ['invoiceitems']);
 
-        $removeQuantity = [];
-        $columns = [];
-        $invoiceitems->each(function ($item) use(&$invoice, &$columns,&$removeQuantity) {
-            $batches = $item['batches'];
+            $invoice = Invoice::create($invoiceData);
 
-            Arr::forget($item, ['name','box','carton','av_qty','total_incentives','batches']);
-            Arr::set($item,'customer_id', $invoice->customer_id);
-            Arr::set($item,'department', $invoice->department);
-            $invoiceItemBatches = [];
+            $removeQuantity = [];
+            $columns = [];
+            $invoiceitems->each(function ($item) use(&$invoice, &$columns,&$removeQuantity) {
+                $batches = $item['batches'];
 
-            collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns, &$invoiceItemBatches){
+                Arr::forget($item, ['name','box','carton','av_qty','total_incentives','batches']);
+                Arr::set($item,'customer_id', $invoice->customer_id);
+                Arr::set($item,'department', $invoice->department);
+                $invoiceItemBatches = [];
 
-                $columns[] = $batch['department'];
+                collect($batches)->each(function($batch) use(&$invoice, &$removeQuantity, &$item, &$columns, &$invoiceItemBatches){
 
-                $invoiceItemBatches[] = new Invoiceitembatch([
-                    'invoice_id' => $invoice->id,
-                    'stock_id' => $item['stock_id'],
-                    'stockbatch_id' => $batch['id'],
-                    'cost_price' => $batch['cost_price'],
-                    'selling_price' => $item['selling_price'],
-                    'department' => $batch['department'],
-                    'quantity' => $batch['qty']
-                ]);
+                    $columns[] = $batch['department'];
 
-                $removeQuantity[] =  $batch;
+                    $invoiceItemBatches[] = new Invoiceitembatch([
+                        'invoice_id' => $invoice->id,
+                        'stock_id' => $item['stock_id'],
+                        'stockbatch_id' => $batch['id'],
+                        'cost_price' => $batch['cost_price'],
+                        'selling_price' => $item['selling_price'],
+                        'department' => $batch['department'],
+                        'quantity' => $batch['qty']
+                    ]);
 
-                //Arr::only(, ['id','bulksales','quantity','wholesales','retail']);
+                    $removeQuantity[] =  $batch;
+
+                    //Arr::only(, ['id','bulksales','quantity','wholesales','retail']);
+
+                });
+
+                $invoice->invoiceitems()->save(
+                    new Invoiceitem($item)
+                )->invoiceitembatches()->saveMany($invoiceItemBatches);
 
             });
 
-            $invoice->invoiceitems()->save(
-                new Invoiceitem($item)
-            )->invoiceitembatches()->saveMany($invoiceItemBatches);
+            Stock::removeSaleableBatches($invoice, $removeQuantity, array_unique($columns)); // remove stock quantity
 
+            $totals = [];
+            $orderTotal->each(function($total) use(&$totals) {
+                $totals[] = new Onlineordertotal([
+                    'name'=>$total['name'],
+                    'value'=>$total['value']
+                ]);
+            });
+
+            $invoice->onlineordertotals()->saveMany($totals);
+
+            //$this->initiateBinCard($invoice);
+
+
+            if($invoice->customer_id !== 1) { // customer ledger for walking customer
+
+                dispatch(new AddLogToCustomerLedger([
+                    'payment_id' => NULL,
+                    'invoice_id' => $invoice->id,
+                    'customer_id' => $invoice->customer_id,
+                    'amount' => -($invoice->sub_total - $invoice->discount_amount),
+                    'transaction_date' => $invoice->invoice_date,
+                    'user_id' => auth()->id(),
+                ]));
+            }
+
+
+            dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+
+            return $invoice;
         });
-
-        Stock::removeSaleableBatches($invoice, $removeQuantity, array_unique($columns)); // remove stock quantity
-
-        $totals = [];
-        $orderTotal->each(function($total) use(&$totals) {
-            $totals[] = new Onlineordertotal([
-                'name'=>$total['name'],
-                'value'=>$total['value']
-            ]);
-        });
-
-        $invoice->onlineordertotals()->saveMany($totals);
-
-        //$this->initiateBinCard($invoice);
-
-
-        if($invoice->customer_id !== 1) { // customer ledger for walking customer
-
-            dispatch(new AddLogToCustomerLedger([
-                'payment_id' => NULL,
-                'invoice_id' => $invoice->id,
-                'customer_id' => $invoice->customer_id,
-                'amount' => -($invoice->sub_total - $invoice->discount_amount),
-                'transaction_date' => $invoice->invoice_date,
-                'user_id' => auth()->id(),
-            ]));
-        }
-
-
-        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
-
-        return $invoice;
     }
 
 

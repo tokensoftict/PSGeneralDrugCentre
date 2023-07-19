@@ -9,6 +9,7 @@ use App\Traits\SimpleDatatableComponentTrait;
 use App\Classes\Column;
 use App\Models\Stocktransfer;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class StockTransferDatatable extends ExportDataTableComponent
 {
@@ -85,7 +86,11 @@ class StockTransferDatatable extends ExportDataTableComponent
 
     public function complete(Stocktransfer $stocktransfer)
     {
-        $complete = (new StockTransferRepository())->complete( $stocktransfer);
+        $complete = DB::transaction(function () use($stocktransfer){
+
+           return (new StockTransferRepository())->complete( $stocktransfer);
+
+        });
 
         if(is_array($complete))
         {
@@ -122,7 +127,9 @@ class StockTransferDatatable extends ExportDataTableComponent
 
     public function delete(Stocktransfer $stocktransfer)
     {
-        (new StockTransferRepository())->delete($stocktransfer);
+       DB::transaction(function() use($stocktransfer){
+           (new StockTransferRepository())->delete($stocktransfer);
+       });
 
         $this->alert(
             "success",

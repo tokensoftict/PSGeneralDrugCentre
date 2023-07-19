@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Classes\Settings;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Artisan;
 
 class Kernel extends ConsoleKernel
 {
@@ -28,7 +30,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('retailnearos:compute')->dailyAt('03:00')->appendOutputTo('storage/app/retailnearos.txt');
 
         $schedule->command('run:movingstocks')->dailyAt('04:00')->appendOutputTo('storage/app/movingstocks.txt');
-
 
     }
 

@@ -4,6 +4,7 @@
 use App\Models\BankAccount;
 use App\Models\Department;
 use App\Models\Paymentmethod;
+use App\Models\Stock;
 use App\Models\Usergroup;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -727,6 +728,13 @@ function alert($status, $msg)
 function money($amt)
 {
     return number_format($amt, 2);
+}
+
+function show_promo(Stock $stock, $column){
+    if($stock->has_promo){
+        return '<span>'.money($stock->{$column}).'</span>'.'&nbsp;&nbsp;&nbsp;'.'<span style="text-decoration: line-through;color:red">'.money($stock->getRawOriginal($column));
+    }
+    return money($stock->{$column});
 }
 
 /**

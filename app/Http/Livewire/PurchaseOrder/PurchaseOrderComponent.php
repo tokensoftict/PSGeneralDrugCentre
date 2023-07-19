@@ -4,6 +4,7 @@ namespace App\Http\Livewire\PurchaseOrder;
 
 use App\Models\Purchase;
 use App\Repositories\PurchaseOrderRepository;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -54,7 +55,9 @@ class PurchaseOrderComponent extends Component
     {
         $this->data['completed_by'] = NULL;
         $this->data['date_completed'] = NULL;
-        $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
+        DB::transaction(function (){
+            $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
+        });
 
         $this->alert(
             "success",
@@ -75,10 +78,11 @@ class PurchaseOrderComponent extends Component
     {
         $this->data['status_id'] = status('Draft');
 
-        $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
+        DB::transaction(function (){
+            $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
 
-        $this->purchaseOrderRepository->complete($this->purchase);
-
+            $this->purchaseOrderRepository->complete($this->purchase);
+        });
         $this->alert(
             "success",
             "Purchase Order",

@@ -97,4 +97,60 @@ trait InvoiceTrait
 
     }
 
+
+    private function print_afour_merge($main_invoice, $child_invoice)
+    {
+        $data = [];
+        $invoice =Invoice::where(function($query) use(&$main_invoice){ $query->orWhere('id',$main_invoice)->orWhere('invoice_number',$main_invoice); })->first();
+        if(!$invoice){
+            return redirect()->route('invoiceandsales.merge')->with('error', "Invalid Main Invoice Number, please check and try again");
+        }
+
+        $data['invoice'] = $invoice;
+        $invoice_child_data = [];
+        $invoice_discount = 0;
+        $invoice_child = Invoice::whereIn('invoice_number',$child_invoice)->get();
+        LogActivity($invoice->id, $invoice->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
+        foreach ($invoice_child as $child){
+            LogActivity($child->id, $child->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
+            $invoice_discount+=$child->discount_amount;
+            foreach($child->invoiceitems()->get() as $item){
+                $invoice_child_data[] = $item;
+            }
+        }
+        $data['invoice_child'] = $invoice_child_data;
+        $data['invoice_discount'] = $invoice_discount;
+        $data['store'] = $this->settings->store();
+        //return view("print.pos_afour_merge",$data);
+        $pdf = PDF::loadView("print.pos_afour_merge",$data);
+        return $pdf->stream('document.pdf');
+    }
+    private function print_way_bill_merge($main_invoice, $child_invoice)
+    {
+        $data = [];
+        $invoice =Invoice::where(function($query) use(&$main_invoice){ $query->orWhere('id',$main_invoice)->orWhere('invoice_number',$main_invoice); })->first();
+        if(!$invoice){
+            return redirect()->route('invoiceandsales.merge')->with('error', "Invalid Main Invoice Number, please check and try again");
+        }
+
+        $data['invoice'] = $invoice;
+        $invoice_child_data = [];
+        $invoice_discount = 0;
+        $invoice_child = Invoice::whereIn('invoice_number',$child_invoice)->get();
+        LogActivity($invoice->id, $invoice->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
+        foreach ($invoice_child as $child){
+            LogActivity($child->id, $child->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
+            $invoice_discount+=$child->discount_amount;
+            foreach($child->invoiceitems()->get() as $item){
+                $invoice_child_data[] = $item;
+            }
+        }
+        $data['invoice_child'] = $invoice_child_data;
+        $data['invoice_discount'] = $invoice_discount;
+        $data['store'] = $this->settings->store();
+        //return view("print.pos_afour_merge",$data);
+        $pdf = PDF::loadView("print.pos_afour_waybill_merge",$data);
+        return $pdf->stream('document.pdf');
+    }
+
 }

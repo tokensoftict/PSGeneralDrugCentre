@@ -5,6 +5,7 @@ namespace App\Http\Livewire\PaymentManager;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Repositories\PaymentRepository;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -36,7 +37,9 @@ class ViewpaymentComponent extends Component
     public function deletePayment()
     {
 
-        $this->paymentRepository->deletePayment($this->payment);
+        DB::transaction(function(){
+            $this->paymentRepository->deletePayment($this->payment);
+        });
 
         $this->dispatchBrowserEvent('invoiceDiscountModal', []);
         $this->dispatchBrowserEvent('refreshBrowser', []);

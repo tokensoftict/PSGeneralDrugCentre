@@ -4,6 +4,7 @@ namespace App\Http\Livewire\StockTransfer\Show;
 
 use App\Models\Stocktransfer;
 use App\Repositories\StockTransferRepository;
+use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
@@ -37,7 +38,9 @@ class ShowStockTransfer extends Component
 
     public function complete()
     {
-        $complete = (new StockTransferRepository())->complete($this->stocktransfer);
+        $complete = DB::transaction(function (){
+           return (new StockTransferRepository())->complete($this->stocktransfer);
+        });
 
         if(is_array($complete))
         {
@@ -74,7 +77,9 @@ class ShowStockTransfer extends Component
 
     public function delete()
     {
-        (new StockTransferRepository())->delete($this->stocktransfer);
+        DB::transaction(function(){
+            (new StockTransferRepository())->delete($this->stocktransfer);
+        });
 
         $this->alert(
             "success",

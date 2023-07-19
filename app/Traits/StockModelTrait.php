@@ -9,10 +9,13 @@ use App\Models\Stock;
 use App\Models\Stockbatch;
 use App\Models\Stocktransfer;
 use Arr;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 trait StockModelTrait
 {
+
 
     public function activeBatches()
     {
@@ -57,6 +60,7 @@ trait StockModelTrait
             $b =  Stockbatch::with(['stock'])->find($batch['id']);
             $b->{$batch['department']} =  $batch[$batch['department']];
             $b->update();
+            $b->refresh();
             $b->stock->updateQuantity();
         }
 
@@ -99,6 +103,7 @@ trait StockModelTrait
             $b =  Stockbatch::with(['stock'])->find($batch['id']);
             $b->{$batch['department']} =  $batch[$batch['department']];
             $b->update();
+            $b->refresh();
             $b->stock->updateQuantity();
         }
 
@@ -290,6 +295,7 @@ trait StockModelTrait
         foreach ($depts as $dept) {
             $this->{$dept->quantity_column} =  $this->stockbatches()->sum($dept->quantity_column);
             $this->update();
+            $this->refresh();
         }
     }
 
@@ -306,6 +312,7 @@ trait StockModelTrait
             $b->{$stocktransfer->from} = $batch[$stocktransfer->from];
             $b->{$cost_price} = $batch[$cost_price];
             $b->update();
+            $b->refresh();
             $b->stock->updateQuantity();
 
             $stocktransfer->stocktransferitems()->where('stock_id', $b->stock->id)->update(['stockbatch_id' => $batch['id']]);
@@ -329,6 +336,7 @@ trait StockModelTrait
             $b = Stockbatch::with(['stock'])->find($batch['id']);
             $b->{$stocktransfer->to} = $batch[$stocktransfer->to];
             $b->update();
+            $b->refresh();
             $b->stock->updateQuantity();
 
 
@@ -446,8 +454,6 @@ trait StockModelTrait
     }
 
 
-
-
     public function checkifStockcanTransfer($qty,$from,$to){
         $batch_ids = [];
         foreach($this->stockbatches()->where($from, ">","0")->orderBy("expiry_date","ASC")->get() as $batch){
@@ -468,8 +474,6 @@ trait StockModelTrait
         }
         return false;
     }
-
-
 
     public function transfer_stock($qty,$from,$to,$transfer){
         $batch_ids = [];
@@ -576,5 +580,26 @@ trait StockModelTrait
         }
     }
 
+
+
+    public function getWholePriceAttribute()
+    {
+        return $this->promotion_item->whole_price ?? $this->attributes['whole_price'];
+    }
+
+    public function getBulkPriceAttribute()
+    {
+        return $this->promotion_item->bulk_price ?? $this->attributes['bulk_price'];
+    }
+    public function getRetailPriceAttribute()
+    {
+        return $this->promotion_item->retail_price ?? $this->attributes['retail_price'];
+    }
+
+
+    public function getHasPromoAttribute()
+    {
+        return isset($this->promotion_item->status_id);
+    }
 
 }

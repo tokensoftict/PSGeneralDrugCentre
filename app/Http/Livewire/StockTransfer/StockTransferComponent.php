@@ -4,6 +4,7 @@ namespace App\Http\Livewire\StockTransfer;
 
 use App\Models\Stocktransfer;
 use App\Repositories\StockTransferRepository;
+use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
@@ -49,7 +50,11 @@ class StockTransferComponent extends Component
 
     public function draftTransfer()
     {
-        $draft = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
+
+        $draft = DB::transaction(function(){
+
+            return $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
+        });
 
         if(is_array($draft))
         {
@@ -86,12 +91,13 @@ class StockTransferComponent extends Component
 
     public function completeTransfer()
     {
+        $completed = DB::transaction(function(){
+            return $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
+        });
 
-        $completed = $this->stockTransferRepository->saveTransfer($this->stocktransfer, $this->data);
         $this->stocktransfer =  $completed;
         if(is_array($completed))
         {
-
             $this->alert(
                 "error",
                 "Stock Transfer",
@@ -107,7 +113,11 @@ class StockTransferComponent extends Component
 
         }else {
 
-            $completed = $this->stockTransferRepository->complete($this->stocktransfer);
+            $completed = DB::transaction(function(){
+
+                return $this->stockTransferRepository->complete($this->stocktransfer);
+
+            });
 
             $this->stocktransfer = $completed;
 
@@ -121,7 +131,6 @@ class StockTransferComponent extends Component
                     'text' =>  "Stock Transfer has been completed successfully!.",
                 ]
             );
-
 
             return ['status'=>true];
         }

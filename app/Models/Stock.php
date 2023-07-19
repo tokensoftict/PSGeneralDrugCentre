@@ -92,6 +92,9 @@ class Stock extends Model
 		'user_id' => 'int'
 	];
 
+
+    protected $appends = ['has_promo'];
+
 	protected $fillable = [
 		'name',
 		'description',
@@ -232,6 +235,17 @@ class Stock extends Model
     public function batchstock()
     {
         return $this->hasOne(Batchstock::class);
+    }
+
+
+    public function promotion_items()
+    {
+        return $this->hasMany(PromotionItem::class);
+    }
+
+    public function promotion_item()
+    {
+        return $this->hasOne(PromotionItem::class)->where('status_id', status('Approved'))->orderBy('id', 'DESC');
     }
 
 }

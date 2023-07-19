@@ -73,6 +73,10 @@
             font-size: 16px;
         }
 
+        .slashed{
+            text-decoration: line-through;
+        }
+
     </style>
 
 @endsection

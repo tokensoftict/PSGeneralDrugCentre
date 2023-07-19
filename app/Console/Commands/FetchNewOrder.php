@@ -14,6 +14,7 @@ use App\Models\Stock;
 use App\Repositories\InvoiceRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FetchNewOrder extends Command
 {
@@ -64,51 +65,58 @@ class FetchNewOrder extends Command
                 $this->info('No Pending order to process');
                 return Command::SUCCESS;
             }
+            DB::transaction(function(){
 
+            });
             $invoice = Invoice::with(['invoiceitembatches','invoiceitembatches.stock','invoiceitems', 'customer', 'payment', 'customer', 'user'])->where('invoice_number',$order['invoice_no'])->first();
 
             if($invoice){
 
                 $this->warn('Already exist in local database '.$order['invoice_no']);
 
-                if( $invoice->payment_id && $invoice->payment()->exists()){
+               return DB::transaction(function() use (&$invoice){
 
-                    Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete();
+                   if( $invoice->payment_id && $invoice->payment()->exists()){
 
-                    CustomerLedger::where('payment_id', $invoice->payment_id )->delete();
+                       Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete();
 
-                    $invoice->customer->updateCreditBalance();
+                       CustomerLedger::where('payment_id', $invoice->payment_id )->delete();
 
-                    $invoice->payment->delete();
-                }
-                CustomerLedger::where('invoice_id', $invoice->id)->delete();
+                       $invoice->customer->updateCreditBalance();
 
-                $returnBatches = [];
-                $columns = [];
-                 $invoice->invoiceitembatches->each(function($item) use(&$returnBatches, &$columns){
-                    $columns[] = $item->department;
-                    $returnBatches[] = array_merge([
-                        'id' => $item->stockbatch_id,
-                        $item->department=> $item->av_qty + $item->quantity,
-                        'department' => $item->department
-                    ], addOtherDepartment($item->stockbatch, $item->department ));
+                       $invoice->payment->delete();
+                   }
+                   CustomerLedger::where('invoice_id', $invoice->id)->delete();
+
+                   $returnBatches = [];
+                   $columns = [];
+                   $invoice->invoiceitembatches->each(function($item) use(&$returnBatches, &$columns){
+                       $columns[] = $item->department;
+                       $returnBatches[] = array_merge([
+                           'id' => $item->stockbatch_id,
+                           $item->department=> $item->av_qty + $item->quantity,
+                           'department' => $item->department
+                       ], addOtherDepartment($item->stockbatch, $item->department ));
+
+                   });
+
+                   Stock::returnStocks($invoice, $returnBatches, array_unique($columns)); //return the stock batches
+
+                   dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(array_column( $invoice->invoiceitems->toArray(), 'stock_id')));
+
+
+                   dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(
+                       array_column($invoice->invoiceitems->toArray(), 'stock_id')
+                   ));
+
+                   $invoice->delete();
+
+                   $this->info("Invoice items has been returned and invoice has been deleted successfully");
+
+                   return Command::SUCCESS;
 
                 });
 
-                Stock::returnStocks($invoice, $returnBatches, array_unique($columns)); //return the stock batches
-
-                dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(array_column( $invoice->invoiceitems->toArray(), 'stock_id')));
-
-
-                dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(
-                    array_column($invoice->invoiceitems->toArray(), 'stock_id')
-                ));
-
-                $invoice->delete();
-
-                $this->info("Invoice items has been returned and invoice has been deleted successfully");
-
-                return Command::SUCCESS;
             }
 
         }

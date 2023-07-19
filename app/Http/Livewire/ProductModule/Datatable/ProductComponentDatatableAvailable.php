@@ -30,17 +30,21 @@ class ProductComponentDatatableAvailable extends ExportDataTableComponent
     public static function mountColumn() : array
     {
         return  [
+            Column::make("Stock ID", "id")->sortable(),
             Column::make("Name", "name")
                 ->sortable()->searchable(),
             Column::make("WS Price", "whole_price")
                 ->format(fn($value, $row, Column $column)=> money($value))
                 ->sortable(),
+            Column::make("WS Price", "whole_price")
+                ->format(fn($value, $row, Column $column)=> show_promo($row, 'whole_price'))
+                ->sortable()->html(),
             Column::make("Bulk Price", "bulk_price")
-                ->format(fn($value, $row, Column $column)=> money($value))
-                ->sortable(),
+                ->format(fn($value, $row, Column $column)=> show_promo($row, 'bulk_price'))
+                ->sortable()->html(),
             Column::make("Retail Price", "retail_price")
-                ->format(fn($value, $row, Column $column)=> money($value))
-                ->sortable(),
+                ->format(fn($value, $row, Column $column)=> show_promo($row, 'retail_price'))
+                ->sortable()->html(),
             Column::make("Box", "box")
                 ->format(fn($value, $row, Column $column)=> $value)
                 ->sortable(),

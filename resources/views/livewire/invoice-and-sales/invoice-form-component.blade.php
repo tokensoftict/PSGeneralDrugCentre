@@ -16,7 +16,8 @@
                                         <div class="np-ib np-text-container">
                                             <div x-text="product.name"></div>
                                             <div class="np-result-description">
-                                                <span style="font-weight: bolder" class="text-danger">Price : <span x-html="money(product.selling_price)"></span></span>
+                                                <span class="font-size-13" style="font-weight: bolder"  >Price : <span class="text-danger"  :class="{'font-size-13':product.promo_selling_price > 0, 'slashed':product.promo_selling_price > 0}" x-html="money(product.selling_price)"></span></span>
+                                                &nbsp; <span x-show="(product.promo_selling_price != null)" style="font-weight: bolder" class="text-primary font-size-13"> <span  x-show="(product.promo_selling_price != null)" x-html="money(product.promo_selling_price)"></span></span>
                                                 &nbsp; &nbsp;
                                                 Quantity : <span x-text="product.quantity"></span>
                                                 &nbsp; &nbsp;
@@ -74,7 +75,7 @@
                                         <td class="text-center" x-text="item.av_qty"></td>
                                         <td class="text-end" x-text="money(item.selling_price)"></td>
                                         <td class="text-end" x-text="money((item.selling_price * item.quantity))"></td>
-                                        <td class="text-end"><button class="btn btn-sm btn-primary" x-on:click="deleteItem(item.stock_id)">Delete</button> </td>
+                                        <td class="text-end"><button class="btn btn-sm btn-danger" x-on:click="deleteItem(item.stock_id)">Delete</button> </td>
                                     </tr>
                                 </template>
                                 </tbody>
@@ -353,7 +354,7 @@
                     return;
                 }
 
-                if(this.selectedProduct[this.department] === 0)
+                if(this.selectedProduct['quantity'] === 0)
                 {
                     alert(this.selectedProduct.name+' is out of stock, quantity remain is 0');
 
@@ -371,7 +372,7 @@
                     added_by : {{ auth()->user()->id }},
                 discount_added_by : null,
                 cost_price : this.selectedProduct.cost_price,
-                selling_price : this.selectedProduct.selling_price,
+                selling_price : this.selectedProduct.promo_selling_price ?? this.selectedProduct.selling_price,
                 profit : this.selectedProduct.selling_price - this.selectedProduct.cost_price,
                 discount_value : 0,
                 discount_amount : 0,

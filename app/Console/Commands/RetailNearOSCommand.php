@@ -105,6 +105,8 @@ class RetailNearOSCommand extends Command
                     'stock_id'=>$stock->id,
                     'threshold_type'=>"THRESHOLD",
                     'os_type'=>'SINGLE',
+                    'purchaseitem_id' => $po->id ?? NULL,
+                    'box' => $stock->box,
                     'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
                     'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
                     'qty_to_buy'=> $qty_to_buy,
@@ -113,7 +115,7 @@ class RetailNearOSCommand extends Command
                     'group_os_id'=>$stock->stockgroup_id,
                     'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                     'threshold_value'=> $thresholad_score,
-                    'current_qty'=> $stock->retail,
+                    'current_qty'=> $stock->totalBalance(),
                     'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                 ];
                Retailnearoutofstock::create($insert);
@@ -125,15 +127,17 @@ class RetailNearOSCommand extends Command
                     'stock_id'=>$stock->id,
                     'threshold_type'=>"NORMAL",
                     'os_type'=>'SINGLE',
+                    'purchaseitem_id' => $po->id ?? NULL,
+                    'box' => $stock->box,
                     'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
                     'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
                     'qty_to_buy'=> $qty_to_buy,
                     'current_sold'=>$qty,
+                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                     'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
                     'group_os_id'=>$stock->stockgroup_id,
-                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                     'threshold_value'=> $thresholad_score,
-                    'current_qty'=> $stock->retail,
+                    'current_qty'=> $stock->totalBalance(),
                     'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                 ];
                 Retailnearoutofstock::create($insert);
@@ -145,15 +149,16 @@ class RetailNearOSCommand extends Command
                     'stock_id'=>$stock->id,
                     'threshold_type'=>"NOT-NORMAL",
                     'os_type'=>'SINGLE',
+                    'purchaseitem_id' => $po->id ?? NULL,
                     'last_qty_purchased'=>(isset($po->qty) ? $po->qty : NULL),
                     'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
                     'qty_to_buy'=> $qty_to_buy,
                     'current_sold'=>$qty,
+                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                     'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
                     'group_os_id'=>$stock->stockgroup_id,
-                    'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                     'threshold_value'=> $thresholad_score,
-                    'current_qty'=> $stock->retail,
+                    'current_qty'=> $stock->totalBalance(),
                     'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                 ];
                 Retailnearoutofstock::create($insert);
@@ -199,12 +204,17 @@ class RetailNearOSCommand extends Command
                 $insert = [
                     'stockgroup_id' => $group->id,
                     'last_po_batch' =>(isset($poItem->id) ? $poItem->id : NULL),
+                    'purchaseitem_id' => (isset($poItem->id) ? $poItem->id : NULL),
                     'threshold_type' => "THRESHOLD",
                     'os_type' => 'GROUP',
+                    'last_qty_purchased'=> $poItem->qty ?? NULL,
+                    'last_purchase_date'=> isset($poItem->id) ? ($poItem->purchase->date_completed ?? $poItem->purchase->updated_at) : NULL,
                     'qty_to_buy' => $qty_to_buy,
                     'current_sold' => $qty,
+                    'box' => $group->getLastBox(),
                     'threshold_value' => $thresholad_score,
                     'current_qty' => $now_qty,
+                    'supplier_id'=> !empty($poItem->purchase->supplier_id) ? $poItem->purchase->supplier_id : NULL
                 ];
                 Retailnearoutofstock::create($insert);
                 continue;
@@ -214,13 +224,18 @@ class RetailNearOSCommand extends Command
                 $qty_to_buy = $qty * $threshold_day;
                 $insert = [
                     'stockgroup_id' => $group->id,
+                    'last_po_batch' =>(isset($poItem->id) ? $poItem->id : NULL),
+                    'purchaseitem_id' => (isset($poItem->id) ? $poItem->id : NULL),
                     'threshold_type' => "NORMAL",
                     'os_type' => 'GROUP',
-                    'last_po_batch' =>(isset($poItem->id) ? $poItem->id : NULL),
+                    'last_qty_purchased'=> $poItem->qty ?? NULL,
+                    'last_purchase_date'=> isset($poItem->id) ? ($poItem->purchase->date_completed ?? $poItem->purchase->updated_at) : NULL,
                     'qty_to_buy' => $qty_to_buy,
                     'current_sold' => $qty,
+                    'box' => $group->getLastBox(),
                     'threshold_value' => $thresholad_score,
                     'current_qty' => $now_qty,
+                    'supplier_id'=> !empty($poItem->purchase->supplier_id) ? $poItem->purchase->supplier_id : NULL
                 ];
                Retailnearoutofstock::create($insert);
                 continue;

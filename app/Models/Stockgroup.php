@@ -129,10 +129,10 @@ class Stockgroup extends Model
 
     public function lastpoItem(){
         $stocks = $this->stocks->pluck('id')->toArray();
-       return $this->hasOne(Purchaseitem::with(['purchase'])->whereIn('stock_id', $stocks)
-           ->whereHas('purchase', function ($item){
-               $item->where('status_id','6');
-           })->latest()->first());
+        return Purchaseitem::with(['purchase'])->whereIn('stock_id', $stocks )
+            ->wherehas('purchase',function($q){
+                $q->where('status_id','6');
+            })->orderBy('id', 'DESC')->limit(1)->first();
     }
 
 
@@ -143,7 +143,7 @@ class Stockgroup extends Model
         $sup = Purchaseitem::with(['purchase'])->whereIn('stock_id', $stocks )
             ->wherehas('purchase',function($q){
                 $q->where('status_id','6');
-            })->latest()->limit(1)->first();
+            })->orderBy('id', 'DESC')->limit(1)->first();
         if(isset($sup->purchase->date_completed)){
             return $sup;
         }

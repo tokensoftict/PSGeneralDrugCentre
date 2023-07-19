@@ -34,13 +34,15 @@ class UserDatatable extends ExportDataTableComponent
                 ->sortable()->searchable(),
             Column::make("Email Address", "email")
                 ->sortable()->searchable(),
+            Column::make("Username", "username")
+                ->sortable()->searchable(),
             Column::make("Group", "usergroup.name")
                 ->sortable()->searchable(),
             Column::make("Status", "status")
                 ->format(function($value, $row, Column $column){
                     if(userCanView('user.toggle')) {
                        return '<div class="form-check form-switch mb-3" dir="ltr">
-                                    <input wire:change="toggle('.$value.')" id="user{{ $classification->id }}" type="checkbox" class="form-check-input" id="customSwitch1" '.($value ? 'checked' : '').'>
+                                    <input wire:change="toggle('.$row->id.')" id="user{{ $classification->id }}" type="checkbox" class="form-check-input" id="customSwitch1" '.($value ? 'checked' : '').'>
                                     <label class="form-check-label" for="customSwitch1">'.($value ? 'Active' : 'Inactive' ).'</label>
                                 </div>';
                     }else{

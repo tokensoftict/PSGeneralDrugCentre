@@ -75,7 +75,7 @@ final class NearOsDatatable extends PowerGridComponent
             })
             ->leftJoin('suppliers', function ($suppliers) {
                 $suppliers->on('nearoutofstocks.supplier_id', '=', 'suppliers.id');
-            });
+            })->orderBy('id', 'DESC');
         //->whereNotNull('stocks.name');
     }
 
@@ -142,7 +142,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('group_os_id')
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
-            ->addColumn('last_purchase_date_formatted', fn (Nearoutofstock $model) => $model->last_purchase_date == NULL ? "" : Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
+            ->addColumn('last_purchase_date')
             ->addColumn('purchaseitem_id');
 
     }
@@ -199,7 +199,7 @@ final class NearOsDatatable extends PowerGridComponent
             Column::make('Stock Quantity', 'current_qty')->sortable(),
             Column::make('Total Sold', 'current_sold')->sortable(),
             Column::make('Last Qty Pur.', 'last_qty_purchased'),
-            Column::make('Last Date Pur.', 'last_purchase_date_formatted', 'last_purchase_date')->sortable(),
+            Column::make('Last Date Pur.', 'last_purchase_date'),
         ];
     }
 

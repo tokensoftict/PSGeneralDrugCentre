@@ -165,7 +165,7 @@ class PurchaseOrderRepository
 
         foreach ( $stockUpdate as $update)
         {
-            Stock::find($update['id'])->update($update);
+            Stock::find($update['id'])->updateQuantity();
         }
 
         /*

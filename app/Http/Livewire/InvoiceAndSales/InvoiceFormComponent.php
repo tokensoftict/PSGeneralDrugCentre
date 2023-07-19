@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
 use App\Traits\SimpleComponentTrait;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -222,10 +223,16 @@ class InvoiceFormComponent extends Component
         {
             $this->invoiceData['invoice_number'] = time();
 
-            $response  = (new invoiceRepository())->createInvoice($this->invoiceData);
+            $response = null;
+            DB::transaction(function() use (&$response){
+                $response  = (new invoiceRepository())->createInvoice($this->invoiceData);
+            });
         }
         else {
-            $response  = (new invoiceRepository())->updateInvoice($this->invoice, $this->invoiceData);
+            $response = null;
+            DB::transaction(function() use (&$response){
+                $response  = (new invoiceRepository())->updateInvoice($this->invoice, $this->invoiceData);
+            });
         }
 
         if(is_array( $response )){

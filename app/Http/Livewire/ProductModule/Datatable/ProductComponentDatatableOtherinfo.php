@@ -30,6 +30,7 @@ class ProductComponentDatatableOtherinfo extends ExportDataTableComponent
     public static function mountColumn() : array
     {
         return  [
+            Column::make("Stock ID", "id")->sortable(),
             Column::make("Name", "name")
                 ->sortable()->searchable(),
             Column::make("Re-order", "reorder")

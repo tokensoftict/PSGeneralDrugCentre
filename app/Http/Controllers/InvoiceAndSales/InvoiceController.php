@@ -195,7 +195,7 @@ class InvoiceController extends Controller
         $data['department'] = department_by_quantity_column($invoice->in_department)->id;
         logActivity($invoice->id, $invoice->invoice_number,'Invoice return page was viewed :'.status_name($invoice->status_id));
 
-        return setPageContent('invoiceandsales.form', $data);
+        return view('invoiceandsales.form', $data);
     }
 
 
@@ -281,6 +281,26 @@ class InvoiceController extends Controller
     {
 
     }
+
+
+    public function mergeInvoice(Request $request)
+    {
+        if($request->method() == "POST"){
+            if($request->doc == "invoice"){
+                return $this->print_afour_merge($request->main, explode(",",$request->child));
+            }else{
+                return $this->print_way_bill_merge($request->main, explode(",",$request->child));
+            }
+        }
+
+        $data = [];
+
+        $data['title'] = 'Marge Invoice';
+        $data['subtitle'] = 'Combine Multiple Invoice Together and Print ';
+
+        return view('invoiceandsales.margeInvoice', $data);
+    }
+
 
 
 }

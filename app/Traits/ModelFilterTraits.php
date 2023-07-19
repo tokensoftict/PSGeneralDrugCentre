@@ -1,7 +1,10 @@
 <?php
 namespace App\Traits;
 
+use App\Models\Stock;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait ModelFilterTraits
 {
@@ -86,6 +89,14 @@ trait ModelFilterTraits
             }
 
         });
+
+
+        if (!defined('STDIN') && \auth()->check() && self::class === Stock::class) {
+            static::addGlobalScope('checkForPromo', function (Builder $builder){
+                $builder->with(['promotion_item']);
+            });
+        }
+
 
     }
 

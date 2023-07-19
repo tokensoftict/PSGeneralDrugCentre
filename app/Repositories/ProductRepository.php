@@ -79,9 +79,25 @@ class ProductRepository
             'retail' => 'retail_cost_price',
         };
 //->where(request()->column ,'>',0)
-        return DB::table('stocks')->select('id', request()->column.' as quantity', $cost_price." as cost_price", $selling_price." as selling_price",'name', 'box', 'location','name as text', 'carton')->where(function($query) use(&$name){
+
+        return DB::table('stocks')->select('stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
+            'stocks.name',
+            'stocks.box',
+            'stocks.location',
+            'stocks.name as text',
+            'stocks.carton',
+            'promotion_items.promotion_id',
+            'promotion_items.from_date',
+            'promotion_items.end_date',
+            'promotion_items.'.$selling_price." as promo_selling_price"
+        )
+            ->leftJoin('promotion_items', function($join){
+                $join->on('stocks.id', '=', 'promotion_items.stock_id')
+                    ->on('promotion_items.status_id', '=', DB::raw(status('Approved')));
+            })
+            ->where(function($query) use(&$name){
             foreach ($name as $char) {
-                $query->where('name', 'LIKE', "%$char%");
+                $query->where('stocks.name', 'LIKE', "%$char%");
             }
         })->get()->toJson();
 

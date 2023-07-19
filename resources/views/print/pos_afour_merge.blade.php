@@ -75,6 +75,7 @@
                 @if($store->logo != "1659902910.png")
                     <img style="max-height:100px;float: right;margin-top: -10px" src="{{ public_path("logo/". $store->logo) }}" alt='Logo'>
                 @endif
+
                 @if($invoice->status_id === status('Complete'))
                     <table class="inv_info"  style="margin-top: 0px;">
                         @if($invoice->picked_by)
@@ -93,22 +94,20 @@
                             </tr>
                         @endif
 
-                            @if($invoice->carton_no)
-                                <tr>
-                                    <th align="left">Carton(s) : </th><td>{{ $invoice->carton_no }}</td>
-                                </tr>
-                            @endif
+                        @if($invoice->carton_no)
+                            <tr>
+                                <th align="left">Carton(s) : </th><td>{{ $invoice->carton_no }}</td>
+                            </tr>
+                        @endif
 
                     </table>
                 @endif
-
             </td>
         </tr>
-
     </table>
 
-    <table  @if($invoice->packed_by) style="margin-top: -105px;" @else style="margin-top: -40px;" @endif   class="inv_info">
 
+    <table @if($invoice->picked_by) style="margin-top: -105px;" @else style="margin-top: -50px;" @endif class="inv_info">
         <tr>
             <th  align="left">Invoice Number</th>
             <td>{{ $invoice->invoice_number }}</td>
@@ -138,11 +137,9 @@
             <td>{{ $invoice->last_updated->name }}</td>
         </tr>
         <tr>
-            <th  align="left">Invoice Status</th>
+            <th  align="left"> Status</th>
             <td>{{ $invoice->status->name }}</td>
         </tr>
-        <tr>
-
     </table>
 
 
@@ -154,15 +151,23 @@
             <td align="left"><b>Name</b></td>
             <td align="center"><b>Qty</b></td>
             <td align="center"><b>Rate</b></td>
-            <td align="right" width="20%"><b>Dis. Rate</b></td>
+            <td align="right"><b>Dis. Rate</b></td>
             <td align="right"><b>Total</b></td>
-            <td align="right"><b>Carton</b></td>
+            <td align="center"><b>Carton</b></td>
             <td align="center"><b>Expiry Date</b></td>
         </tr>
         <tbody id="appender">
-        @foreach($invoice->invoiceitems as $item)
+        @php
+            $num = 1;
+            $invoice_sub = 0;
+            $invoice_discount = 0;
+        @endphp
+        @foreach($invoice->invoiceitems()->get() as $item)
+            @php
+                $invoice_sub += $item->quantity * ($item->selling_price-$item->discount_amount);
+            @endphp
             <tr>
-                <td align="left">{{ $loop->iteration }}</td>
+                <td align="left">{{ $num }}</td>
                 <td align="left" class="text-left">{{ $item->stock->name }}</td>
                 <td align="center" class="text-center">{{ $item->quantity }}</td>
                 <td align="center" class="text-center">{{ number_format($item->selling_price,2) }}</td>
@@ -198,62 +203,95 @@
                     {{ $string }}
                 </td>
                 <td>@php
-                        $invoice_batches = $item->invoiceitembatches;
+                        $invoice_batches = $item->invoiceitembatches()->get();
                     @endphp
                     @foreach($invoice_batches as $batch)
-                        @if(isset($batch->stockbatch->expiry_date))
-                            <b>{{ convert_date2($batch->stockbatch->expiry_date) }}<br/>
+                        @if(isset($batch->stockBatch->expiry_date))
+                            <b>{{ convert_date2($batch->stockBatch->expiry_date) }} :</b> {{ $batch->quantity }} qty <br/>
                         @endif
                     @endforeach
                 </td>
             </tr>
+            @php
+                $num++;
+            @endphp
+        @endforeach
+        @foreach($invoice_child as $item)
+            @php
+                $invoice_sub += $item->quantity * ($item->selling_price-$item->discount_amount);
+            @endphp
+            <tr>
+                <td align="left">{{ $num }}</td>
+                <td align="left" class="text-left">{{ $item->stock->name }}</td>
+                <td align="center" class="text-center">{{ $item->quantity }}</td>
+                <td align="center" class="text-center">{{ number_format($item->selling_price,2) }}</td>
+                <td align="right" class="text-right">{{ number_format(($item->selling_price-$item->discount_amount),2) }}</td>
+                <td align="right" class="text-right">{{ number_format(($item->quantity * ($item->selling_price - $item->discount_amount)),2) }}</td>
+                <td>
+                    @php
+                        if($item->stock->carton > 1){
+                            $qty_by = $item->quantity;
+                            if($qty_by < $item->stock->carton){
+                                echo $qty_by." pcs";
+                            }else{
+                                $carton = floor($qty_by/ $item->stock->carton);
+                                 $reminder = ($qty_by % $item->stock->carton);
+
+                                 $string = "";
+
+                                 if($carton > 0){
+
+                                    $string.=$carton." Carton";
+                                 }
+
+                                if($carton > 0 && $reminder > 0){
+                                    $string.=" and ".$reminder." pcs";
+                                }
+
+                                echo $string;
+                            }
+
+                        }
+                    @endphp
+                </td>
+                <td>@php
+                        $invoice_batches = $item->invoiceitembatches()->get();
+                    @endphp
+                    @foreach($invoice_batches as $batch)
+                        @if(isset($batch->stockBatch->expiry_date))
+                            <b>{{ convert_date2($batch->stockBatch->expiry_date) }} :</b> {{ $batch->quantity }} qty <br/>
+                        @endif
+                    @endforeach
+                </td>
+            </tr>
+            @php
+                $num++;
+            @endphp
         @endforeach
         </tbody>
         <tfoot>
-        @if($invoice->onlineordertotals->count() > 0)
-            @foreach($invoice->onlineordertotals as $total)
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <th align="right">{{ ($total->name === 'Subtotal' ? str_replace('Subtotal', 'Sub total', $total->name) : substr($total->name,0,10) )  }}</th>
-                    <th align="right">{{ money($total->value) }}</th>
-                    <td></td>
-                    <td></td>
-                </tr>
-            @endforeach
-        @else
         <tr>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <th  align="right" class="text-right">Sub Total</th>
-            <th  align="right" class="text-right">{{ number_format($invoice->sub_total,2) }}</th>
-            <td></td>
-            <td></td>
-        </tr>
-        @endif
-
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <th  align="right" class="text-right">Discount</th>
-            <th  align="right" class="text-right">-{{ money($invoice->discount_amount) }}</th>
-            <td></td>
+            <td></td> <td></td><td></td>
+            <td  align="right" class="text-right">Sub Total</td>
+            <td  align="right" class="text-right">{{ number_format($invoice_sub,2) }}</td>
             <td></td>
         </tr>
         <tr>
             <td></td>
             <td></td>
+            <td></td>  <td></td> <td></td>
+            <td  align="right" class="text-right">Discount</td>
+            <td  align="right" class="text-right">-{{ number_format($invoice_discount,2) }}</td>
+            <td></td>
+        </tr>
+        <tr>
             <td></td>
             <td></td>
-            <th   align="right" class="text-right">Total</th>
-            <th  align="right" class="text-right"><b>{{ money(($invoice->sub_total -$invoice->discount_amount)) }}</b></th>
-            <td></td>
+            <td></td>   <td></td> <td></td>
+            <td   align="right" class="text-right">Total</td>
+            <td  align="right" class="text-right"><b>{{ number_format(($invoice_sub-$invoice_discount),2) }}</b></td>
             <td></td>
         </tr>
         </tfoot>

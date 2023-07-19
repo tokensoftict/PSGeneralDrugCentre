@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
 
-        return setPageContent('accesscontrol.user.index');
+        return view('accesscontrol.user.index');
     }
 
 

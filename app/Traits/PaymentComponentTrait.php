@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\PaymentRepository;
+use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 trait PaymentComponentTrait
@@ -73,25 +74,31 @@ trait PaymentComponentTrait
 
     public function savePayment()
     {
-        $this->paymentRepository->savePayment($this);
+        DB::transaction(function(){
+            $this->paymentRepository->savePayment($this);
 
-        if($this->invoice->in_department == "retail"){
-            $this->invoice->status_id = status('Complete');
-            $this->invoice->update();
-            return redirect()->route(type().'view', $this->invoice->id);
-        }
+            if($this->invoice->in_department == "retail"){
+                $this->invoice->status_id = status('Complete');
+                $this->invoice->update();
+                return redirect()->route(type().'view', $this->invoice->id);
+            }
+        });
 
         return true;
     }
 
     public function saveCreditPayment() : void
     {
-        $this->paymentRepository->saveCreditPayment($this);
+        DB::transaction(function(){
+            $this->paymentRepository->saveCreditPayment($this);
+        });
     }
 
     public function saveDepositPayment() : void
     {
-        $this->paymentRepository->saveDepositPayment($this);
+        DB::transaction(function(){
+            $this->paymentRepository->saveDepositPayment($this);
+        });
     }
 
     private function getPaymentInfo() : array
