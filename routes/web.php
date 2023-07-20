@@ -197,6 +197,9 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/changeSellingPrice', ['as' => 'changeSellingPrice', 'uses' => 'ProductController@changeSellingPrice', 'custom_label'=>'Change Product Selling Price']);
 
                 Route::match(['post','get'],'balance_stock', ['as' => 'balance_stock', 'uses' => 'ProductController@balance_stock','visible' => true, 'custom_label'=>'Quick Adjust Quantity']);
+
+                Route::match(['post','get'], 'stock_export', ['as' => 'export_stock', 'uses' => 'ProductController@export_stock','custom_label'=>'Export / Import Stocks', 'visible' => true]);
+
             });
         });
         Route::prefix('transfer')->namespace('StockTransfer')->group(function () {

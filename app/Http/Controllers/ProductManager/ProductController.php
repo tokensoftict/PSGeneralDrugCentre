@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\ProductManager;
 
+use App\Exports\Stockexport;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Imports\Stockimports;
 use App\Models\Stock;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -202,6 +203,61 @@ class ProductController extends Controller
         }
 
         return view('product.batched_stock_list', $data);
+    }
+
+
+    public function export_stock(Request $request)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+        if($request->method() == "GET" && $request->has('export')){
+            $data = [];
+            $stocks = Stock::where("status","1")->orderBy('status','ASC');
+            $stocks->chunk(500,function ($stock) use (&$data) {
+                foreach ($stock as $st){
+                    $last_po = $st->purchaseitems()->wherehas('purchase',function($q){
+                        $q->where('status_id',status('Complete'));
+                    })->orderBy('id','DESC')->first();
+                    if(isset($last_po->created_at)){
+                        $lsp = convert_date2($last_po->created_at);
+                    }else{
+                        $lsp = "N/A";
+                    }
+                    $data[] = [
+                        'ID'=> $st->id,
+                        'name'=> $st->name,
+                        'Category' => $st->category_id ? $st->category->name : 'N/A',
+                        'Manufacturer' => $st->manufacturer_id ? $st->manufacturer->name  : 'N/A',
+                        'Classification' => $st->classification_id ? $st->classification->name : 'N/A',
+                        'Group' => $st->stockgroup_id ? $st->stockgroup->name : "N/A",
+                        'Retail Price'=> $st->retail_price,
+                        'Whole Sales Price'=>$st->whole_price,
+                        'Bulk Sales Price'=>$st->bulk_price,
+                        'Status'=>$st->getRawOriginal('status'),
+                        'Quantity'=>$st->totalBalance(),
+                        'Last purchase Date'=>$lsp,
+                        'Box'=>$st->box
+                    ];
+                }
+            });
+            $file_name = str_replace(" ", "_", "Current Active Stock " . date("ynjHi")).".xlsx";
+            return  Excel::download(new Stockexport($data),$file_name);
+        }
+
+        if($request->method() == "POST"){
+
+            Excel::import(new Stockimports, request()->file('excel_file'));
+            return redirect()->route('product.export_stock')->with('success', "Stock has been updated successfully!!..");
+
+        }
+
+
+        $data = [
+            'title'=>'Export and Import Stock',
+            'subtitle'=>'Bulk Export and Import Stock'
+        ];
+
+        return view('product.export_and_import_stock', $data);
     }
 
 }
