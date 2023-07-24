@@ -5,11 +5,13 @@ namespace App\Repositories;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Models\Creditpaymentlog;
 use App\Models\Customerdeposit;
+use App\Models\CustomerLedger;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Paymentmethoditem;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 class PaymentRepository
@@ -25,6 +27,25 @@ class PaymentRepository
 
     public function addPayment(array $data) : Payment
     {
+        //delete existing payment for the invoice
+
+        /*  checking for existing payment  */
+
+        if($data['invoice_type']  == Invoice::class) {
+            DB::transaction(function () use ($data) {
+                $payments = Payment::where('invoice_number', $data['invoice_number'])->get();
+
+                foreach ($payments as $payment) {
+                    $payment->paymentmethoditems()->delete();
+                    CustomerLedger::where('payment_id', $payment->id)->delete();
+                    $payment->delete();
+                }
+            });
+        }
+
+
+        /*  ending of deleting and checking for existing payment  */
+
         $methods = $data['methods'];
 
         Arr::forget($data, ['methods']);
