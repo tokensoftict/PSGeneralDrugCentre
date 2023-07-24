@@ -53,9 +53,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property Manufacturer|null $manufacturer
  * @property Stockgroup|null $stockgroup
  * @property User|null $user
+ * @property Collection|Batchstock[] $batchstocks
+ * @property Collection|Invoiceitembatch[] $invoiceitembatches
+ * @property Collection|Invoiceitem[] $invoiceitems
+ * @property Collection|Movingstock[] $movingstocks
+ * @property Collection|Nearoutofstock[] $nearoutofstocks
+ * @property Collection|PromotionItem[] $promotion_items
+ * @property Collection|Purchaseitem[] $purchaseitems
+ * @property Collection|Retailnearoutofstock[] $retailnearoutofstocks
  * @property Collection|Stockbatch[] $stockbatches
+ * @property Collection|Stockbincard[] $stockbincards
+ * @property Collection|Stockopening[] $stockopenings
  * @property Collection|Stocktransferitem[] $stocktransferitems
- * @property Collection|Stockbatch[] $activeBatches
  * @package App\Models
  */
 class Stock extends Model

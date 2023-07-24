@@ -237,6 +237,35 @@
                 </div>
             @endif
 
+
+            @if(isset($filters['department_from']))
+                <div class="col-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label">From</label>
+                        <select class="form-control" data-trigger name="filter[department_from]" id="choices-single-default" placeholder="Select Source Department">
+                            @foreach($departments as $department)
+                                <option {{ $filters['department_from'] == $department->quantity_column ? 'selected' : '' }} value="{{ $department->quantity_column }}">{{ $department->label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
+
+
+            @if(isset($filters['department_to']))
+                <div class="col-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label">To</label>
+                        <select class="form-control" data-trigger name="filter[department_to]" id="choices-single-default" placeholder="Select Destination Department">
+                            @foreach($departments as $department)
+                                <option {{ $filters['department_to'] == $department->quantity_column ? 'selected' : '' }} value="{{ $department->quantity_column }}">{{ $department->label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
+
+
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
             </div>

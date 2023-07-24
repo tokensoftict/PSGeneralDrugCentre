@@ -260,4 +260,7 @@ class ProductController extends Controller
         return view('product.export_and_import_stock', $data);
     }
 
+
+
+
 }

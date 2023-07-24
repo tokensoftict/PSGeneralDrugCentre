@@ -63,14 +63,6 @@ class ReportFilterComponent extends Component
             $data['items'] = $this->filters['items'];
         }
 
-        if(isset($this->filters['batchno'])){
-            $data['batch_numbers'] = Production::select('batch_number')->where('status_id',6)->pluck('batch_number')->toArray();
-        }
-
-        if(isset($this->filters['rawmaterial_id']) || isset($this->filters['purchase_id'])){
-            $data['materials'] = Rawmaterial::where('status',1)->select('id','name')->get();
-        }
-
         if(isset($this->filters['paymentmethod_id'])){
             $data['paymentMethods'] = Paymentmethod::where('status',1)->where('id','<>',6)->select('id','name')->get();
         }
@@ -79,15 +71,19 @@ class ReportFilterComponent extends Component
             $data['stocks'] = Stock::where('status',1)->where('id','<>',6)->select('id','name')->get();
         }
 
-        if(isset($this->filters['production_template_id'])){
-            $data['templates'] = ProductionTemplate::where('status',1)->where('id','<>',6)->select('id','name')->get();
+
+        if(isset($this->filters['department_to']) || isset($this->filters['department_from'])){
+
+            $data['departments'] = Department::where('status',1)->select('id','name','quantity_column', 'label')->whereNotNull('quantity_column')->get();
         }
 
-        if(isset($this->filters['productionline_id'])){
-            $data['lines'] = Productionline::where('status',1)->where('id','<>',6)->select('id','name')->get();
+        if(isset($this->filters['department_from'])){
+
         }
 
+        if(isset($this->filters['department_to'])){
 
+        }
         return view('components.report-filter-component', $data);
     }
 }

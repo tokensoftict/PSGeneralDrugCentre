@@ -211,6 +211,8 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['post','get'], 'create', ['as' => 'create', 'uses' => 'StockTransferController@create','visible' => true, 'custom_label'=>'Create New Transfer']);
 
+                Route::match(['post','get'],'stock-move-list', ['as' => 'stock_move_list', 'uses' => 'StockTransferController@stock_move_list','visible' => true, 'custom_label'=>'Stock to Move List Report']);
+
                 Route::match(['get','post'],'{stocktransfer}/edit', ['as' => 'edit', 'uses' => 'StockTransferController@edit','custom_label'=>'Edit Transfer']);
 
                 Route::get('{stocktransfer}/show', ['as' => 'show', 'uses' => 'StockTransferController@show','custom_label'=>'View Stock Transfer']);

@@ -94,4 +94,30 @@ class StockTransferController extends Controller
 
     }
 
+
+    public function stock_move_list(Request $request)
+    {
+        $data = [
+            'title'=>'Stock To Move List',
+            'subtitle'=>'Stock To Move List Report',
+            'filters' => [
+                'department_from'=> 'quantity',
+                'department_to'=> 'wholesales',
+                'filters' => [
+                    'department_from'=> 'quantity',
+                    'department_to'=> 'wholesales',
+                ]
+            ]
+        ];
+
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['department_from'] = $data['filters']['department_from'];
+            $data['filters']['filters']['department_to'] = $data['filters']['department_to'];
+        }
+
+        return view('stocktransfer.stock_to_move_list', $data);
+    }
+
 }
