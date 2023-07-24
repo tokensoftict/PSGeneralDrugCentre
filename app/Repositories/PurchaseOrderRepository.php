@@ -33,6 +33,7 @@ class PurchaseOrderRepository
                 'department' => $purchase->department,
                 'date_created' => mysql_str_date($purchase->date_created),
                 'date_completed' => NULL,
+                'batch_no' =>$purchase->batch_no,
                 'purchaseitems' =>$purchase->purchaseitems->map->only(array_keys(self::purchaseitems(new Purchaseitem())))->toJson()
             ];
         }else{
@@ -44,6 +45,7 @@ class PurchaseOrderRepository
                 'department' => "",
                 'date_created' =>todaysDate(),
                 'date_completed' => NULL,
+                'batch_no' =>"",
                 'purchaseitems' => collect([])->toJson()
             ];
         }
@@ -129,7 +131,8 @@ class PurchaseOrderRepository
                 $purchase->department => $item->qty,
                 cost_price_column(department_by_quantity_column($purchase->department)->id)=> $item->cost_price,
                 'stock_id' => $item->stock_id,
-                'supplier_id' => $purchase->supplier_id
+                'supplier_id' => $purchase->supplier_id,
+                'batch_no' => $item->batch_no,
             ];
 
             $stockUpdate[] = [

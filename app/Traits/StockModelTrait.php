@@ -222,7 +222,8 @@ trait StockModelTrait
                     $from => 0,
                     'qty' => $batch->{$from},
                     'cost_price' => $batch->{$cost_price_column},
-                    'department' => $from
+                    'department' => $from,
+                    'batch_no' => $batch->batch_no
                 ];
             }else{
                 $newqty = $batch->{$from} - $qty;
@@ -232,7 +233,8 @@ trait StockModelTrait
                     $from => $newqty,
                     'cost_price' => $batch->{$cost_price_column},
                     'department' => $from,
-                    'qty' => $qty
+                    'qty' => $qty,
+                    'batch_no' => $batch->batch_no
                 ];
                 $qty = 0;
             }

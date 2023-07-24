@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $retail
  * @property int $quantity
  * @property float|null $cost_price
+ * @property string|null $batch_no
  * @property float|null $retail_cost_price
  * @property int|null $stock_id
  * @property int|null $supplier_id
@@ -61,7 +62,8 @@ class Stockbatch extends Model
 		'cost_price',
 		'retail_cost_price',
 		'stock_id',
-		'supplier_id'
+		'supplier_id',
+        'batch_no'
 	];
 
 	public function stock()

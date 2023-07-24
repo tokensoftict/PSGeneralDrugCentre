@@ -50,7 +50,8 @@ class Purchaseitem extends Model
 		'expiry_date',
 		'qty',
 		'cost_price',
-		'user_id'
+		'user_id',
+        'batch_no'
 	];
 
     //protected $with = ['stock'];

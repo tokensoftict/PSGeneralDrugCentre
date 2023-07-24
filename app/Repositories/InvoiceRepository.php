@@ -231,7 +231,8 @@ class InvoiceRepository
                     'cost_price' => $batch['cost_price'],
                     'selling_price' => $item['selling_price'],
                     'department' => $batch['department'],
-                    'quantity' => $batch['qty']
+                    'quantity' => $batch['qty'],
+                    'batch_no' => $batch['batch_no']
                 ]);
                 $removeQuantity[] =  $batch;
             });

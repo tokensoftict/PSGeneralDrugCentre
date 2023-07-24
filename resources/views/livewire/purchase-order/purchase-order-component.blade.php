@@ -1,7 +1,8 @@
 <div x-data="purchase" x-init="totalPurchase()">
     {{-- The whole world belongs to you. --}}
+
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-6">
             <div class="mb-3">
                 <label>Select Stock</label>
                 <select id="select2" x-init="select2" x-model="stock_id" class="form-control" id="product">
@@ -9,8 +10,10 @@
                 </select>
             </div>
         </div>
+    </div>
+    <div class="row">
 
-        <div class="col-sm-1">
+        <div class="col-sm-2">
             <div class="mb-3">
                 <label style="white-space: nowrap;">Av. Quantity</label>
                 <input type="number" readonly class="form-control" x-model="allqty" id="av_qty"/>
@@ -35,6 +38,13 @@
             <div class="mb-3">
                 <label style="white-space: nowrap;">Expiry Date</label>
                 <input type="text" class="form-control datepicker-basic" x-model="expiry_date" id="expiry_date"/>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="mb-3">
+                <label style="white-space: nowrap;">Batch Number</label>
+                <input type="text" class="form-control" x-model="batch_no" id="batch_no"/>
             </div>
         </div>
 
@@ -86,6 +96,7 @@
                        <th class="text-center">Quantity</th>
                        <th class="text-end">Cost Price</th>
                        <th class="text-center">Expiry Date</th>
+                       <th class="text-center">Batch Number</th>
                        <th class="text-end">Total</th>
                        <th>Action</th>
                    </tr>
@@ -97,6 +108,7 @@
                            <td class="text-center" x-text="item.qty"></td>
                            <td class="text-end" x-text="money(item.cost_price)"></td>
                            <td class="text-center" x-text="item.expiry_date"></td>
+                           <td class="text-center" x-text="item.batch_no"></td>
                            <td class="text-end" x-text="money(item.total)"></td>
                            <td class="text-end"><button class="btn btn-sm btn-primary" x-on:click="deleteItem(item.stock_id)">Delete</button> </td>
                        </tr>
@@ -104,6 +116,7 @@
                    </tbody>
                    <tfoot>
                    <tr>
+                       <td></td>
                        <td></td>
                        <td></td>
                        <td></td>
@@ -146,6 +159,7 @@
                 allqty : 0,
                 quantity : "",
                 expiry_date: "",
+                batch_no : "",
                 selectStock : {},
                 netTotal :0,
                 purchaseitems : @this.get('data.purchaseitems') ?  JSON.parse(@this.get('data.purchaseitems')) : [],
@@ -225,12 +239,18 @@
                     }
 
 
+                    if(this.batch_no === ""){
+                        alert("Please enter batch number")
+                        return ;
+                    }
+
                     this.purchaseitems.push({
                         'stock_id' : this.selectStock.id,
                         'expiry_date' : this.expiry_date,
                         'qty' :this.quantity,
                         'name' : this.selectStock.name,
                         'cost_price' : this.cost_price,
+                        'batch_no' : this.batch_no,
                         'user_id' : '{{ auth()->id() }}',
                         'total' : this.quantity * this.cost_price,
                         'status_id' : '{{ status("Pending") }}'
@@ -239,7 +259,9 @@
                     this.expiry_date = "";
                     this.cost_price = "";
                     this.quantity = "";
+                    this.allqty = "";
                     this.expiry_date = "";
+                    this.batch_no = "";
                     this.totalPurchase();
                     $('#select2').empty().trigger('change');
 

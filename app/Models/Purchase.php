@@ -57,7 +57,8 @@ class Purchase extends Model
 		'supplier_id',
 		'department',
 		'date_created',
-		'date_completed'
+		'date_completed',
+        'created_by'
 	];
 
 	public function user()
@@ -68,6 +69,11 @@ class Purchase extends Model
     public function complete_by()
     {
         return $this->belongsTo(User::class, 'completed_by');
+    }
+
+    public function create_by()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 	public function status()

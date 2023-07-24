@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $cost_price
  * @property float $selling_price
  * @property string|null $department
+ * @property string|null $batch_no
  * @property int $quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -56,7 +57,8 @@ class Invoiceitembatch extends Model
 		'cost_price',
 		'selling_price',
 		'department',
-		'quantity'
+		'quantity',
+        'batch_no'
 	];
 
     protected $with = ['stockbatch'];

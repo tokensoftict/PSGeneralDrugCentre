@@ -157,7 +157,7 @@
             <td align="right" width="20%"><b>Dis. Rate</b></td>
             <td align="right"><b>Total</b></td>
             <td align="right"><b>Carton</b></td>
-            <td align="center"><b>Expiry Date</b></td>
+            <td align="center"><b>Expiry Date | Batch No.</b></td>
         </tr>
         <tbody id="appender">
         @foreach($invoice->invoiceitems as $item)
@@ -202,7 +202,7 @@
                     @endphp
                     @foreach($invoice_batches as $batch)
                         @if(isset($batch->stockbatch->expiry_date))
-                            <b>{{ convert_date2($batch->stockbatch->expiry_date) }}<br/>
+                            <b>{{ convert_date2($batch->stockbatch->expiry_date) }} {{ $batch->batch_no ? " | ".$batch->batch_no : "" }}<br/>
                         @endif
                     @endforeach
                 </td>
