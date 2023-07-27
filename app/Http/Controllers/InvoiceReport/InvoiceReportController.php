@@ -139,4 +139,27 @@ class InvoiceReportController extends Controller
 
 
 
+    public function print_frequency(Request $request)
+    {
+        $data = [
+            'title' => 'Retail Invoice POS Print Frequency',
+            'subtitle' => 'This report generate the total number thermal receipt for retails sales was print',
+            'filters' => [
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
+                'filters' => [
+                    'between.invoice_date' => [todaysDate(),todaysDate()],
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+        }
+
+        return view('reports.invoice.retailprintfrequency', $data);
+    }
+
+
 }

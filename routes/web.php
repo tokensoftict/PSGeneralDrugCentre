@@ -370,6 +370,8 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_customer', ['as' => 'by_customer', 'uses' => 'InvoiceReportController@by_customer', 'custom_label'=>'Invoice Report By Customer']);
 
+                Route::match(['get','post'],'print_frequency', ['as' => 'print_frequency', 'uses' => 'InvoiceReportController@print_frequency', 'custom_label'=>'Retail Invoice POS Print Frequency']);
+
             });
 
 
