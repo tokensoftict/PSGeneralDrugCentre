@@ -10,6 +10,14 @@ trait InvoiceTrait
 
     public function print_pos(Invoice $invoice)
     {
+
+        if($invoice->in_department=='retail' && $invoice->retail_printed) return 'You can only print completed invoice once';
+
+        if($invoice->in_department === 'retail' && ($invoice->status_id == status('Paid') || $invoice->status_id == status('Complete'))  && $invoice->retail_printed === false){
+            $invoice->retail_printed = '1';
+            $invoice->update();
+        }
+
         logActivity($invoice->id, $invoice->invoice_number,'Print Invoice Thermal Status:'.$invoice->status->name);
 
         $data['invoice'] =$invoice;

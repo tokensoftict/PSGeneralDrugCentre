@@ -364,6 +364,8 @@ class InvoiceRepository
 
             $invoice->payment_id = NULL;
 
+            $invoice->retail_printed = "0";
+
             $invoice->update();
         }
 

@@ -173,6 +173,8 @@ class InvoicePolicy
     {
         if(!userCanView(type()."pos_print")) return false;
 
+        if($invoice->department === 'retail' && $invoice->retail_printed === true) return false;
+
         if($invoice->department === 'retail' && ($invoice->status_id !== status('Complete') && $invoice->status_id !== status('Paid') && $invoice->online_order_status !="1")) return false;
 
         if($invoice->status_id ==  status('Deleted')) return false;

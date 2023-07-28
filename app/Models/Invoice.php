@@ -44,6 +44,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $checked_by
  * @property int $carton_no
  * @property bool $online_order_status
+ * @property bool $retail_printed
  * @property int|null $online_order_debit
  * @property int|null $onliner_order_id
  * @property int|null $before_customer_id
@@ -94,7 +95,8 @@ class Invoice extends Model
 		'online_order_status' => 'bool',
 		'online_order_debit' => 'int',
 		'onliner_order_id' => 'int',
-		'before_customer_id' => 'int'
+		'before_customer_id' => 'int',
+        'retail_printed' => 'bool'
 	];
 
 	protected $fillable = [
@@ -128,7 +130,8 @@ class Invoice extends Model
 		'online_order_status',
 		'online_order_debit',
 		'onliner_order_id',
-		'before_customer_id'
+		'before_customer_id',
+        'retail_printed'
 	];
 
     public function payment()

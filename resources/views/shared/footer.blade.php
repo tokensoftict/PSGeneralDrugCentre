@@ -35,6 +35,7 @@
                 e.preventDefault();
                 var href = $(this).attr('href');
                 var win = window.open(href, "MsgWindow", "width=800,height=500");
+                window.location.reload();
                 win.onload = function () {
                     win.print();
                 }
@@ -60,6 +61,7 @@
     function open_print_window(elem){
         var href = $(elem).attr('href');
         var win = window.open(href, "MsgWindow", "width=800,height=500");
+        window.location.reload();
         win.onload = function(){
             win.print();
         }
