@@ -44,7 +44,7 @@ class Stockopening extends Model
 		'retail' => 'int',
 		'quantity' => 'int',
 		'supplier_id' => 'int',
-		'total' => 'int',
+		'total' => 'float',
 		'date_added' => 'datetime'
 	];
 

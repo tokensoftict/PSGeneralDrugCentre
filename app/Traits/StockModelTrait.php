@@ -431,12 +431,12 @@ trait StockModelTrait
         return $this->stockbatches()->sum($department);
     }
 
+    public function cacheTotalBalance(){
+        return $this->quantity + $this->bulksales + $this->wholesales + (divide($this->retail , $this->box));
+    }
     public function totalBalance()
     {
-        return
-            $this->stockbatches()->sum('bulksales') +
-            $this->stockbatches()->sum('quantity') +
-            $this->stockbatches()->sum('wholesales') +
+        return $this->stockbatches()->sum(DB::raw('bulksales + quantity + wholesales'))+
            divide($this->stockbatches()->sum('retail') , $this->box);
     }
 

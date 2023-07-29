@@ -46,6 +46,15 @@ class ReportsController extends Controller
         return redirect()->route('reports.productReport.retailnearoutofstock');
     }
 
+    public function run_moving_stock()
+    {
+        $this->settings->put('m_run_moving_stock', 'run');
+
+        \DB::table('movingstocks')->truncate();
+
+        return redirect()->route('reports.productReport.movingstocksreport');
+    }
+
 
 
 }

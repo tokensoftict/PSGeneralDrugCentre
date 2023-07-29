@@ -43,7 +43,7 @@ final class StockOpeningReport extends PowerGridComponent
     {
         $date = $this->filters['payment_date'];
 
-        return Stockopening::query()->with(['stock', 'supplier'])->where('date_added', $date);
+        return Stockopening::query()->with(['stock', 'supplier', 'stock.category', 'stock.promotion_items'])->where('date_added', $date);
     }
 
     /*
@@ -99,7 +99,7 @@ final class StockOpeningReport extends PowerGridComponent
             ->addColumn('carton', function (Stockopening $stockopening){
                 return $stockopening->stock->carton;
             })->addColumn('av_qty', function (Stockopening $stockopening){
-                return $stockopening->stock->totalBalance();
+                return $stockopening->stock->cacheTotalBalance();
             })
             ->addColumn('average_retail_cost_price')
             ->addColumn('average_cost_price')
@@ -141,7 +141,7 @@ final class StockOpeningReport extends PowerGridComponent
                 ->searchable(),
             Column::make('Carton', 'carton')->sortable()
                 ->searchable(),
-            Column::make('Qty Avail', 'av_qty')->sortable()
+            Column::make('Current Quantity Available', 'av_qty')->sortable()
                 ->searchable(),
             Column::make('Wholesales', 'wholesales')->sortable(),
             Column::make('Bulksales', 'bulksales')->sortable(),

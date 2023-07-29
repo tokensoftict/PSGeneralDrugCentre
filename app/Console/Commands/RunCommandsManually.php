@@ -50,6 +50,18 @@ class RunCommandsManually extends Command
             Artisan::call('retailnearos:compute');
         }
 
+        if($settings->get('m_run_moving_stock') === "run"){
+            $settings->put("m_run_moving_stock", 'running');
+            $settings->put("moving_stocks_run_status", 'okay');
+
+            $this->info("Moving Stock is now running");
+
+            Artisan::call('run:movingstocks');
+
+        }
+
+
+
         return Command::SUCCESS;
     }
 }

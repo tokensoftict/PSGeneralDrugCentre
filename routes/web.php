@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', 'ReportsController@index')->name('reports');
     Route::get('/run_nearos', 'ReportsController@run_nearos')->name('run_nearos');
     Route::get('/run_retail_nearos', 'ReportsController@run_retail_nearos')->name('run_retail_nearos');
+    Route::get('/run_moving_stock', 'ReportsController@run_moving_stock')->name('run_moving_stock');
 
     Route::prefix('ajax')->namespace('Ajax')->group(function () {
         Route::get('/findstock', ['as' => 'findstock', 'uses' => 'AjaxController@findstock']);

@@ -6,6 +6,7 @@ use App\Classes\Settings;
 use App\Models\Invoiceitembatch;
 use App\Models\Movingstock;
 use App\Models\Stockopening;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -305,26 +306,26 @@ class RunChunkMovingStock //implements ShouldQueue
                     $noofdaysoflastpur =1;
                 }
                 //calculate turn over rate too
-                $turn_over_rate2 = $daily_qty_sold /($average_inventory * $noofdaysoflastpur);
+                $turn_over_rate2 = divide($daily_qty_sold ,($average_inventory * $noofdaysoflastpur)) ;
 
                 $turn_over_rate2 = $turn_over_rate2 * $this->nconstant2;
 
                 if(!$stock->stockOpening->first()) {
                     $rt_qty = 0;
                 }else{
-                    $rt_qty = round($stock->stockOpening->first()->total - ($stock->stockOpening->first()->retail/$stock->box));
+                    $rt_qty = round($stock->stockOpening->first()->total - (divide($stock->stockOpening->first()->retail,$stock->box)));
                 }
 
                 if(!$stock->stockOpening->first()) {
                     $all_qty =  0;
                 }else{
-                    $all_qty= round($stock->stockOpening->first()->total - ($stock->stockOpening->first()->retail/$stock->box));
+                    $all_qty= round($stock->stockOpening->first()->total - (divide($stock->stockOpening->first()->retail,$stock->box)));
                 }
 
                 if(!$stock->stockOpening->first()){
                     $tt_av_cost_price = 0;
                 }else{
-                    $tt = $stock->stockOpening->first()->total - ($stock->stockOpening->first()->retail/$stock->box);
+                    $tt = $stock->stockOpening->first()->total - (divide($stock->stockOpening->first()->retail,$stock->box));
                     $tt_av_cost_price = ($stock->stockOpening->first()->average_cost_price * round($tt));
                 }
 
@@ -381,14 +382,14 @@ class RunChunkMovingStock //implements ShouldQueue
                     $noofdaysoflastpur =1;
                 }
                 if($total_qty_sold > 0){
-                    $daily_qty_sold = ($total_qty_sold) / $this->ndays;
+                    $daily_qty_sold = divide(($total_qty_sold) , $this->ndays);
                 }else{
                     $daily_qty_sold = 0;
                 }
 
                 if($total_opening_inventory > 0){
-                    $average_inventory = ($total_opening_inventory) / $this->ndays;
-                    $turn_over_rate2 = $daily_qty_sold /($average_inventory * $noofdaysoflastpur);
+                    $average_inventory = divide(($total_opening_inventory) , $this->ndays);
+                    $turn_over_rate2 = divide($daily_qty_sold ,($average_inventory * $noofdaysoflastpur));
 
                     $turn_over_rate2 = $turn_over_rate2 * $this->nconstant2;
 
@@ -476,6 +477,7 @@ class RunChunkMovingStock //implements ShouldQueue
         $this->store->put('moving_stocks_run_status', 'okay');
         $this->store->put('total_moving_to_process', 0);
         $this->store->put('total_moving_processed', 0);
+        $this->store->put('moving_stock_last_run', Carbon::now()->toDateTimeLocalString());
     }
 
 

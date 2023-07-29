@@ -55,8 +55,8 @@ class StockOpeningCommand extends Command
                     $total_ms = 0;
 
                     foreach ($batches as $batch) {
-                        $total_qty += ($batch->wholesales + $batch->bulksales + (($stock->box == 0 || $batch->retail == 0) ? 0 : round(abs((($batch->retail ==0 ?? 0) / ($stock->box ?? 0)))) + $batch->quantity));
-                        $average_cost += ($batch->wholesales + $batch->bulksales + ($stock->box ==0 || $batch->retail == 0) ? 0 : round(abs((($batch->retail ==0 ?? 0)/ ($stock->box ?? 0)))) + $batch->quantity) * $batch->cost_price;
+                        $total_qty += ($batch->wholesales + $batch->bulksales + $batch->quantity + round(abs(divide($batch->retail, $stock->box))) );
+                        $average_cost += ($batch->wholesales + $batch->bulksales + $batch->quantity + round(abs(divide($batch->retail, $stock->box))) ) * $batch->cost_price;
                         $retail_average_cost += $batch->retail * $batch->retail_cost_price;
                         $total_retail_qty += $batch->retail;
                         $total_ws += $batch->wholesales;
@@ -64,8 +64,8 @@ class StockOpeningCommand extends Command
                         $total_ms += $batch->quantity;
                     }
 
-                    $tt_average_cost = ($average_cost == 0 ? 0 : round($average_cost / $total_qty));
-                    $tt_average_cost_price = ($retail_average_cost == 0 ? 0 : round($retail_average_cost / $total_retail_qty));
+                    $tt_average_cost = ($average_cost == 0 ? 0 : round(divide($average_cost , $total_qty)));
+                    $tt_average_cost_price = ($retail_average_cost == 0 ? 0 : round(divide($retail_average_cost , $total_retail_qty)));
                     $last_supplier = $stock->activeBatches->last();
 
                     $opening = [
