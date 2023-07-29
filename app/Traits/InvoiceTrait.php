@@ -11,7 +11,14 @@ trait InvoiceTrait
     public function print_pos(Invoice $invoice)
     {
 
-        if($invoice->in_department=='retail' && $invoice->retail_printed) return 'You can only print completed invoice once';
+        if($invoice->in_department=='retail' && $invoice->retail_printed) {
+
+            if(!userCanView('invoiceandsales.rePrintInvoice')){
+                return 'You can only print completed invoice once';
+            }else{
+                logActivity($invoice->id, $invoice->invoice_number,'Retail Invoice was Re-print');
+            }
+        }
 
         if($invoice->in_department === 'retail' && ($invoice->status_id == status('Paid') || $invoice->status_id == status('Complete'))  && $invoice->retail_printed === false){
             $invoice->retail_printed = '1';
@@ -168,6 +175,18 @@ trait InvoiceTrait
         //return view("print.pos_afour_merge",$data);
         $pdf = PDF::loadView("print.pos_afour_waybill_merge",$data);
         return $pdf->stream('document.pdf');
+    }
+
+
+
+    public function rePrintInvoice(){
+
+    }
+
+
+    public function checkOutInvoice()
+    {
+        return view('invoiceandsales.scan');
     }
 
 }

@@ -150,6 +150,19 @@
             <span class="d-block pb-1 pt-1"> No Of Cartons : </span>
             <strong  class="d-block pb-1 pt-1">{{ $this->invoice->carton_no ?? "Not Available" }}</strong>
             <br/>
+
+            <span class="d-block pb-1 pt-1">Checkout Scan By : </span>
+            <strong  class="d-block pb-1 pt-1">{{ $this->invoice->scan_by->name ?? "Not Available" }}</strong>
+            <br/>
+
+            <span class="d-block pb-1 pt-1">Checkout Scan Date : </span>
+            <strong  class="d-block pb-1 pt-1">{!! $this->invoice->scan_date ?  convert_date($this->invoice->scan_date) : "Not Available" !!}</strong>
+            <br/>
+
+            <span class="d-block pb-1 pt-1">Checkout Scan Time : </span>
+            <strong  class="d-block pb-1 pt-1">{!! $this->invoice->scan_time ? twelveHourClock($this->invoice->scan_time) : "Not Available" !!}</strong>
+            <br/>
+
         </div>
         <div class="col-8">
 

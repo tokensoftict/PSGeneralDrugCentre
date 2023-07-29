@@ -527,4 +527,35 @@ class InvoiceRepository
         dispatch(new AddLogToProductBinCard($cards));
     }
 
+
+    public function findByInvoiceNumber($invoice_number){
+
+        $invoice = Invoice::where('invoice_number', $invoice_number)->first();
+
+        if(!$invoice) return false;
+
+        return $invoice;
+    }
+
+
+    public function checkOut(Invoice $invoice) : array
+    {
+        if($invoice->scan_user_id !== NULL)
+        {
+            logActivity($invoice->id, $invoice->invoice_number, "Trying to scan / checkout invoice has been checkout already");
+
+            return ['status'=>false, 'message'=>'Invoice has already been checkout by '.$invoice->scan_by->name];
+        }else{
+
+            $invoice->scan_user_id = \auth()->id();
+            $invoice->scan_time = Carbon::now();
+            $invoice->scan_date = todaysDate();
+            $invoice->update();
+
+            logActivity($invoice->id, $invoice->invoice_number, "Invoice number was been Scan / Checkout");
+
+            return ['status'=>true];
+        }
+    }
+
 }

@@ -117,7 +117,7 @@
     <hr>
     <div class="text-center">  {{ $store->footer_notes }}</div>
     <br/>
-    <center><img src="data:image/png;base64,' . {{ DNS1D::getBarcodePNG($invoice->invoice_number, 'C39+',3,50) }} . '" alt="barcode"   /></center>
+    <center><img src="data:image/png;base64,' . {{ DNS1D::getBarcodePNG((string)$invoice->invoice_number, 'C39',3,130) }} . '" alt="barcode"   /></center>
     <br/>
     <div class="text-center"> {!! softwareStampWithDate() !!}</div>
 </div>

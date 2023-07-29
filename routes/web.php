@@ -265,6 +265,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{invoice}/destroy', ['as' => 'destroy', 'uses' => 'InvoiceController@destroy']);
                 Route::put('{invoice}/update', ['as' => 'update', 'uses' => 'InvoiceController@update']);
                 Route::match(['get', 'post'], 'merge', ['as' => 'merge', 'uses' => 'InvoiceController@mergeInvoice', 'custom_label'=>'Merge Invoice', 'visible' => true]);
+                Route::match(['get', 'post'], 'checkoutScan', ['as' => 'checkoutScan', 'uses' => 'InvoiceController@checkOutInvoice', 'custom_label'=>'Scan Invoice for Product Checkout', 'visible' => true]);
+                Route::get( 'rePrintInvoice', ['as' => 'rePrintInvoice', 'uses' => 'InvoiceController@rePrintInvoice', 'custom_label'=>'Re-print Invoice Retail Receipt']);
             });
         });
 

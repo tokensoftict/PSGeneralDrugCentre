@@ -32,12 +32,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $vat
  * @property float $vat_amount
  * @property int|null $created_by
+ * @property int|null $scan_user_id
  * @property int|null $last_updated_by
  * @property int|null $voided_by
  * @property Carbon $invoice_date
  * @property Carbon $sales_time
  * @property string|null $void_reason
  * @property Carbon|null $date_voided
+ * @property Carbon|null $scan_date
+ * @property Carbon|null $scan_time
  * @property Carbon|null $void_time
  * @property int|null $picked_by
  * @property int|null $packed_by
@@ -52,6 +55,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon|null $updated_at
  *
  * @property User|null $user
+ * @property User|null $scan_by
  * @property User|null $create_by
  * @property Customer|null $customer
  * @property Status $status
@@ -85,13 +89,16 @@ class Invoice extends Model
 		'last_updated_by' => 'int',
 		'voided_by' => 'int',
 		'invoice_date' => 'datetime',
+        'scan_date' => 'datetime',
 		'sales_time' => 'datetime',
+        'scan_time' => 'datetime',
 		'date_voided' => 'datetime',
 		'void_time' => 'datetime',
 		'picked_by' => 'int',
 		'packed_by' => 'int',
 		'checked_by' => 'int',
 		'carton_no' => 'int',
+        'scan_user_id' =>'int',
 		'online_order_status' => 'bool',
 		'online_order_debit' => 'int',
 		'onliner_order_id' => 'int',
@@ -131,7 +138,10 @@ class Invoice extends Model
 		'online_order_debit',
 		'onliner_order_id',
 		'before_customer_id',
-        'retail_printed'
+        'retail_printed',
+        'scan_user_id',
+        'scan_date',
+        'scan_time'
 	];
 
     public function payment()
@@ -172,6 +182,12 @@ class Invoice extends Model
     public function packed() : BelongsTo
     {
         return $this->belongsTo(User::class, 'packed_by');
+    }
+
+
+    public function scan_by() : BelongsTo
+    {
+        return $this->belongsTo(User::class, 'scan_user_id');
     }
 
     public function user()
