@@ -26,7 +26,8 @@
                     function onScanSuccess(decodedText, decodedResult){
                         //decodedText
                         beep();
-                        checkoutInvoice().then(function (response) {
+                        @this.set('invoice_number', decodedText, true);
+                        @this.checkoutInvoice().then(function (response) {
                             beep();
                             setTimeout(() => {
                                 window.location.reload()
