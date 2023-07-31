@@ -29,9 +29,6 @@
                         @this.set('invoice_number', decodedText, true);
                         @this.checkoutInvoice().then(function (response) {
                             beep();
-                            setTimeout(() => {
-                                window.location.reload()
-                            }, 1900);
                         });
                         html5QrcodeScanner.clear();
                     }

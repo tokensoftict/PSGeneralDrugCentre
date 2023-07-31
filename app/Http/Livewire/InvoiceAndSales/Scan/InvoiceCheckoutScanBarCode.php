@@ -29,6 +29,12 @@ class InvoiceCheckoutScanBarCode extends Component
         return view('livewire.invoice-and-sales.scan.invoice-checkout-scan-bar-code');
     }
 
+    public function getListeners()
+    {
+        return [
+            'confirmed'
+        ];
+    }
 
     public function checkoutInvoice(){
         $invoiceRepo = (new InvoiceRepository());
@@ -41,8 +47,11 @@ class InvoiceCheckoutScanBarCode extends Component
                 "Invoice Checkout",
                 [
                     'position' => 'center',
-                    'timer' => 2000,
                     'toast' => false,
+                    'timer' => 100000000000,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Okay',
+                    'onConfirmed' => 'confirmed',
                     'text' => 'Invoice ('.$this->invoice_number.') not found, Please make sure you are scanning the correct invoice number'
                 ]
             );
@@ -55,8 +64,11 @@ class InvoiceCheckoutScanBarCode extends Component
                     "Invoice Checkout",
                     [
                         'position' => 'center',
-                        'timer' => 2000,
                         'toast' => false,
+                        'timer' => 100000000000,
+                        'showConfirmButton' => true,
+                        'confirmButtonText' => 'Okay',
+                        'onConfirmed' => 'confirmed',
                         'text' => 'Invoice has been checkout successfully!'
                     ]
                 );
@@ -66,12 +78,20 @@ class InvoiceCheckoutScanBarCode extends Component
                     "Invoice Checkout",
                     [
                         'position' => 'center',
-                        'timer' => 2000,
                         'toast' => false,
+                        'timer' => 100000000000,
+                        'showConfirmButton' => true,
+                        'confirmButtonText' => 'Okay',
+                        'onConfirmed' => 'confirmed',
                         'text' => $checkout['message']
                     ]
                 );
             }
         }
+    }
+
+    public function confirmed()
+    {
+        return redirect()->route('invoiceandsales.checkoutScan');
     }
 }

@@ -151,7 +151,7 @@
     <div class="text-center"> {!! softwareStampWithDate() !!}</div>
     <br/>
     <div align="center" style="width: 100%;">
-        <img src="data:image/png;base64,' . {{ DNS1D::getBarcodePNG((string)$invoice->invoice_number, 'C39',3,150) }} . '" alt="barcode"   />
+        <img src="data:image/png;base64,' . {{ DNS1D::getBarcodePNG((string)$invoice->invoice_number, 'C39',5,150) }} . '" alt="barcode"   />
     </div>
     <br/>
     <div class="text-center"> Develop By Tokensoft ICT - 08130610626</div>
