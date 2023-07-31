@@ -26,21 +26,12 @@
                     function onScanSuccess(decodedText, decodedResult){
                         //decodedText
                         beep();
-                       let con = confirm('Are you sure you want checkout invoice '+decodedText);
-                       if(con) {
-                           @this.
-                           set('invoice_number', decodedText, true);
-                           @this.
-                           checkoutInvoice().then(function (response) {
-                               beep();
-                               setTimeout(() => {
-                                   window.location.reload()
-                               }, 1900);
-                           });
-                       }else{
-                           html5QrcodeScanner.clear();
-                           window.location.reload()
-                       }
+                        checkoutInvoice().then(function (response) {
+                            beep();
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1900);
+                        });
                         html5QrcodeScanner.clear();
                     }
 
