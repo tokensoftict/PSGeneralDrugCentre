@@ -532,6 +532,8 @@ class InvoiceRepository
 
         $invoice = Invoice::where('invoice_number', $invoice_number)->first();
 
+        if(!$invoice) {$invoice = Invoice::find($invoice_number);}
+
         if(!$invoice) return false;
 
         return $invoice;
