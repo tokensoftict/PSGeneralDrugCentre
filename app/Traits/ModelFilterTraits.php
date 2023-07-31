@@ -1,7 +1,9 @@
 <?php
 namespace App\Traits;
 
+use App\Models\Pricechangehistory;
 use App\Models\Stock;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +90,22 @@ trait ModelFilterTraits
                 $model->quantityColumnChanges();
             }
 
+            if(get_class($model) == Stock::class){
+                $trackDirtyColumn = ['whole_price' => 'wholesales', 'bulk_price'=>'bulksales', 'retail_price'=>'retail'];
+                foreach ($trackDirtyColumn as $column => $department){
+                    if($model->isDirty($column)){
+                        Pricechangehistory::create([
+                            'stock_id' => $model->id,
+                            'from' => $model->getOriginal($column),
+                            'to' => $model->{$column},
+                            'change_date' => todaysDate(),
+                            'change_time' => Carbon::now(),
+                            'user_id' => auth()->id(),
+                            'department' => $department,
+                        ]);
+                    }
+                }
+            }
         });
 
 

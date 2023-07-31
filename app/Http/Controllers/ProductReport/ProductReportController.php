@@ -162,4 +162,37 @@ class ProductReportController extends Controller
     }
 
 
+
+    public function product_price_change_history(Request $request)
+    {
+        $data = [
+            'title' => 'Product Price Change History Report',
+            'subtitle' => 'Product Price Change History Report',
+            'filters' => [
+                'stock' => Stock::where('status', 1)->first(),
+                'department'=> 'wholesales',
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'stock_id' => Stock::where('status', 1)->first()->id,
+                'filters' => [
+                    'between.pricechangehistories.change_date' => monthlyDateRange(),
+                    'stock_id' => Stock::where('status', 1)->first(),
+                    'department'=> 'wholesales',
+                ]
+            ]
+        ];
+
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
+            $data['filters']['filters']['between.pricechangehistories.change_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
+            $data['filters']['filters']['department'] = $data['filters']['department'];
+        }
+
+        return view('reports.product.product_price_change_history', $data);
+    }
+
+
 }

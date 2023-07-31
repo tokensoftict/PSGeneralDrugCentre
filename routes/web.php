@@ -425,6 +425,8 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'balance_stock_worth', ['as' => 'balance_stock_worth', 'uses' => 'ProductReportController@balance_stock_worth', 'custom_label'=>'Balance Stock Worth Report']);
 
+                Route::match(['get','post'],'product_price_change_history', ['as' => 'product_price_change_history', 'uses' => 'ProductReportController@product_price_change_history', 'custom_label'=>'Stock Price Change History Report']);
+
             });
 
 

@@ -72,8 +72,8 @@ trait InvoiceTrait
 
         }
         if($invoice->in_department =="retail" && Auth::user()->department_id ==department_by_quantity_column('retail')->id){
-            $pdf->getMpdf()->AddPage('P', '', '', '', '', 0, 0, 0, 0, 0, 0);
-            $pdf->getMpdf()->WriteHTML(view('print.pos', $data));
+            //$pdf->getMpdf()->AddPage('P', '', '', '', '', 0, 0, 0, 0, 0, 0);
+           // $pdf->getMpdf()->WriteHTML(view('print.pos', $data));
         }
         logActivity($invoice->id, $invoice->invoice_number,"Print POS Invoice Status : ".$invoice->status->name);
 

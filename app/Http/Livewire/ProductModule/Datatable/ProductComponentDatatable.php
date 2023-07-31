@@ -37,7 +37,7 @@ class ProductComponentDatatable extends ExportDataTableComponent
                 ->format(function ($value, $row, Column $column) {
                     if (userCanView('product.toggle')){
                         return '<div class="form-check form-switch mb-3" dir="ltr">
-                                        <input wire:change="toggle(' . $value . ')" id="user' . $value . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->status ? 'checked' : '') . '>
+                                        <input wire:change="toggle(' . $row->id . ')" id="user' . $row->id . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->status ? 'checked' : '') . '>
                                         <label class="form-check-label" for="customSwitch1">' . ($row->status ? 'Active' : 'Inactive') . '</label>
                                     </div>';
                     }
@@ -49,7 +49,7 @@ class ProductComponentDatatable extends ExportDataTableComponent
                 ->format(function ($value, $row, Column $column) {
                     if (userCanView('product.toggle')){
                         return '<div class="form-check form-switch mb-3" dir="ltr">
-                                        <input wire:change="toggle(' . $value . ')" id="user' . $value . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->reorder ? 'checked' : '') . '>
+                                        <input wire:change="toggle(' . $row->id . ')" id="user' . $row->id . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->reorder ? 'checked' : '') . '>
                                         <label class="form-check-label" for="customSwitch1">' . ($row->reorder ? 'Active' : 'Inactive') . '</label>
                                     </div>';
                     }

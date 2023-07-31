@@ -119,7 +119,7 @@ trait SimpleComponentTrait
 
         foreach($this->data as $key=>$value)
         {
-           if(empty($this->{$key})){
+           if(empty($data->{$key})){
                $this->{$key} = "";
            }else {
                $this->{$key} = $data->{$key};
