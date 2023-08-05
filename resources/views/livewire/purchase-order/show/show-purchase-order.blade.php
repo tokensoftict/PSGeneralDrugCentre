@@ -48,7 +48,9 @@
             <address class="pt-1">
                 <strong>General Drug Store:</strong><br>
                 <span class="d-block pb-1 pt-1"> Created By : {{ $this->purchase->user->name }}</span>
-                <span class="d-block pb-1">Date : {{ str_date2($this->purchase->date_created) }}</span>
+                <span class="d-block pb-1 pt-1"> Completed By : {{ $this->purchase->complete_by->name ?? "" }}</span>
+                <span class="d-block pb-1">Date Created : {{ str_date2($this->purchase->date_created) }}</span>
+                <span class="d-block pb-1">Date Completed : {{ str_date2($this->purchase->date_completed) }}</span>
                 <span class="d-block pb-1"> Status: {!! showStatus($this->purchase->status_id) !!}</span>
                <span class="d-block pb-1"> Department : {{ \App\Classes\Settings::$department[$this->purchase->department ] }}</span>
             </address>
@@ -79,6 +81,7 @@
                         <th>Quantity</th>
                         <th>Cost Price</th>
                         <th>Expiry Date</th>
+                        <th>Batch Number</th>
                         <th class="text-end">Total</th>
                     </tr>
                 </thead>
@@ -90,6 +93,7 @@
                             <td>{{ $item->qty }}</td>
                             <td>{{ number_format($item->cost_price,2) }}</td>
                             <td>{{ $item->expiry_date ?? eng_str_date($item->expiry_date) }}</td>
+                            <td>{{ $item->batch_no }}</td>
                             <td class="text-end">{{ number_format(($item->qty * $item->cost_price),2) }}</td>
                         </tr>
                     @endforeach
@@ -100,10 +104,12 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                         <th class="text-end">Sub Total</th>
                         <th class="text-end">{{ number_format((new \App\Repositories\PurchaseOrderRepository())->totalPo($this->purchase),2) }}</th>
                     </tr>
                     <tr>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>

@@ -57,6 +57,7 @@ class PurchaseOrderRepository
             return [
                 'stock_id' => $purchaseitem->stock_id,
                 'expiry_date' => $purchaseitem->expiry_date,
+                'batch_no' => $purchaseitem->batch_no,
                 'qty' => $purchaseitem->qty,
                 'name' => $purchaseitem->name,
                 'cost_price' => $purchaseitem->cost_price,
@@ -69,6 +70,7 @@ class PurchaseOrderRepository
                 'stock_id' => "",
                 'expiry_date' => "",
                 'qty' => "",
+                'batch_no' => "",
                 'name' => "",
                 'cost_price' => "",
                 'user_id' => auth()->id(),
@@ -96,6 +98,8 @@ class PurchaseOrderRepository
         $items = $data['purchaseitems'];
 
         unset($data['purchaseitems']);
+
+        $data['created_by'] = \auth()->id();
 
         if(isset($purchase->id)){
 
@@ -186,7 +190,8 @@ class PurchaseOrderRepository
         dispatch(new PushStockUpdateToServerFromPo($stocks));
 
         $purchase->status_id = status('Complete');
-
+        $purchase->date_completed = todaysDate();
+        $purchase->completed_by = \auth()->id();
         $purchase->update();
     }
 
