@@ -354,6 +354,8 @@ class InvoiceRepository
 
         $invoice->invoiceitembatches()->delete();
 
+        $invoice->invoiceprinthistories()->delete();
+
         if($invoice->payment_id !== NULL)
         {
             Creditpaymentlog::where('payment_id',  $invoice->payment_id)->delete(); // delete credit payment logs

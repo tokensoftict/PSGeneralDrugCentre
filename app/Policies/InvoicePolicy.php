@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Classes\Settings;
 use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -152,6 +153,8 @@ class InvoicePolicy
     {
         if(!userCanView("invoiceandsales.print_afour")) return false;
 
+        if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['a4'], $invoice)) return false;
+
         if(
             $invoice->status_id !== status("Dispatched") &&
             $invoice->status_id !== status("Paid") &&
@@ -173,6 +176,8 @@ class InvoicePolicy
     {
         if(!userCanView(type()."pos_print")) return false;
 
+        if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['thermal'], $invoice)) return false;
+
         if($invoice->department === 'retail' && $invoice->retail_printed === true && !userCanView('invoiceandsales.rePrintInvoice')) return false;
 
         if($invoice->department === 'retail' && ($invoice->status_id !== status('Complete') && $invoice->status_id !== status('Paid') && $invoice->online_order_status !="1")) return false;
@@ -192,6 +197,8 @@ class InvoicePolicy
     public function printWaybill(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.print_way_bill")) return false;
+
+        if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['waybill'], $invoice)) return false;
 
         if(
             $invoice->status_id !== status("Dispatched") &&

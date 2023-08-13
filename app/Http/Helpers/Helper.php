@@ -731,7 +731,7 @@ function money($amt)
 }
 
 function show_promo(Stock $stock, $column){
-    if($stock->has_promo){
+    if($stock->has_promo && $stock->promotion_item->{$column} > 0){
         return '<span>'.money($stock->{$column}).'</span>'.'&nbsp;&nbsp;&nbsp;'.'<span style="text-decoration: line-through;color:red">'.money($stock->getRawOriginal($column));
     }
     return money($stock->{$column});
@@ -1183,3 +1183,23 @@ function addOtherDepartment($batch, $department): array
 
 }
 
+
+function logInvoicePrint($type, \App\Models\Invoice $invoice)
+{
+    if($invoice->in_department !== "retail") { // we dont need to log retail invoice because printing of draft does not mean anything
+        \App\Models\Invoiceprinthistory::create([
+            'invoice_id' => $invoice->id,
+            'user_id' => auth()->id(),
+            'type' => $type,
+            'status_id' => $invoice->status_id,
+            'print_date' => todaysDate(),
+            'created_at' => Carbon::now()->toDateTimeString()
+        ]);
+    }
+}
+
+
+function canPrint($type, \App\Models\Invoice $invoice){
+
+    return $invoice->invoiceprinthistories()->where('type', $type)->where('status_id', $invoice->status_id)->count() === 0;
+}

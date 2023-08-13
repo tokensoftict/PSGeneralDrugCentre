@@ -63,6 +63,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Collection|Invoiceactivitylog[] $invoiceactivitylogs
  * @property Collection|Invoiceitembatch[] $invoiceitembatches
  * @property Collection|Invoiceitem[] $invoiceitems
+ * @property Collection|invoiceprinthistories[] $invoiceprinthistories
  * @property Collection|Onlineordertotal[] $onlineordertotals
  *
  * @package App\Models
@@ -229,4 +230,9 @@ class Invoice extends Model
 	{
 		return $this->hasMany(Onlineordertotal::class);
 	}
+
+    public function invoiceprinthistories()
+    {
+        return $this->hasMany(Invoiceprinthistory::class);
+    }
 }

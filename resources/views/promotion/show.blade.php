@@ -88,16 +88,31 @@
                         <td>{{ $item->stock->name }}</td>
                         <td>{{ $item->stock->totalBalance() }}</td>
                         <td class="text-center">
-                            <span class="d-block font-size-11 text-danger" style="text-decoration: line-through;  ">{{ money($item->stock->whole_price) }}</span>
+                            @if($item->whole_price > 0)
+                            <span class="d-block font-size-11 text-danger" style="text-decoration: line-through;  ">{{ money($item->stock->getUneditedValues()['whole_price']) }}</span>
                             <span class="d-block font-size-13 text-primary" >{{ money($item->whole_price) }}</span>
+                            @else
+                                <span class="d-block font-size-13 text-primary" >{{ money($item->stock->whole_price) }}</span>
+                                <span class="d-block font-size-11 text-warning" >No Promo</span>
+                            @endif
                         </td>
                         <td class="text-center">
-                            <span class="d-block font-size-11 text-danger" style="text-decoration: line-through ">{{ money($item->stock->bulk_price) }}</span>
+                            @if($item->bulk_price > 0)
+                            <span class="d-block font-size-11 text-danger" style="text-decoration: line-through ">{{ money($item->stock->getUneditedValues()['bulk_price']) }}</span>
                             <span class="d-block font-size-13 text-primary" >{{ money($item->bulk_price) }}</span>
+                            @else
+                                <span class="d-block font-size-13 text-primary">{{ money($item->stock->bulk_price) }}</span>
+                                <span class="d-block font-size-11 text-warning" >No Promo</span>
+                            @endif
                         </td>
                         <td class="text-center">
-                            <span class="d-block font-size-11 text-danger" style="text-decoration: line-through ">{{ money($item->stock->retail_price) }}</span>
+                            @if($item->retail_price > 0)
+                            <span class="d-block font-size-11 text-danger">{{ money($item->stock->getUneditedValues()['retail_price']) }}</span>
                             <span class="d-block font-size-13 text-primary" >{{ money($item->retail_price) }}</span>
+                            @else
+                                <span class="d-block font-size-13 text-primary">{{ money($item->stock->retail_price) }}</span>
+                                <span class="d-block font-size-11 text-warning" >No Promo</span>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -586,22 +586,40 @@ trait StockModelTrait
 
     public function getWholePriceAttribute()
     {
-        return $this->promotion_item->whole_price ?? $this->attributes['whole_price'];
+        if(!isset($this->promotion_item->status_id)) return $this->attributes['whole_price'];
+
+        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['whole_price'];
+
+        return (isset($this->promotion_item->whole_price) && $this->promotion_item->whole_price > 0) ? $this->promotion_item->whole_price : $this->attributes['whole_price'];
     }
 
     public function getBulkPriceAttribute()
     {
-        return $this->promotion_item->bulk_price ?? $this->attributes['bulk_price'];
+        if(!isset($this->promotion_item->status_id)) return $this->attributes['bulk_price'];
+
+        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['bulk_price'];
+
+        return (isset($this->promotion_item->bulk_price) && $this->promotion_item->bulk_price > 0) ? $this->promotion_item->bulk_price : $this->attributes['bulk_price'];
     }
     public function getRetailPriceAttribute()
     {
-        return $this->promotion_item->retail_price ?? $this->attributes['retail_price'];
+        if(!isset($this->promotion_item->status_id)) return $this->attributes['retail_price'];
+
+        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['retail_price'];
+
+        return (isset($this->promotion_item->retail_price) && $this->promotion_item->retail_price > 0 ) ? $this->promotion_item->retail_price : $this->attributes['retail_price'];
     }
 
 
     public function getHasPromoAttribute()
     {
         return isset($this->promotion_item->status_id);
+    }
+
+
+    public function getUneditedValues() : array
+    {
+        return $this->attributes;
     }
 
 }

@@ -17,7 +17,7 @@
                                             <div x-text="product.name"></div>
                                             <div class="np-result-description">
                                                 <span class="font-size-13" style="font-weight: bolder"  >Price : <span class="text-danger"  :class="{'font-size-13':product.promo_selling_price > 0, 'slashed':product.promo_selling_price > 0}" x-html="money(product.selling_price)"></span></span>
-                                                &nbsp; <span x-show="(product.promo_selling_price != null)" style="font-weight: bolder" class="text-primary font-size-13"> <span  x-show="(product.promo_selling_price != null)" x-html="money(product.promo_selling_price)"></span></span>
+                                                &nbsp; <span x-show="(product.promo_selling_price != null && product.promo_selling_price > 0)" style="font-weight: bolder" class="text-primary font-size-13"> <span  x-show="(product.promo_selling_price != null)" x-html="money(product.promo_selling_price)"></span></span>
                                                 &nbsp; &nbsp;
                                                 Quantity : <span x-text="product.quantity"></span>
                                                 &nbsp; &nbsp;
@@ -372,7 +372,7 @@
                     added_by : {{ auth()->user()->id }},
                 discount_added_by : null,
                 cost_price : this.selectedProduct.cost_price,
-                selling_price : this.selectedProduct.promo_selling_price ?? this.selectedProduct.selling_price,
+                selling_price : (this.selectedProduct.promo_selling_price && this.selectedProduct.promo_selling_price > 0) ? this.selectedProduct.promo_selling_price : this.selectedProduct.selling_price,
                 profit : this.selectedProduct.selling_price - this.selectedProduct.cost_price,
                 discount_value : 0,
                 discount_amount : 0,

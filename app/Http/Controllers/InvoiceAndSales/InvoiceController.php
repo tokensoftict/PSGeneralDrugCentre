@@ -203,6 +203,8 @@ class InvoiceController extends Controller
     {
         logActivity($invoice->id, $invoice->invoice_number,'Print Invoice Way Bill Status:'.status_name($invoice->status_id));
 
+        logInvoicePrint(Settings::$printType['waybill'], $invoice);
+
         $data['invoice'] = $invoice;
         $data['store'] = $this->settings->store();
         $pdf = PDF::loadView("print.pos_afour_waybill",$data);
@@ -214,6 +216,8 @@ class InvoiceController extends Controller
     public function print_afour(Invoice $invoice)
     {
         logActivity($invoice->id, $invoice->invoice_number,'Print Invoice A4 Status:'.status_name($invoice->status_id));
+
+        logInvoicePrint(Settings::$printType['a4'], $invoice);
 
         $data['invoice'] = $invoice;
         $data['store'] = $this->settings->store();

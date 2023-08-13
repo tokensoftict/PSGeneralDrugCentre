@@ -1,6 +1,7 @@
 <?php
 namespace App\Traits;
 
+use App\Classes\Settings;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use PDF;
@@ -26,6 +27,8 @@ trait InvoiceTrait
         }
 
         logActivity($invoice->id, $invoice->invoice_number,'Print Invoice Thermal Status:'.$invoice->status->name);
+
+        logInvoicePrint(Settings::$printType['thermal'], $invoice);
 
         $data['invoice'] =$invoice;
         $data['store'] = $this->settings->store();
@@ -162,6 +165,7 @@ trait InvoiceTrait
         $invoice_discount = 0;
         $invoice_child = Invoice::whereIn('invoice_number',$child_invoice)->get();
         LogActivity($invoice->id, $invoice->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
+
         foreach ($invoice_child as $child){
             LogActivity($child->id, $child->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
             $invoice_discount+=$child->discount_amount;
