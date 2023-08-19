@@ -1,20 +1,20 @@
 <?php
-namespace App\Models;
-use App\Jobs\PushDataServer;
 
 /**
  * Created by Reliese Model.
  */
 
+namespace App\Models;
 
-
+use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Customer
- *
+ * 
  * @property int $id
  * @property string|null $firstname
  * @property string|null $lastname
@@ -28,16 +28,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $deposit_balance
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
+ * @property Invoice $invoice
  * @property City|null $city
+ * @property Collection|Creditpaymentlog[] $creditpaymentlogs
+ * @property Collection|CustomerLedger[] $customer_ledgers
+ * @property Collection|Invoiceitem[] $invoiceitems
+ * @property Collection|Invoice[] $invoices
+ * @property Collection|Paymentmethoditem[] $paymentmethoditems
+ * @property Collection|Payment[] $payments
  *
  * @package App\Models
  */
 class Customer extends Model
 {
-
     use ModelFilterTraits;
-
 	protected $table = 'customers';
 
 	protected $casts = [
@@ -61,27 +65,58 @@ class Customer extends Model
 		'deposit_balance'
 	];
 
+	public function city()
+	{
+		return $this->belongsTo(City::class);
+	}
+
+	public function creditpaymentlogs()
+	{
+		return $this->hasMany(Creditpaymentlog::class);
+	}
+
+
+    public function creditpaymentlog()
+    {
+        return $this->hasOne(Creditpaymentlog::class)
+            ->where('amount','>',0)->latestOfMany('id');
+    }
+
+	public function customer_ledgers()
+	{
+		return $this->hasMany(CustomerLedger::class);
+	}
+
+	public function invoiceitems()
+	{
+		return $this->hasMany(Invoiceitem::class);
+	}
+
+	public function invoices()
+	{
+		return $this->hasMany(Invoice::class);
+	}
+
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class)->latestOfMany();
+    }
+
+	public function paymentmethoditems()
+	{
+		return $this->hasMany(Paymentmethoditem::class);
+	}
+
+	public function payments()
+	{
+		return $this->hasMany(Payment::class);
+	}
+
     public function updateCreditBalance()
     {
         $this->credit_balance =  $this->creditpaymentlogs()->sum('amount');
         $this->update();
     }
-
-
-    public function creditpaymentlogs()
-    {
-        return $this->hasMany(Creditpaymentlog::class);
-    }
-
-    public function customer_ledgers()
-    {
-        return $this->hasMany(CustomerLedger::class);
-    }
-
-    public function city()
-	{
-		return $this->belongsTo(City::class);
-	}
 
     public function getBulkPushData() : array{
         return [
@@ -105,4 +140,3 @@ class Customer extends Model
     }
 
 }
-
