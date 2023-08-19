@@ -124,7 +124,7 @@ trait InvoiceTrait
             return redirect()->route('invoiceandsales.merge')->with('error', "Invalid Main Invoice Number, please check and try again");
         }
 
-        if($invoice->status_id != status('Complete'))
+        if($invoice->status_id != status('Complete') && $invoice->status_id != status('Paid'))
         {
             return redirect()->route('invoiceandsales.merge')->with('error', "Main Invoice has not been dispatched / completed - ".$invoice->invoice_number);
         }
@@ -135,7 +135,7 @@ trait InvoiceTrait
         $invoice_child = Invoice::whereIn('invoice_number',$child_invoice)->get();
         LogActivity($invoice->id, $invoice->invoice_number,"Invoice a4 print merged, Main Invoice : $main_invoice, Child Invoice ".implode(",",$child_invoice));
         foreach ($invoice_child as $child){
-            if($child->status_id != status('Complete'))
+            if($child->status_id != status('Complete') && $child->status_id != status('Paid'))
             {
                 return redirect()->route('invoiceandsales.merge')->with('error', "Child Invoice ".$child->invoice_number." has not been dispatched / completed");
             }
