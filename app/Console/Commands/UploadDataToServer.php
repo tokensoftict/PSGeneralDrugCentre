@@ -167,11 +167,15 @@ class UploadDataToServer extends Command
             $this->info('Parsing Stock Data Complete');
             $this->info('Posting Stock Data to '.onlineBase());
             $response = _POST('bulk_add_data',$postdata);
+            $this->info('Stock data has been posted successfully for chunk '.$response);
+            $this->info('Stock data has been posted successfully for chunk '.$chunk_numbers);
+            /*
             if($response['status'] == true){
                 $chunk_numbers = $chunk_numbers-1;
                 $this->info('Stock data has been posted successfully for chunk '.$chunk_numbers);
                 sleep(3);
             }
+            */
         });
 
 
