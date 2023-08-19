@@ -434,7 +434,7 @@ trait StockModelTrait
 
     public function getRetailQuantity()
     {
-        return round($this->stockbatches()->sum('retail')/$this->box, 0);
+        return round(divide($this->stockbatches()->sum('retail'),$this->box), 0);
     }
 
     public function cacheTotalBalance(){
