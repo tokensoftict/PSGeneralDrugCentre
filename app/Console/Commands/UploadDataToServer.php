@@ -54,7 +54,7 @@ class UploadDataToServer extends Command
         //to avoid relation error
 
         //now we begin with manufacture
-
+/*
         $this->info('Gathering Manufacturer Data');
         $manufacturers = Manufacturer::all();
         $all_data = [];
@@ -149,7 +149,7 @@ class UploadDataToServer extends Command
             sleep(4);
         }
 
-
+*/
         //now finally lets hanle stock pushing
           $this->info('Gathering Bulk Stock Data');
         $stocks = Stock::where(function($query){
@@ -175,7 +175,7 @@ class UploadDataToServer extends Command
         });
 
 
-
+/*
 
         //now we begin with Customer date
         $this->info('Gathering Customer Data');
@@ -225,7 +225,7 @@ class UploadDataToServer extends Command
             $this->info('Purchase Orders data has been posted successfully');
             sleep(4);
         }
-
+*/
         $this->info('Data has been uploaded to server successfully');
 
         return ;

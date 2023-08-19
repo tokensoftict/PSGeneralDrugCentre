@@ -387,8 +387,8 @@ trait StockModelTrait
             'max'=>"0",
             'cartoon'=>$this->carton,
             'sachet'=>1,
-            //'status'=>$this->status,
-            //'retail_status'=>$this->status,
+            'status'=>$this->status,
+            'retail_status'=>$this->status,
         ];
 
         $ex = $this->getOnlineExpiryDate();

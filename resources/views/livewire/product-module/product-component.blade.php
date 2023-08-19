@@ -21,7 +21,7 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="mb-3">
                     <label>Code</label>
-                    <input name="code" required class="form-control" placeholder="Code" wire:model.defer="product_data.code" type="text">
+                    <input name="code"  class="form-control" placeholder="Code" wire:model.defer="product_data.code" type="text">
                 </div>
             </div>
 
