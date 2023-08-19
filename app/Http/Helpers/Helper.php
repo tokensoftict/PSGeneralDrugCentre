@@ -9,6 +9,7 @@ use App\Models\Usergroup;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Classes\Settings;
 use Spatie\Valuestore\Valuestore;
@@ -55,6 +56,9 @@ function _POST($endpoint, $payload = []) : array|bool
     {
         return json_decode($response->body(), true) ??  true;
     }
+
+    Storage::disk('local')->append('bulk-logs', $response->body(), null);
+
     return false;
 }
 
