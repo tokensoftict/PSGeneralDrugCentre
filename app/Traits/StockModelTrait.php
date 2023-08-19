@@ -422,9 +422,9 @@ trait StockModelTrait
 
     public function getOnlineQuantity()
     {
-        return $this->stockbatches()->sum('bulksales') +
-            $this->stockbatches()->sum('quantity') +
-            $this->stockbatches()->sum('wholesales') ;
+        return $this->stockbatches()->where('bulksales', '>',0)->sum('bulksales') +
+            $this->stockbatches()->where('quantity', '>',0)->sum('quantity') +
+            $this->stockbatches()->where('quantity', '>',0)->sum('quantity') ;
     }
 
     public function getCurrentlevel($department)
