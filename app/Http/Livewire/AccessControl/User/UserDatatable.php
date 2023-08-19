@@ -17,7 +17,6 @@ class UserDatatable extends ExportDataTableComponent
 
     protected $model = User::class;
 
-    public array $perPageAccepted = [100, 200, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5000, 6000, 6500];
 
     public array $filters = [];
 
