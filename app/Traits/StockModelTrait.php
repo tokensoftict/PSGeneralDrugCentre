@@ -382,6 +382,7 @@ trait StockModelTrait
             'group_id'=>$this->stockgroup_id,
             'price'=>$this->bulk_price,
             'quantity'=>$this->getOnlineQuantity(),
+            'retail_quantity' => $this->getRetailQuantity(),
             'box'=>$this->box,
             'is_wholesales'=>($this->bulk_price > 0 ? 1 : 0 ),
             'max'=>"0",
@@ -429,6 +430,11 @@ trait StockModelTrait
     public function getCurrentlevel($department)
     {
         return $this->stockbatches()->sum($department);
+    }
+
+    public function getRetailQuantity()
+    {
+        return round($this->stockbatches()->sum('retail')/$this->box, 0);
     }
 
     public function cacheTotalBalance(){
