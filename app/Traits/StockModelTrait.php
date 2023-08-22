@@ -424,7 +424,7 @@ trait StockModelTrait
     {
         return $this->stockbatches()->where('bulksales', '>',0)->sum('bulksales') +
             $this->stockbatches()->where('quantity', '>',0)->sum('quantity') +
-            $this->stockbatches()->where('quantity', '>',0)->sum('quantity') ;
+            $this->stockbatches()->where('wholesales', '>',0)->sum('wholesales') ;
     }
 
     public function getCurrentlevel($department)
