@@ -53,7 +53,7 @@ class StockTransferController extends Controller
 
 
 
-        return setPageContent('stocktransfer.form',$data);
+        return view('stocktransfer.form',$data);
     }
 
 

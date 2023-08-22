@@ -29,7 +29,7 @@ function divide($num1, $num2)
 
 function _GET($endpoint, $payload = []) : array|bool
 {
-    $response = Http::timeout(120)->get(onlineBase() . 'api/data/' . $endpoint);
+    $response = Http::timeout(5000)->get(onlineBase() . 'api/data/' . $endpoint);
     if($response->status() == 200 )
     {
         return json_decode($response->body(), true) ??  true;
@@ -39,7 +39,7 @@ function _GET($endpoint, $payload = []) : array|bool
 
 function _FETCH($url) : array|bool
 {
-    $response = Http::timeout(120)->get($url);
+    $response = Http::timeout(5000)->get($url);
 
     if($response->status() == 200 )
     {
@@ -50,7 +50,7 @@ function _FETCH($url) : array|bool
 
 function _POST($endpoint, $payload = []) : array|bool
 {
-    $response =   Http::timeout(120)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(5000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
     if($response->status() == 200 )
     {

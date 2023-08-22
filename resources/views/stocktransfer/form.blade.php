@@ -86,7 +86,13 @@
                 </div>
             </form>
             @if(isset($from) && isset($to))
-                <livewire:stock-transfer.stock-transfer-component :stocktransfer="$stocktransfer" :from="$from" :to="$to"/>
+                @if($from == $to)
+                    {!! alert_error('You can not transfer to the same department') !!}
+                @else
+                <div class="row">
+                    <livewire:stock-transfer.stock-transfer-component :stocktransfer="$stocktransfer" :from="$from" :to="$to"/>
+                </div>
+                @endif
             @endif
         </div>
     </div>
