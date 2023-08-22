@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('run:movingstocks')->dailyAt('04:00')->appendOutputTo('storage/app/movingstocks.txt');
 
+        $schedule->command('sync:stock')->everyTwoHours()->appendOutputTo('storage/app/syncStock.txt');;
+
     }
 
     /**
