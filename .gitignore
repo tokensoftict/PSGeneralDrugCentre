@@ -2,6 +2,8 @@
 /public/hot
 !/public/images/bg.jpg
 /public/storage
+/public/product_images
+/public/producs
 /storage/*.key
 /vendor
 .env
@@ -11,3 +13,4 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/laravel-docker/.env
