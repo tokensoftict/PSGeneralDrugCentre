@@ -236,6 +236,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Bar Code</th>
+                                    <th>Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -244,6 +245,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{!! $barcode !!}</td>
+                                            <td><button href="#" onclick="deleteBarcode('{{ $barcode }}')" class="btn btn-danger btn-sm">Delete</button></td>
                                         </tr>
                                     @endforeach
                                 @endif
@@ -311,6 +313,10 @@
 
         }
 
+        function deleteBarcode(code){
+            @this.barcodes = @this.barcodes.filter(item => item !== code)
+            console.log(@this.barcodes);
+        }
 
         function captureBarcode(barcode)
         {
