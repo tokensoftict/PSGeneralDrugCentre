@@ -13,6 +13,7 @@
 
     <script src="{{ asset('js/moment.min.js') }}"></script>
     <script src="{{ asset('js/pikaday.js') }}"></script>
+    <script src="{{ asset('js/barcode.js') }}"></script>
 @endsection
 
 @section('content')

@@ -29,6 +29,11 @@ class AjaxController extends Controller
         $this->customerRepository = $customerRepository;
     }
 
+    public function findStockByBarcode(Request $request)
+    {
+        return $this->productRepository->findProductByBarcode($request->get('barcode'));
+    }
+
     public function findstock(Request $request)
     {
         return  $this->productRepository->findProduct($request->get('query') ?? $request->get("searchTerm"));

@@ -31,7 +31,7 @@ class InvoiceController extends Controller
         $data['subtitle'] = 'Generate New ';
         $data['invoice'] = new Invoice();
         $data['department'] = auth()->user()->department_id;
-        return setPageContent('invoiceandsales.form', $data);
+        return view('invoiceandsales.form', $data);
     }
 
     public function draft(Request $request)

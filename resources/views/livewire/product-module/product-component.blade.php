@@ -126,9 +126,9 @@
                 <div class="mb-3">
                     <label>Barcode</label>
                     <div class="input-group col-md-12">
-                        <input readonly=""  id="text_barcode" type="text" wire:model.defer="product_data.barcode" name="barcode" class="form-control">
+                        <input readonly=""  id="text_barcode" type="text"  name="barcode" class="form-control">
                         <div class="input-group-btn">
-                            <button data-toggle="modal" data-target="#myModal" type="button" class="btn btn-primary">Capture Barcode</button>
+                            <button id="barcode" type="button" class="btn btn-primary">Capture Barcode</button>
                         </div>
                     </div>
                 </div>
@@ -185,6 +185,24 @@
                 </div>
             @endif
 
+
+            <div class="col-lg-12 mt-3">
+                <h4>Product Image</h4>
+                <hr/>
+                <div class="mb-3">
+                    <label>Product Image</label>
+                    <input type="file" id="formFile"  name="logo" wire:model.defer="product_data.image_path" style="width: 0;height: 0;padding: 0; margin: 0" >
+                    <div class="form-control">
+                        <br/>
+                        <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
+                        <br/>
+                        <div wire:loading wire:target="store.logo">Uploading...</div>
+                        <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Select Image and Upload</button>
+                    </div>
+                    @error('product_data.image') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
         </div>
 
         <div class="col-lg-12">
@@ -200,4 +218,119 @@
 
         </div>
     </form>
+    <div  class="modal fade" wire:ignore.self id="simpleBarcodeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Product Barcode Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="modal-title">Product Barcode List(s)</h5>
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Bar Code</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @if(isset($this->product->id))
+                                    @foreach($this->barcodes as $barcode)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{!! $barcode !!}</td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="saveBarcode" wire:target="saveBarcode" wire:loading.attr="disabled" class="btn btn-primary">
+                        <span wire:loading wire:target="saveBarcode" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let barCodeOpen = false;
+        window.onload = function (){
+            $(document).ready(function(){
+                let myModal = "";
+                myModal = new bootstrap.Modal(document.getElementById("simpleBarcodeModal"), {});
+
+                document.getElementById("simpleBarcodeModal").addEventListener('shown.bs.modal', function () {
+                    barCodeOpen = true
+                })
+
+                document.getElementById("simpleBarcodeModal").addEventListener('hidden.bs.modal', function () {
+                    barCodeOpen = false
+                })
+
+                $('#barcode').on('click', function (){
+                    myModal.show();
+                });
+            });
+
+            $(document).scannerDetection({
+                timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+                endChar: [13], // be sure the scan is complete if key 13 (enter) is detected
+                avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms
+                ignoreIfFocusOn: 'input', // turn off scanner detection if an input has focus
+                startChar: [16], // Prefix character for the cabled scanner (OPL6845R)
+                endChar: [40],
+                onComplete: function(barcode){
+                    captureBarcode(barcode);
+                }, // main callback function
+                scanButtonKeyCode: 116, // the hardware scan button acts as key 116 (F5)
+                scanButtonLongPressThreshold: 5, // assume a long press if 5 or more events come in sequence
+                onScanButtonLongPressed: function(){
+                    alert('key pressed');
+                }, // callback for long pressing the scan button
+                onError: function(string){}
+            });
+
+            $('#saveBarcode').on('click', function(){
+                @this.saveBarcode().then(function(response){
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000)
+                });
+            });
+
+        }
+
+
+        function captureBarcode(barcode)
+        {
+            if(barCodeOpen === false)
+            {
+                alert('Click on capture barcode scanner to capture barcode');
+            }else{
+                @if(!isset($this->product->id))
+                alert('Please save this product before, creating barcode')
+                @else
+                @this.validateBarcode(barcode).then(function(resp){
+                    if(resp.status == false){
+
+                    }
+                });
+                @endif
+            }
+        }
+
+
+    </script>
+
 </div>

@@ -84,6 +84,7 @@
 @section('js')
     <script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
     <script src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('js/barcode.js') }}"></script>
 
     <script>
         $(document).ready(function(){

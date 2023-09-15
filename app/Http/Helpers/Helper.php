@@ -1,9 +1,6 @@
 <?php
 
 
-use App\Models\BankAccount;
-use App\Models\Department;
-use App\Models\Paymentmethod;
 use App\Models\Stock;
 use App\Models\Usergroup;
 use Carbon\Carbon;
@@ -15,21 +12,23 @@ use App\Classes\Settings;
 use Spatie\Valuestore\Valuestore;
 
 function onlineBase(){
-    return  'https://admin.generaldrugcentre.com/';//'http://localhost/rest-ecommerce-github/general_drug/public/'; //'https://admin.generaldrugcentre.com/';  //env('CURL_BASE_URL', 'https://admin.generaldrugcentre.com/api/data/');
+
+    if(config('app.env') === "local"){
+        return 'http://localhost/rest-ecommerce-github/general_drug/public/';
+    }
+    return  'https://admin.generaldrugcentre.com/';
 }
 
 function divide($num1, $num2)
 {
-    if($num1 == 0) return 0;
-    if($num2 == 0) return 0;
+    if($num1 == 0 || $num2 == 0) return 0;
 
     return ($num1/$num2);
-
 }
 
 function _GET($endpoint, $payload = []) : array|bool
 {
-    $response = Http::timeout(5000)->get(onlineBase() . 'api/data/' . $endpoint);
+    $response = Http::timeout(10000)->get(onlineBase() . 'api/data/' . $endpoint);
     if($response->status() == 200 )
     {
         return json_decode($response->body(), true) ??  true;
@@ -39,7 +38,7 @@ function _GET($endpoint, $payload = []) : array|bool
 
 function _FETCH($url) : array|bool
 {
-    $response = Http::timeout(5000)->get($url);
+    $response = Http::timeout(10000)->get($url);
 
     if($response->status() == 200 )
     {
@@ -50,7 +49,7 @@ function _FETCH($url) : array|bool
 
 function _POST($endpoint, $payload = []) : array|bool
 {
-    $response =   Http::timeout(5000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(10000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
     if($response->status() == 200 )
     {

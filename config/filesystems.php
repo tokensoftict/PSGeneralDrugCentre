@@ -49,6 +49,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'product_images' => [
+            'driver' => 'local',
+            'root' => env("PUBLIC_DIR",public_path('products')),
+            'url' => env('APP_URL'),
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

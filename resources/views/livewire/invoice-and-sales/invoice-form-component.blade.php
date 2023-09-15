@@ -1,11 +1,11 @@
-<div x-data="invoice()" x-init="totalInvoice(); newCustomerEvent()">
+<div x-data="invoice()" x-init="totalInvoice(); newCustomerEvent(); getInputFromBarcode()">
     <div class="row">
         <div class="col-sm-8">
             <div class="card">
                 <div class="card-body" style="position: relative;">
                     <div class="mb-3">
                         <label for="ac-demo">Search For Product or Scan Bar Code</label>
-                        <input type="text" x-model="searchString" x-on:keyup.debounce="searchProduct(this.value)" placeholder="Product Barcode, Product Name..." class="form-control form-control-lg">
+                        <input id="searchText" type="text" x-model="searchString" x-on:keyup.debounce="searchProduct(this.value)" placeholder="Product Barcode, Product Name..." class="form-control form-control-lg">
 
                     </div>
                     <template x-if="(searchproduct.length > 0)" >
@@ -121,7 +121,7 @@
                             </h4>
                             <div class="mb-3">
                                 <label>Search For Customer :</label>
-                                <input class="form-control input-sm" x-model="searchCustomerString" class="form-control" x-on:keyup.debounce="searchCustomer(this.value)"  placeholder="Search for customer by phone number, name or email address">
+                                <input class="form-control input-sm" id="customer-search-text" x-model="searchCustomerString" class="form-control" x-on:keyup.debounce="searchCustomer(this.value)"  placeholder="Search for customer by phone number, name or email address">
 
                                 @if(userCanView('customer.create'))
                                     <a href="#" wire:click="newCustomer" class="text-success" style="display: block;text-align: center">Add New Customer</a>
@@ -541,10 +541,49 @@
                     var a = e[i];
                     new Choices(a, { placeholderValue: "This is a placeholder set in the config", searchPlaceholderValue: "This is a search placeholder" });
                 }
-            }
+            },
+            async requestProductWithBarcode(barcode)
+            {
 
+            },
+            getInputFromBarcode()
+            {
+                var obj = this;
+                $(document).ready(function(){
+                    $(document).scannerDetection({
+                        timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+                        endChar: [13], // be sure the scan is complete if key 13 (enter) is detected
+                        avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms// turn off scanner detection if an input has focus
+                        startChar: [16], // Prefix character for the cabled scanner (OPL6845R)
+                        endChar: [40],
+                        ignoreIfFocusOn : ['customer-search-text', 'searchText'],
+                        onComplete: function(barcode){
+                            //window.focus();
+                            obj.requestProductWithBarcode(barcode);
+                        }, // main callback function
+                        scanButtonKeyCode: 116, // the hardware scan button acts as key 116 (F5)
+                        scanButtonLongPressThreshold: 5, // assume a long press if 5 or more events come in sequence
+                        onScanButtonLongPressed: function(){
+                            alert('key pressed');
+                        }, // callback for long pressing the scan button
+                        onError: function(string){}
+                    });
+                });
+            }
         }
         }
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dropdown', () => ({
+                init() {
+                    alert('yes')
+                    console.log('I will get evaluated when initializing each "dropdown" component.')
+                },
+            }))
+
+
+        })
+
 
     </script>
 </div>

@@ -32,6 +32,7 @@ class ProductRepository
         'piece'=> NULL,
         'box'=> NULL,
         'carton'=> NULL,
+        'image_path' =>  NULL,
         'sachet'=> '0',
         'status'=> '1',
     ];
@@ -61,6 +62,43 @@ class ProductRepository
     public function destroy($id) : void
     {
         $this->getStock($id)->delete();
+    }
+
+
+    public function findProductByBarcode($barcode)
+    {
+        $selling_price = match (request()->column){
+            'wholesales', 'bulksales', 'quantity', '', NULL => 'whole_price',
+            'retail' => 'retail_price',
+        };
+
+        $cost_price = match (request()->column){
+            'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
+            'retail' => 'retail_cost_price',
+        };
+
+
+        $stock =  DB::table('stocks')->select('stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
+            'stocks.name',
+            'stocks.box',
+            'stocks.location',
+            'stocks.name as text',
+            'stocks.carton',
+            'promotion_items.promotion_id',
+            'promotion_items.from_date',
+            'promotion_items.end_date',
+            'promotion_items.'.$selling_price." as promo_selling_price"
+        )
+            ->leftJoin('promotion_items', function($join){
+                $join->on('stocks.id', '=', 'promotion_items.stock_id')
+                    ->on('promotion_items.status_id', '=', DB::raw(status('Approved')));
+            })->join('stockbarcodes', function($join){
+                $join->on('stocks.id', '=', 'stockbarcodes.stock_id');
+            })
+            ->where('stockbarcodes.barcode', $barcode)->first();
+
+        if($stock) return $stock;
+        return collect([])->toJson();
     }
 
     public function findProduct(mixed $name)

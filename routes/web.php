@@ -7,6 +7,7 @@ Route::get('/', ['as' => 'index', 'uses' => 'Auth\LoginController@index']);
 Route::get('/auth', ['as' => 'login', 'uses' => 'Auth\LoginController@index']);
 Route::post('login', ['as' => 'login_process', 'uses' => 'Auth\LoginController@loginprocess']);
 Route::match(['get', 'post'], 'logout', ['as' => 'logout', 'uses' => 'Auth\LoginController@logout']);
+Route::get('/scan', ['as' => 'scan', 'uses' => 'ProductScannerController']);
 
 Route::middleware(['auth'])->group(function () {
     Route::match(['post', 'get'], '/profile', 'Auth\LoginController@profile')->name('profile');
@@ -18,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('ajax')->namespace('Ajax')->group(function () {
         Route::get('/findstock', ['as' => 'findstock', 'uses' => 'AjaxController@findstock']);
+        Route::get('/findStockByBarcode', ['as' => 'findStockByBarcode', 'uses' => 'AjaxController@findStockByBarcode']);
         Route::get('/findPurchaseProduct', ['as' => 'findpurchasestock', 'uses' => 'AjaxController@findpurchasestock']);
         Route::get('/findcustomer', ['as' => 'findcustomer', 'uses' => 'AjaxController@findcustomer']);
         Route::get('/profitandlossdatatable', ['as' => 'profitandlossdatatable', 'uses' => 'AjaxController@profitandlossdatatable']);

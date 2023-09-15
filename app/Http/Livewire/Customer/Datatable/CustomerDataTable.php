@@ -58,12 +58,12 @@ class CustomerDataTable extends ExportDataTableComponent
                 ->sortable(),
             Column::make("Last Payment Date", "id")
                 ->format(function($value, $row, Column $column){
-                    $date = optional($row->creditpaymentlog)->payment_date;
+                    $date = isset($row->creditpaymentlog->payment_date) ? $row->creditpaymentlog->payment_date : false;
                     return $date ? convert_date($date) : "N/A";
                 }),
                  Column::make("Last Invoice Date", "id")
                    ->format(function($value, $row, Column $column){
-                       $date = optional($row->invoice)->invoice_date;
+                       $date = isset($row->invoice->invoice_date) ? $row->invoice->invoice_date : false;
                        return $date ? convert_date($date) : "N/A";
                    })
                 ->sortable(),

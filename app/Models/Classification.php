@@ -9,6 +9,7 @@ namespace App\Models;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
+use Google\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Collection[] $stocks
  *
  * @package App\Models
  */
@@ -46,6 +48,10 @@ class Classification extends Model
         ];
     }
 
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
+    }
 
     public function newonlinePush()
     {

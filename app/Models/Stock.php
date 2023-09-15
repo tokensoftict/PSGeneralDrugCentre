@@ -35,12 +35,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $quantity
  * @property string|null $barcode
  * @property string|null $location
+ * @property string|null $image_path
+ * @property string|null $image_download_status
  * @property bool $expiry
  * @property int $piece
  * @property int $box
  * @property int $carton
  * @property bool $sachet
  * @property bool $status
+ * @property bool $image_uploaded
  * @property int|null $batched
  * @property bool $reorder
  * @property int|null $user_id
@@ -65,6 +68,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|Stockbincard[] $stockbincards
  * @property Collection|Stockopening[] $stockopenings
  * @property Collection|Stocktransferitem[] $stocktransferitems
+ * @property Collection|stockbarcodes[] $stockbarcodes
  * @package App\Models
  */
 class Stock extends Model
@@ -130,7 +134,10 @@ class Stock extends Model
 		'status',
 		'batched',
 		'reorder',
-		'user_id'
+		'user_id',
+        'image_path',
+        'image_uploaded',
+        'image_download_status'
 	];
 
 	public function brand()
@@ -253,6 +260,12 @@ class Stock extends Model
     public function promotion_item()
     {
         return $this->hasOne(PromotionItem::class)->where('status_id', status('Approved'))->orderBy('id', 'DESC');
+    }
+
+
+    public function stockbarcodes()
+    {
+        return $this->hasMany(Stockbarcode::class);
     }
 
 }
