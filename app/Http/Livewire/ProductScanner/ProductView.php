@@ -40,8 +40,8 @@ class ProductView extends Component
         }
     }
 
-    public function getProductByID(Stock $stock)
+    public function getProductByID($stock)
     {
-        $this->product = $stock;
+        $this->product = Stock::find($stock);
     }
 }
