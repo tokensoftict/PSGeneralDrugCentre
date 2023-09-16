@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ProductModule;
 
+use App\Classes\Settings;
 use App\Models\Category;
 use App\Models\Stock;
 use App\Models\Stockbarcode;
@@ -87,6 +88,10 @@ class ProductComponent extends Component
            "product_data.location"=>"required"
        ];
 
+        if($this->product_data['image_path'] === "logo/" . app(Settings::class)->store()->logo)
+        {
+            $data['product_data.image_path'] = 'mimes:jpeg,jpg,png,bmp|required|max:10000';
+        }
 
         if(userCanView('product.changeSellingPrice'))
         {
