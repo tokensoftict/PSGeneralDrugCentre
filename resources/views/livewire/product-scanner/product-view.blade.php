@@ -18,7 +18,7 @@
             <div class="right">
                 <h3>{{ $this->product->name }}</h3>
                 <h4 id="price"> <small>&#8358;</small> {{ money($this->product->retail_price) }} </h4>
-                <h4 id="quantity" style="margin-top: 10px"> Available Quantity : {{ $this->product->retail }} </h4>
+                <h4 id="quantity" style="margin-top: 10px"> Available Quantity : {{ $this->product->getRetailQuantity() }} </h4>
                 <p>
                     @if(!empty($this->product->description))
                     {{ $this->product->description }}
