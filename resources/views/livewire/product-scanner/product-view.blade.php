@@ -9,8 +9,8 @@
                 </div>
                 @if(isset($this->product->classification))
                     <div class="option flex">
-                        @foreach($this->product?->classification->stocks()->whereNotNull('image_path')->limit(8)->get() as $stock)
-                            <img src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
+                        @foreach($this->product?->classification->stocks()->whereNotNull('image_path')->limit(10)->get() as $stock)
+                            <img wire:click="getProductByID('{{ $stock->id }}')" src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
                         @endforeach
                     </div>
                 @endif
@@ -18,12 +18,12 @@
             <div class="right">
                 <h3>{{ $this->product->name }}</h3>
                 <h4 id="price"> <small>&#8358;</small> {{ money($this->product->retail_price) }} </h4>
-                <h4 id="quantity" style="margin-top: 10px"> Available Quantity {{ $this->product->retail }} </h4>
+                <h4 id="quantity" style="margin-top: 10px"> Available Quantity : {{ $this->product->retail }} </h4>
                 <p>
                     @if(!empty($this->product->description))
                     {{ $this->product->description }}
                     @else
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum cupiditate dolore doloribus error fuga ipsum quibusdam repellendus tempora, voluptate voluptatem. Consequatur laudantium quasi quidem. Eos eveniet impedit magni quod similique.
+
                     @endif
                 </p>
 

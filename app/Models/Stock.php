@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Classes\Settings;
 use App\Traits\ModelFilterTraits;
 use App\Traits\StockModelTrait;
 use Carbon\Carbon;
@@ -144,6 +145,12 @@ class Stock extends Model
 	{
 		return $this->belongsTo(Brand::class);
 	}
+
+
+    public function getImagePathAttribute()
+    {
+        if(empty($this->image_path)) return "logo/".app(Settings::class)->store()->logo;
+    }
 
 	public function category()
 	{

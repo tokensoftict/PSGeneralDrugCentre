@@ -39,4 +39,9 @@ class ProductView extends Component
             $this->product = $product->stock;
         }
     }
+
+    public function getProductByID(Stock $stock)
+    {
+        $this->product = $stock;
+    }
 }
