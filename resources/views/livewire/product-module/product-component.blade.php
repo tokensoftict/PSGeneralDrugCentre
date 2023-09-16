@@ -199,7 +199,7 @@
                         <div wire:loading wire:target="product_data.image">Uploading...</div>
                         <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Select Image and Upload</button>
                     </div>
-                    @error('product_data.image') <span class="text-danger">{{ $message }}</span> @enderror
+                    @error('product_data.image_path') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
 
