@@ -196,7 +196,7 @@
                         <br/>
                         <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
                         <br/>
-                        <div wire:loading wire:target="store.logo">Uploading...</div>
+                        <div wire:loading wire:target="product_data.image">Uploading...</div>
                         <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Select Image and Upload</button>
                     </div>
                     @error('product_data.image') <span class="text-danger">{{ $message }}</span> @enderror
