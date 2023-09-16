@@ -10,7 +10,9 @@
                 @if(isset($this->product->classification))
                     <div class="option flex">
                         @foreach($this->product?->classification->stocks()->where('retail_price', '>', 0)->whereNotNull('image_path')->limit(10)->get() as $stock)
-                            <img wire:click="getProductByID('{{ $stock->id }}')" src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
+                            <a href="#" wire:click="getProductByID({{ $stock->id }})">
+                                <img src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
+                            </a>
                         @endforeach
                     </div>
                 @endif
