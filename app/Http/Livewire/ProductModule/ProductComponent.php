@@ -102,7 +102,7 @@ class ProductComponent extends Component
 
         if($this->product_data['image_path'] !== NULL && !is_string($this->product_data['image_path']))
         {
-            $data['product_data.image_path'] = 'mimes:jpeg,jpg|required|max:100000';
+            $data['product_data.image_path'] = 'mimes:jpeg,jpg,png,bmp|required|max:10000';
         }
 
         $this->validate($data);
