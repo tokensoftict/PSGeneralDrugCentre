@@ -4,12 +4,12 @@
             <div class="left">
                 <div class="main_image">
                     <center>
-                        <img src="{{ asset($this->product->image_path) }}" onclick="enterFullScreen(document.documentElement)" style="width: 65%; margin: 0px auto" class="slide">
+                        <img src="{{ asset($this->product->image_path) }}" onclick="enterFullScreen(document.documentElement)" style="width: 75%; margin: 0px auto" class="slide">
                     </center>
                 </div>
                 @if(isset($this->product->classification))
                     <div class="option flex">
-                        @foreach($this->product?->classification->stocks()->whereNotNull('image_path')->limit(10)->get() as $stock)
+                        @foreach($this->product?->classification->stocks()->where('retail_price', '>', 0)->whereNotNull('image_path')->limit(10)->get() as $stock)
                             <img wire:click="getProductByID('{{ $stock->id }}')" src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
                         @endforeach
                     </div>
