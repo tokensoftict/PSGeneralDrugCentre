@@ -149,7 +149,10 @@ class Stock extends Model
 
     public function getImagePathAttribute()
     {
-        if(empty($this->image_path)) return "logo/".app(Settings::class)->store()->logo;
+        if($this->attributes['image_path'] == NULL) {
+            return "logo/" . app(Settings::class)->store()->logo;
+        }
+        return $this->attributes['image_path'];
     }
 
 	public function category()
