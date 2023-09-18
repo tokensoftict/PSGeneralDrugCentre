@@ -165,6 +165,10 @@ class InvoicePolicy
             $invoice->status_id !== status("Complete")
         )  return false;
 
+        if($invoice->status_id ==  status('Deleted')    ||
+            $invoice->status_id == status('Waiting-For-Credit-Approval') ||
+            $invoice->status_id == status('Waiting-For-Cheque-Approval')) return false;
+
         return true;
     }
 
@@ -188,8 +192,8 @@ class InvoicePolicy
         if($invoice->department === 'retail' && ($invoice->status_id !== status('Complete') && $invoice->status_id !== status('Paid') && $invoice->online_order_status !="1")) return false;
 
         if($invoice->status_id ==  status('Deleted')    ||
-            $invoice->status_id !== status('Waiting-For-Credit-Approval') ||
-            $invoice->status_id !== status('Waiting-For-Cheque-Approval')) return false;
+            $invoice->status_id == status('Waiting-For-Credit-Approval') ||
+            $invoice->status_id == status('Waiting-For-Cheque-Approval')) return false;
 
         return true;
     }
@@ -215,6 +219,10 @@ class InvoicePolicy
             $invoice->status_id !== status("Paid") &&
             $invoice->status_id !== status('Complete')
         )  return false;
+
+        if($invoice->status_id ==  status('Deleted')    ||
+            $invoice->status_id == status('Waiting-For-Credit-Approval') ||
+            $invoice->status_id == status('Waiting-For-Cheque-Approval')) return false;
 
         return true;
     }
