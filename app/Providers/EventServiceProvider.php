@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\UpdateOnlineOrderStatusEvent;
+use App\Listeners\CancelledOnlineOrder;
+use App\Listeners\PaymentConfirmOnlineOrder;
+use App\Listeners\WaitingForPaymentOnlineOrder;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,6 +22,11 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        UpdateOnlineOrderStatusEvent::class => [
+            WaitingForPaymentOnlineOrder::class,
+            CancelledOnlineOrder::class,
+            PaymentConfirmOnlineOrder::class
+        ]
     ];
 
     /**

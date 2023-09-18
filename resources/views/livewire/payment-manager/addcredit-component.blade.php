@@ -46,7 +46,7 @@
                 <span class="d-block text-center" style="font-size: 18px"><strong>Select Payment Method</strong></span>
                 <select class="select mt-1 form-control form-control-lg" id="payment_method{{  $this->select2key }}"  wire:model="payment_method">
                     <option value="">Select Payment Method</option>
-                    @foreach($this->payments as $payment)
+                    @foreach($this->payments->filter(function($item){ return $item->id !== 8; }) as $payment)
                         <option value="{{ $payment->id }}">{{ $payment->name }}</option>
                     @endforeach
                 </select>
@@ -96,7 +96,7 @@
             @if($this->payment_method === "6")
 
                 <table class="table table-bordered table-striped mt-4">
-                    @foreach($this->payments as $payment)
+                    @foreach($this->payments->filter(function($item){ return $item->id !== 8; }) as $payment)
                         @if($payment->id !=6)
                             <tr>
                                 <td>{{ $payment->name }}</td>

@@ -518,7 +518,7 @@ class PaymentRepository
 
         $this->bridgePayment($obj, $payment_data, $payment_data_items);
 
-        $payment =  $this->addPayment($payment_data);
+        $payment =  $this->addPayment($payment_data, $obj);
 
 
         $deposit->payment_id = $payment->id;
@@ -543,66 +543,68 @@ class PaymentRepository
 
     public function saveCreditPayment(&$obj) : void
     {
-        $payment_data_items = [];
+        DB::transaction(function() use($obj){
+            $payment_data_items = [];
 
-        $credit = Creditpaymentlog::create(
-            [
-                'credit_number' => creditPaymentReference(),
-                'payment_id' => NULL,
-                'user_id' =>  auth()->id(),
-                'paymentmethod_id' => $obj->payment_method,
-                'customer_id' =>  $obj->customer_id,
-                'paymentmethoditem_id' => NULL,
-                'invoicelog_type' =>NULL ,
-                'invoicelog_id' => NULL,
-                'amount' => $obj->sub_total,
-                'payment_date' => dailyDate()
-            ]
-        );
+            $credit = Creditpaymentlog::create(
+                [
+                    'credit_number' => creditPaymentReference(),
+                    'payment_id' => NULL,
+                    'user_id' =>  auth()->id(),
+                    'paymentmethod_id' => $obj->payment_method,
+                    'customer_id' =>  $obj->customer_id,
+                    'paymentmethoditem_id' => NULL,
+                    'invoicelog_type' =>NULL ,
+                    'invoicelog_id' => NULL,
+                    'amount' => $obj->sub_total,
+                    'payment_date' => dailyDate()
+                ]
+            );
 
-        $payment_data = [
-            'user_id' => auth()->id(),
-            'customer_id' => $obj->customer_id,
-            'subtotal' => $obj->sub_total,
-            'payment_date' => dailyDate(),
-            'invoice_number' =>  $credit->credit_number,
-            'invoice_type' => Creditpaymentlog::class,
-            'invoice_id' =>  $credit->id
-        ];
+            $payment_data = [
+                'user_id' => auth()->id(),
+                'customer_id' => $obj->customer_id,
+                'subtotal' => $obj->sub_total,
+                'payment_date' => dailyDate(),
+                'invoice_number' =>  $credit->credit_number,
+                'invoice_type' => Creditpaymentlog::class,
+                'invoice_id' =>  $credit->id
+            ];
 
-        $this->bridgePayment($obj, $payment_data, $payment_data_items);
+            $this->bridgePayment($obj, $payment_data, $payment_data_items);
 
-        $payment =  $this->addPayment($payment_data);
+            $payment =  $this->addPayment($payment_data, $obj);
 
-        $credit->payment_id = $payment->id;
+            $credit->payment_id = $payment->id;
 
-        $credit->update();
+            $credit->update();
 
-        $credit->customer->updateCreditBalance();
+            $credit->customer->updateCreditBalance();
 
-        if($obj->online_credit_invoice !== "")
-        {
-            _GET('processorder/' . $obj->online_credit_invoice . "/3");
+            if($obj->online_credit_invoice !== "")
+            {
+                _GET('processorder/' . $obj->online_credit_invoice . "/3");
 
-            $in = Invoice::find($obj->online_credit_invoice);
-            $in->online_order_debit = 0;
-            $in->update();
-        }
+                $in = Invoice::find($obj->online_credit_invoice);
+                $in->online_order_debit = 0;
+                $in->update();
+            }
 
-        $obj->alert(
-            "success",
-            "Credit Payment",
-            [
-                'position' => 'center',
-                'timer' => 1500,
-                'toast' => false,
-                'text' =>  "Credit Payment has been added successfully!.",
-            ]
-        );
+            $obj->alert(
+                "success",
+                "Credit Payment",
+                [
+                    'position' => 'center',
+                    'timer' => 1500,
+                    'toast' => false,
+                    'text' =>  "Credit Payment has been added successfully!.",
+                ]
+            );
 
-        $this->completePayment($obj,$payment->id);
+            $this->completePayment($obj,$payment->id);
 
-        $obj->dispatchBrowserEvent('openPaymentPage', ['link'=>route('payment.show',$payment->id)]);
+            $obj->dispatchBrowserEvent('openPaymentPage', ['link'=>route('payment.show',$payment->id)]);
+        });
     }
 
 
