@@ -78,6 +78,8 @@ class InvoicePolicy
             status('Paid'),
             status('Deleted'),
             status('Discount'),
+            status('Waiting-For-Credit-Approval'),
+            status('Waiting-For-Cheque-Approval'),
         ])) return false;
 
         return true;
@@ -120,6 +122,8 @@ class InvoicePolicy
             status('Complete'),
             status('Paid'),
             status('Deleted'),
+            status('Waiting-For-Credit-Approval'),
+            status('Waiting-For-Cheque-Approval'),
         ])) return false;
 
         return true;
@@ -176,13 +180,16 @@ class InvoicePolicy
     {
         if(!userCanView(type()."pos_print")) return false;
 
+
         if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['thermal'], $invoice)) return false;
 
         if($invoice->department === 'retail' && $invoice->retail_printed === true && !userCanView('invoiceandsales.rePrintInvoice')) return false;
 
         if($invoice->department === 'retail' && ($invoice->status_id !== status('Complete') && $invoice->status_id !== status('Paid') && $invoice->online_order_status !="1")) return false;
 
-        if($invoice->status_id ==  status('Deleted')) return false;
+        if($invoice->status_id ==  status('Deleted')    ||
+            $invoice->status_id !== status('Waiting-For-Credit-Approval') ||
+            $invoice->status_id !== status('Waiting-For-Cheque-Approval')) return false;
 
         return true;
     }
@@ -197,6 +204,9 @@ class InvoicePolicy
     public function printWaybill(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.print_way_bill")) return false;
+
+        if( $invoice->status_id == status('Waiting-For-Credit-Approval') &&
+            $invoice->status_id == status('Waiting-For-Cheque-Approval')) return false;
 
         if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['waybill'], $invoice)) return false;
 
@@ -275,9 +285,47 @@ class InvoicePolicy
             status("Paid")
             ,status("Dispatched"),
             status('Complete'),
-            ])))  return false;
+        ])))  return false;
 
         return true;
+    }
+
+
+    public function applyForCredit(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.applyForCredit")) return false;
+
+        if($invoice->status_id === status('Draft')) return true;
+
+        return false;
+    }
+
+
+    public function applyForCheque(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.applyForCheque")) return false;
+
+        if($invoice->status_id === status('Draft')) return true;
+
+        return false;
+    }
+
+    public function approveCreditPayment(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.approve_or_decline_credit_payment")) return false;
+
+        if($invoice->status_id === status('Waiting-For-Credit-Approval')) return true;
+
+        return false;
+    }
+
+    public function approveChequePayment(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.approve_or_decline_cheque_payment")) return false;
+
+        if($invoice->status_id === status('Waiting-For-Cheque-Approval')) return true;
+
+        return false;
     }
 
 }

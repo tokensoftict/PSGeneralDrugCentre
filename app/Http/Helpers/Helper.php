@@ -458,6 +458,9 @@ function eng_str_date($time = false, $pad = false)
     return date('d/m/Y' . $pad, $time);
 }
 
+function human_date($date){
+    return (new Carbon($date))->format('F jS, Y');
+}
 
 function twentyfourHourClock($time)
 {

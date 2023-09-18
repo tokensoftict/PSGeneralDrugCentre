@@ -63,6 +63,65 @@ class InvoiceController extends Controller
         return setPageContent('invoiceandsales.index', $data);
     }
 
+    public function waiting_for_credit_approval(Request $request)
+    {
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
+
+        $data['title'] = 'Waiting Credit Payment Approval Invoice(s)';
+        $data['subtitle'] = 'List of Waiting For Credit Payment Approval Invoice(s) - '.$data['filters']['filters']['invoice_date'];
+
+        if(auth()->user()->department_id !== 5) {
+            $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
+            $data['filters']['filters']['in_department'] = $dpt;
+        }
+
+        $data['filters']['filters']['status_id'] = status('Waiting-For-Credit-Approval');
+
+        return setPageContent('invoiceandsales.index', $data);
+    }
+
+
+    public function waiting_for_cheque_approval(Request $request)
+    {
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
+
+        $data['title'] = 'Waiting Cheque Approval Invoice(s)';
+        $data['subtitle'] = 'List of Waiting For Cheque Approval Invoice(s) - '.$data['filters']['filters']['invoice_date'];
+
+        if(auth()->user()->department_id !== 5) {
+            $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
+            $data['filters']['filters']['in_department'] = $dpt;
+        }
+
+        $data['filters']['filters']['status_id'] = status('Waiting-For-Cheque-Approval');
+
+        return setPageContent('invoiceandsales.index', $data);
+    }
+
     public function discount(Request $request)
     {
         $data = [
@@ -233,6 +292,42 @@ class InvoiceController extends Controller
 
     }
 
+    public function approve_or_decline_credit_payment(Invoice $invoice)
+    {
+
+    }
+
+    public function approve_or_decline_cheque_payment(Invoice $invoice)
+    {
+
+    }
+/*
+    public function applyForCheque(Invoice $invoice)
+    {
+        $data = [];
+
+        $data['title'] = 'Cheque Payment Approval';
+        $data['subtitle'] = 'Apply For Cheque Payment Approval';
+        $data['invoice'] = $invoice;
+
+        logActivity($invoice->id, $invoice->invoice_number,'requested for cheque approval page was viewed');
+
+        return view('invoiceandsales.applychequeapproval', $data);
+    }
+
+
+    public function applyForCredit(Invoice $invoice){
+        $data = [];
+
+        $data['title'] = 'Credit Payment Approval';
+        $data['subtitle'] = 'Apply For Credit Payment Approval';
+        $data['invoice'] = $invoice;
+
+        logActivity($invoice->id, $invoice->invoice_number,'requested for credit approval page was viewed');
+
+        return view('invoiceandsales.applycreditapproval', $data);
+    }
+*/
     public function applyProductDiscount(Invoice $invoice)
     {
         $data = [];

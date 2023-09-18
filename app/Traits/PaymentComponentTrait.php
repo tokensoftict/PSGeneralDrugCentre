@@ -20,11 +20,20 @@ trait PaymentComponentTrait
 
     public $payments;
 
+    public $banks;
+
     public $bankAccounts;
 
     public string $description;
 
     public $bank_account_id;
+
+    public string $bank = ""; // this is for cheque payment
+
+    public string $comment = ""; // this is for cheque payment
+    public string $cheque_date = "" ;// this is for cheque payment
+
+
 
     public array $split_payments = [];
 
@@ -76,15 +85,22 @@ trait PaymentComponentTrait
     {
         DB::transaction(function(){
             $this->paymentRepository->savePayment($this);
-
-            if($this->invoice->in_department == "retail"){
+            $filterChequeAndCredit = 0;
+            if($this->payment_method == "6"){
+                $filterChequeAndCredit = collect($this->split_payments)->filter(function($item, $index){
+                    if(($index == "8" || $index == "4") && $item['amount'] > 0){
+                        return $item;
+                    }
+                })->count();
+            }
+            if($this->invoice->in_department == "retail" && $filterChequeAndCredit === 0){
                 $this->invoice->status_id = status('Complete');
                 $this->invoice->update();
                 return redirect()->route(type().'view', $this->invoice->id);
             }
         });
 
-        return true;
+        return redirect()->route(type().'view', $this->invoice->id);
     }
 
     public function saveCreditPayment() : void
@@ -114,6 +130,8 @@ trait PaymentComponentTrait
         $this->change = money(0);
         $this->totalSplitAmount = money(0);
 
+        $this->banks = banks();
+
 
         if(isset($this->invoice->id)) {
 
@@ -125,8 +143,14 @@ trait PaymentComponentTrait
         foreach ($this->payments as $payment)
         {
             if(!isset(  $this->split_payments[$payment->id])) {
-                $this->split_payments[$payment->id]['amount'] = 0;
-                $this->split_payments[$payment->id]['bank_account_id'] = "";
+                if($payment->id == 8){
+                    $this->split_payments[$payment->id]['amount'] = 0;
+                    $this->split_payments[$payment->id]['bank'] = "";
+                    $this->split_payments[$payment->id]['cheque_date'] = "";
+                }else {
+                    $this->split_payments[$payment->id]['amount'] = 0;
+                    $this->split_payments[$payment->id]['bank_account_id'] = "";
+                }
             }
 
         }

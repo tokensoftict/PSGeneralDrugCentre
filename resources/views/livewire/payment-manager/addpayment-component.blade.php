@@ -40,11 +40,14 @@
             <h5><strong>Payment Information</strong></h5>
             <hr/>
             <br/>
+            @php
+                //->filter(function($item) { return !in_array($item->id, [7,4,8]);})
+            @endphp
             <div class="mb-3" wire:ignore>
                 <span class="d-block text-center" style="font-size: 18px"><strong>Select Payment Method</strong></span>
                 <select class="select mt-1 form-control form-control-lg" id="payment_method{{  $this->select2key }}"  wire:model="payment_method">
                     <option value="">Select Payment Method</option>
-                    @foreach($this->payments as $payment)
+                    @foreach($this->payments  as $payment)
                         <option value="{{ $payment->id }}">{{ $payment->name }}</option>
                     @endforeach
                 </select>
@@ -94,15 +97,37 @@
                 @endif
             @endif
 
+            @if($this->payment_method === "8")
+                <div class="mb-3">
+                    <span class="d-block text-center"   style="font-size: 18px">Cheque Date</span>
+                    <input type="date" class="form-control-lg form-control" wire:model="cheque_date" id="cheque_date" placeholder="Date Written on Cheque">
+                </div>
+                <div class="mb-3">
+                    <span class="d-block text-center"   style="font-size: 18px">Select Bank</span>
+                    <select class="select form-control form-control-lg" wire:model="bank" id="bank" >
+                        <option value="">Select Bank</option>
+                        @foreach($this->banks as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <span class="d-block text-center"   style="font-size: 18px">Cheque Comment</span>
+                    <textarea name="comment"  id="comment" wire:model.debounce="comment"  cols="30" rows="5" class="form-control form-control-lg"></textarea>
+                </div>
+            @endif
+
+
             @if($this->payment_method === "6")
 
                 <table class="table table-bordered table-striped">
                     @foreach($this->payments->filter(function($item){ return $item->id !== 7; }) as $payment)
                         @if($payment->id !=6)
                             <tr>
-                                <td>{{ $payment->name }}</td>
-                                <td><input class="form-control form-control-lg" wire:model.debounce="split_payments.{{ $payment->id }}.amount"></td>
-                                <td>
+                                <th>{{ $payment->name }}</th>
+                                <th><input class="form-control form-control-lg" wire:model.debounce="split_payments.{{ $payment->id }}.amount"></th>
+                                <th>
                                     @if(in_array($payment->id,[2,3]))
                                         <select class="select form-control form-control-lg" wire:model="split_payments.{{ $payment->id }}.bank_account_id">
                                             <option value="">Select Bank Account</option>
@@ -112,12 +137,25 @@
                                         </select>
                                     @endif
 
+                                    @if(in_array($payment->id,[8]))
+                                        <select class="select form-control form-control-lg" wire:model="split_payments.{{ $payment->id }}.bank">
+                                            <option value="">Select Bank</option>
+                                            @foreach($this->banks as $bank)
+                                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <br/>
+                                        <input type="date" class="form-control form-control-lg" placeholder="Cheque Date" wire:model="split_payments.{{ $payment->id }}.cheque_date">
+                                        <br/>
+
+                                    @endif
+
                                     @if($payment->id === 5)
                                         @if($this->error_deposit !== "")
                                             <span class="text-danger">{{ $this->error_deposit }}</span>
                                         @endif
                                     @endif
-                                </td>
+                                </th>
                             </tr>
                         @endif
                     @endforeach
@@ -149,7 +187,6 @@
                     this.select2.on("select2:select", (event) => {
                         @this.set(model,this.select2.val());
                     });
-
                 },
             };
         }

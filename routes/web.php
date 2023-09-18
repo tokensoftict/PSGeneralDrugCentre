@@ -252,6 +252,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['get','post'],'', ['as' => 'draft', 'uses' => 'InvoiceController@draft', 'visible' => true, 'custom_label'=>'Draft Invoice']);
                 Route::match(['get','post'],'discount', ['as' => 'discount', 'uses' => 'InvoiceController@discount', 'visible' => true, 'custom_label'=>'Discount Invoice']);
                 Route::match(['get','post'],'paid', ['as' => 'paid', 'uses' => 'InvoiceController@paid', 'visible' => true, 'custom_label'=>'Paid Invoice']);
+                Route::match(['get','post'],'waiting-for-credit-approval', ['as' => 'waiting-for-credit-approval', 'uses' => 'InvoiceController@waiting_for_credit_approval', 'visible' => true, 'custom_label'=>'Waiting Credit Approval Invoice']);
+                Route::match(['get','post'],'waiting-for-cheque-approval', ['as' => 'waiting-for-cheque-approval', 'uses' => 'InvoiceController@waiting_for_cheque_approval', 'visible' => true, 'custom_label'=>'Waiting Cheque Approval Invoice']);
                 Route::match(['get','post'],'dispatched', ['as' => 'dispatched', 'uses' => 'InvoiceController@dispatched', 'visible' => true, 'custom_label'=>'Completed Invoice']);
                 Route::get('editInvoiceDate', ['as' => 'editInvoiceDate', 'uses' => 'InvoiceController@editInvoiceDate', 'custom_label'=>'Edit Invoice Date']);
                 Route::get('deleted', ['as' => 'deleted', 'uses' => 'InvoiceController@deleted', 'visible' => true, 'custom_label'=>'Deleted Invoice']);
@@ -260,7 +262,12 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{invoice}/dispatchInvoice', ['as' => 'dispatchInvoice', 'uses' => 'InvoiceController@dispatchInvoice', 'custom_label'=>'Dispatch Invoice']);
                 Route::get('{invoice}/print_way_bill', ['as' => 'print_way_bill', 'uses' => 'InvoiceController@print_way_bill', 'custom_label'=>'Print WayBill']);
                 Route::get('{invoice}/view', ['as' => 'view', 'uses' => 'InvoiceController@view']);
-                Route::get('{invoice}/applyInvoiceDiscount', ['as' => 'applyInvoiceDiscount', 'uses' => 'InvoiceController@applyInvoiceDiscount', "custom_label"=>"Apply Invoice Discount"]);
+                //Route::get('{invoice}/applyForCredit', ['as' => 'applyForCredit', 'uses' => 'InvoiceController@applyForCredit', "custom_label"=>"Apply For Credit Payment Approval"]);
+                //Route::get('{invoice}/applyForCheque', ['as' => 'applyForCheque', 'uses' => 'InvoiceController@applyForCheque', "custom_label"=>"Apply For Cheque Payment Approval"]);
+
+                Route::get('{invoice}/approve_or_decline_credit_payment', ['as' => 'approve_or_decline_credit_payment', 'uses' => 'InvoiceController@approve_or_decline_credit_payment', "custom_label"=>"Approve/Decline Credit Payment"]);
+                Route::get('{invoice}/approve_or_decline_cheque_payment', ['as' => 'approve_or_decline_cheque_payment', 'uses' => 'InvoiceController@approve_or_decline_cheque_payment', "custom_label"=>"Approve/Decline Cheque Payment"]);
+
                 Route::get('{invoice}/applyProductDiscount', ['as' => 'applyProductDiscount', 'uses' => 'InvoiceController@applyProductDiscount', "custom_label"=>"Apply Product Discount"]);
                 Route::match(['get', 'post'],'requestForDiscount', ['as' => 'requestForDiscount', 'uses' => 'InvoiceController@requestForDiscount', 'custom_label'=>'Request For Discount']);
                 Route::get('{invoice}/edit', ['as' => 'edit', 'uses' => 'InvoiceController@edit']);

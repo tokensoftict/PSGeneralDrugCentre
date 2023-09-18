@@ -9,7 +9,7 @@
         <div class="col-8">
 
             <div class="float-end">
-                @if(can(['edit','showPayment','pay','dispatched','printAfour','printThermal','printWaybill','delete', 'return'],$this->invoice))
+                @if(can(['edit','showPayment','pay','dispatched','printAfour','printThermal','printWaybill','delete', 'return', 'applyForCredit', 'applyForCheque', 'approveChequePayment' ,'approveCreditPayment'],$this->invoice))
                     <div class="btn-group" role="group">
                         <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             Invoice  Action <i class="mdi mdi-chevron-down"></i>
@@ -24,6 +24,30 @@
                             @can('return', $this->invoice)
                                 <li>
                                     <a href="{{ route('invoiceandsales.return',$this->invoice->id) }}" class="dropdown-item">Return Invoice</a>
+                                </li>
+                            @endcan
+
+                            @can('applyForCredit', $this->invoice)
+                                <li>
+                                    <a href="{{ route('invoiceandsales.applyForCredit',$this->invoice->id) }}" class="dropdown-item">Apply For Credit Payment</a>
+                                </li>
+                            @endcan
+
+                            @can('applyForCheque', $this->invoice)
+                                <li>
+                                    <a href="{{ route('invoiceandsales.applyForCheque',$this->invoice->id) }}" class="dropdown-item">Apply For Cheque Payment</a>
+                                </li>
+                            @endcan
+
+                            @can('approveCreditPayment', $this->invoice)
+                                <li>
+                                    <a href="#" id="showConfirmCreditModal" class="dropdown-item">Approve/Decline Credit Payment</a>
+                                </li>
+                            @endcan
+
+                            @can('approveChequePayment', $this->invoice)
+                                <li>
+                                    <a href="#" id="showConfirmChequeModal" class="dropdown-item">Approve/Decline Cheque Payment</a>
                                 </li>
                             @endcan
 

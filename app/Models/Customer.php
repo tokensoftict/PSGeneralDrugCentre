@@ -65,6 +65,14 @@ class Customer extends Model
 		'deposit_balance'
 	];
 
+
+    protected $appends = ['fullname'];
+
+    public function getFullnameAttribute()
+    {
+        return $this->firstname." ".$this->lastname;
+    }
+
 	public function city()
 	{
 		return $this->belongsTo(City::class);

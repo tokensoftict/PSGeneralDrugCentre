@@ -2,6 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Enums\InvoicePaymentApprovalTypeEnum;
+use App\Enums\InvoicePaymentApprovalTypeStatusEnum;
+use App\Http\Livewire\InvoiceAndSales\Cheque\ChequePaymentApprovalDialog;
+use App\Http\Livewire\InvoiceAndSales\Credit\CreditPaymentApprovalDialog;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Models\Creditpaymentlog;
 use App\Models\Customerdeposit;
@@ -25,7 +29,7 @@ class PaymentRepository
     }
 
 
-    public function addPayment(array $data) : Payment
+    public function addPayment(array $data, $obj) : Payment
     {
         //delete existing payment for the invoice
 
@@ -56,11 +60,19 @@ class PaymentRepository
             'payment_date' => !isset($data['payment_date']) ? dailyDate() : $data['payment_date'],
         ]);
 
-        $paymentItems = $this->parsePaymentMethods($methods, $data);
+        $paymentItems = $this->parsePaymentMethods($methods, $data, $obj);
 
         $data = array_merge($data , ['total_paid' => $paymentItems['total']]);
 
         $payment = Payment::create($data);
+
+        //request for approval if there is any
+
+        $data['payment_id'] = $payment->id;
+
+        $invoicePaymentStatus = $this->savePaymentInvoiceStatus($methods, $data, $obj);
+
+        unset($data['payment_id']);
 
         $payment->paymentmethoditems()->saveMany($paymentItems['items']);
 
@@ -94,7 +106,16 @@ class PaymentRepository
                 'total_amount_paid' =>$paymentItems['total']
             ]);
 
-            logActivity($payment->invoice->id, $payment->invoice->invoice_number, "Payment(s) was added to invoice Status :".$payment->invoice->status->name);
+            if(count($invoicePaymentStatus) > 0){
+                foreach ($invoicePaymentStatus as $status){
+                    $payment->invoice()->update([
+                        'status_id' =>  $status,
+                    ]);
+                }
+                logActivity($payment->invoice->id, $payment->invoice->invoice_number, "Some payment were added to the invoice, others are sent for approval ".$payment->invoice->status->name);
+            }else{
+                logActivity($payment->invoice->id, $payment->invoice->invoice_number, "Payment(s) was added to invoice Status : ".$payment->invoice->status->name);
+            }
         }
 
         $totalPaid = $payment->paymentmethoditems()->whereIn('paymentmethod_id', [1,2,3])->sum('amount');
@@ -115,8 +136,90 @@ class PaymentRepository
     }
 
 
+    public function savePaymentInvoiceStatus(array $methods, array $data, $obj){
+        $invoicePaymentStatus = [];
+        if(get_class($obj) !== ChequePaymentApprovalDialog::class && get_class($obj) !== CreditPaymentApprovalDialog::class) {
+            foreach ($methods as $method) {
+                if ($method['paymentmethod_id'] == "4") {
+                    InvoicePaymentApprovalStatusRepository::create([
+                        'type' => InvoicePaymentApprovalTypeEnum::Credit,
+                        'date' => todaysDate(),
+                        'amount' => $method['amount'],
+                        'payment_id' => $data['payment_id'],
+                        'approval_status' => InvoicePaymentApprovalTypeStatusEnum::Pending,
+                        'invoice_id' => $data['invoice_id'],
+                    ]);
 
-    public function parsePaymentMethods(array $methods, array $data) : array
+                    $invoicePaymentStatus[] = status('Waiting-For-Credit-Approval');
+                }
+
+                if ($method['paymentmethod_id'] == "8") {
+                    InvoicePaymentApprovalStatusRepository::create([
+                        'type' => InvoicePaymentApprovalTypeEnum::Cheque,
+                        'date' => $obj->cheque_date,
+                        'amount' => $method['amount'],
+                        'payment_id' => $data['payment_id'],
+                        'approval_status' => InvoicePaymentApprovalTypeStatusEnum::Pending,
+                        'invoice_id' => $data['invoice_id'],
+                        'bank_id' => $obj->bank,
+                    ]);
+
+                    $invoicePaymentStatus[] = status('Waiting-For-Cheque-Approval');
+                }
+            }
+        }
+        return $invoicePaymentStatus;
+    }
+
+    public function saveApproveCreditpayment($data)
+    {
+        $payment_method_item = Paymentmethoditem::create([
+            'payment_id' => $data['payment_id'],
+            'invoice_id' => $data['invoice_id'],
+            'user_id' => $data['user_id'],
+            'amount' => $data['amount'],
+            'paymentmethod_id' => 4,
+            'customer_id' => $data['customer_id'],
+            'department' => $data['department'],
+            'payment_date' => $data['payment_date'],
+            'invoice_type' => $data['invoice_type'],
+        ]);
+
+        $credit = [
+            'credit_number' => creditPaymentReference(),
+            'user_id' =>$data['user_id'],
+            'paymentmethod_id' => 4,
+            'customer_id' => $data['customer_id'],
+            'paymentmethoditem_id' => $payment_method_item->id,
+            'payment_id' => $data['payment_id'],
+            'invoicelog_type' => $data['invoice_type'],
+            'invoicelog_id' => $data['invoice_id'],
+            'amount' => -($data['amount']),
+            'payment_date' => $data['payment_date']
+        ];
+
+        $this->addCreditPayment($credit);
+
+        return $payment_method_item;
+    }
+
+    public function saveApprovedChequePayment($data)
+    {
+        $payment_method_item = Paymentmethoditem::create([
+            'payment_id' => $data['payment_id'],
+            'invoice_id' => $data['invoice_id'],
+            'user_id' => $data['user_id'],
+            'amount' => $data['amount'],
+            'paymentmethod_id' => 8,
+            'customer_id' => $data['customer_id'],
+            'department' => $data['department'],
+            'payment_date' => $data['payment_date'],
+            'invoice_type' => $data['invoice_type'],
+        ]);
+
+        return $payment_method_item;
+    }
+    public function parsePaymentMethods(array $methods, array $data, &$obj) : array
     {
         $pmethods = [];
 
@@ -126,6 +229,11 @@ class PaymentRepository
 
         foreach ($methods as $method)
         {
+            if(get_class($obj) !== ChequePaymentApprovalDialog::class && get_class($obj) !== CreditPaymentApprovalDialog::class) {
+                if ($method['paymentmethod_id'] == "4") continue;
+                if ($method['paymentmethod_id'] == "8") continue;
+            }
+
             $pmethods[] = new Paymentmethoditem(
                 array_merge($method, [
                     'user_id' => $data['user_id'],
@@ -188,7 +296,7 @@ class PaymentRepository
 
     public function addDepositPayment(array $data)
     {
-       // Customerdeposit::create($data);
+        // Customerdeposit::create($data);
     }
 
     public function getPaymentinfo(&$component) : array
@@ -204,6 +312,12 @@ class PaymentRepository
         {
             return [
                 'bank_account_id' => $component->bank_account_id
+            ];
+        }else if($component->payment_method === "8"){
+            return [
+                'bank' => $component->bank,
+                'cheque_date' => $component->cheque_date,
+                'comment' => $component->comment
             ];
         }
         else {
@@ -223,6 +337,14 @@ class PaymentRepository
 
         $obj->totalSplitAmount = money($tt);
 
+        if(isset($obj->split_payments[8]) && $obj->split_payments[8]['amount'] > 0 && ($obj->invoice->customer_id == 0 || $obj->invoice->customer_id == 1 )){
+            return false;
+        }
+
+        if(isset($obj->split_payments[4]) && $obj->split_payments[4]['amount'] > 0 && ($obj->invoice->customer_id == 0 || $obj->invoice->customer_id == 1 )) {
+            return false;
+        }
+
         if(isset($obj->split_payments[3])) {
             if ($obj->split_payments[2]['amount'] > 0 && $obj->split_payments[2]['bank_account_id'] == "") return false;
         }
@@ -238,6 +360,12 @@ class PaymentRepository
             if ($obj->split_payments[5]['amount'] == 0) {
                 $obj->error_deposit = "";
             }
+        }
+
+        if(isset($obj->split_payments[8])){
+            $obj->bank = $obj->split_payments[8]['bank'];
+            $obj->cheque_date = $obj->split_payments[8]['cheque_date'];
+            if ($obj->split_payments[8]['amount'] > 0 && (empty($obj->split_payments[8]['bank']) || empty($obj->split_payments[8]['cheque_date']) )) return false;
         }
 
         if(($tt < $obj->sub_total)) return false;
@@ -291,12 +419,20 @@ class PaymentRepository
                 $obj->btnEnabled = true;
             }
         }
+        else if($obj->payment_method === "8"){
+
+            if($obj->bank === "" || $obj->cheque_date === "") {
+                $obj->btnEnabled = false;
+            }else{
+                $obj->btnEnabled = true;
+            }
+
+        }
         else if($obj->payment_method === "")
         {
             $obj->btnEnabled = false;
         }
         else{
-
             $obj->btnEnabled = true;
         }
 
@@ -499,7 +635,7 @@ class PaymentRepository
 
         $this->bridgePayment($obj, $payment_data, $payment_data_items);
 
-        $payment = $this->addPayment($payment_data);
+        $payment = $this->addPayment($payment_data, $obj);
 
         $obj->alert(
             "success",

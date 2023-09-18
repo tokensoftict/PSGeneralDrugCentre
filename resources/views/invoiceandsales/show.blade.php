@@ -19,18 +19,23 @@
 
     <livewire:invoice-and-sales.show.show-invoice-component :invoice="$invoice"/>
 
-    @if($invoice->status_id === 2 || $invoice->status_id === 4 || $invoice->status_id == status("Complete"))
-
-        <x-show-payment-component :payment="$invoice->payment"/>
-
+    @if($invoice->status_id === status('Waiting-For-Credit-Approval'))
+        <livewire:invoice-and-sales.credit.credit-payment-approval-dialog  mode="approveDecline" :invoice="$invoice"/>
     @endif
 
+    @if($invoice->status_id === status('Waiting-For-Cheque-Approval'))
+        <livewire:invoice-and-sales.cheque.cheque-payment-approval-dialog  mode="approveDecline" :invoice="$invoice"/>
+    @endif
 
-    @if($invoice->status_id === 3)
+    @if($invoice->status_id ===  status('Paid') || $invoice->status_id === status('Dispatched') || $invoice->status_id == status("Complete"))
+        <x-show-payment-component :payment="$invoice->payment"/>
+    @endif
+
+    @if($invoice->status_id === status('Draft'))
         <x-create-payment-component :invoice="$invoice"/>
     @endif
 
-    @if($invoice->status_id === 2)
+    @if($invoice->status_id === status('Paid'))
         <x-dispatch-invoice-component :invoice="$invoice"/>
     @endif
 

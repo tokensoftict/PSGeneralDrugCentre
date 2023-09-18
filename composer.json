@@ -5,7 +5,7 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "ahmadwaleed/laravel-blanket": "dev-main",
         "aliqasemzadeh/livewire-bootstrap-modal": "dev-master",
         "carlos-meneses/laravel-mpdf": "^2.1",
