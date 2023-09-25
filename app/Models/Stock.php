@@ -198,6 +198,13 @@ class Stock extends Model
 
     public function stockOpening()
     {
+        if($this->stockOpenings()->where('date_added',date('Y-m-d'))->count() == 0){
+            if($this->stockOpenings()->where('date_added',yesterdayDate())->count() > 0){
+                return $this->stockOpenings()->where('date_added',yesterdayDate());
+            }else{
+                return NULL;
+            }
+        }
         return $this->stockOpenings()->where('date_added',date('Y-m-d'));
     }
 
