@@ -238,7 +238,7 @@ class Stockgroup extends Model
         if($this->stocks()->exists()) {
             $total = 0;
             foreach($this->stocks()->where('status',1)->get() as $stocks){
-                $total+=$stocks->wholesales + $stocks->bulksales + $stocks->quantity + round(abs(($stocks->retail/$stocks->box)));
+                $total+=$stocks->wholesales + $stocks->bulksales + $stocks->quantity + round(abs((divide($stocks->retail, $stocks->box))));
             }
             return $total;
         }
