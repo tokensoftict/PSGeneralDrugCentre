@@ -47,6 +47,9 @@ final class NearOsDatatable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Nearoutofstock::query()
+        ->whereHas('stock', function($query){
+                $query->where('status', 1);
+            })
             ->with(['stock', 'stockgroup', 'stockgroup.oneStock'])
             ->select(
                 [
