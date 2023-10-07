@@ -142,7 +142,7 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('group_os_id')
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
-            ->addColumn('last_purchase_date')
+            ->addColumn('last_purchase_date', fn (Nearoutofstock $model) => $model->last_purchase_date == NULL ? "" : Carbon::parse($model->last_purchase_date)->format('d/m/Y'))
             ->addColumn('purchaseitem_id');
 
     }
