@@ -48,9 +48,6 @@ final class RetailNearOsDatatable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Retailnearoutofstock::query()
-            ->whereHas('stock', function($query){
-                $query->where('status', 1);
-            })
             ->select(
                 [
                     'retailnearoutofstock.*',
