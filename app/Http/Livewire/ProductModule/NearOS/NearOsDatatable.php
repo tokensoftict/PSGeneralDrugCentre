@@ -143,6 +143,9 @@ final class NearOsDatatable extends PowerGridComponent
             ->addColumn('is_grouped')
             ->addColumn('last_qty_purchased')
             ->addColumn('last_purchase_date')
+            ->addColumn('last_purchase_date_fomartted', function(Nearoutofstock $nearoutofstock){
+                return  (new Carbon($nearoutofstock->last_purchase_date))->format('d/m/Y');
+            })
             ->addColumn('purchaseitem_id');
 
     }
@@ -199,7 +202,7 @@ final class NearOsDatatable extends PowerGridComponent
             Column::make('Stock Quantity', 'current_qty')->sortable(),
             Column::make('Total Sold', 'current_sold')->sortable(),
             Column::make('Last Qty Pur.', 'last_qty_purchased'),
-            Column::make('Last Date Pur.', 'last_purchase_date'),
+            Column::make('Last Date Pur.', 'last_purchase_date_fomartted'),
         ];
     }
 
