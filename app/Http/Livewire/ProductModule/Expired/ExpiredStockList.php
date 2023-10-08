@@ -136,6 +136,9 @@ final class ExpiredStockList extends PowerGridComponent
             ->addColumn('carton', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->carton;
             })
+            ->addColumn('expiry_date', function(Stockbatch $stockbatch){
+                return $stockbatch->expiry_date->format('d/m/Y');
+            })
             ->addColumn('ws')
             ->addColumn('bs')
             ->addColumn('ms')
@@ -168,6 +171,7 @@ final class ExpiredStockList extends PowerGridComponent
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
             Column::make('Wholesales', 'ws'),
+            Column::make('Expiry Date', 'expiry_date'),
             Column::make('Bulksales', 'bs'),
             Column::make('Retail', 'rt'),
             Column::make('Main Store', 'ms'),

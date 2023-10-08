@@ -49,9 +49,17 @@ class MovingStocksCommand extends Command
             dispatch(new RunChunkMovingStock('group',false, $group, $settings));
         });
 
+        /*
         $settings->put('moving_stocks_run_status',  "backgroundprocess");
         $settings->put('total_moving_to_process', $process_count);
         $settings->put('total_moving_processed', 0);
+        */
+
+        $this->store->put('moving_stocks_run_status', 'okay');
+        $this->store->put('total_moving_to_process', 0);
+        $this->store->put('total_moving_processed', 0);
+        $this->store->put('m_run_moving_stock', 'okay');
+        $this->store->put('moving_stock_last_run', Carbon::now()->toDateTimeLocalString());
 
         $this->info('Moving stock executed successfully');
         return Command::SUCCESS;
