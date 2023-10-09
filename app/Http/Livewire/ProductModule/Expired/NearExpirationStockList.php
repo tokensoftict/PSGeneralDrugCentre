@@ -143,7 +143,7 @@ final class NearExpirationStockList extends PowerGridComponent
             })
             ->addColumn('expiry_date')
             ->addColumn('formatted_expiry_date', function(Stockbatch $stockbatch){
-                return $stockbatch->expiry_date;
+                return $stockbatch->expiry_date->format('d/m/Y');
             })
             ->addColumn('ws')
             ->addColumn('bs')

@@ -50,6 +50,7 @@ class Stockbatch extends Model
 		'retail_cost_price' => 'float',
 		'stock_id' => 'int',
 		'supplier_id' => 'int',
+        'expiry_date' => 'date'
 	];
 
 	protected $fillable = [
