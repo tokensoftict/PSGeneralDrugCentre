@@ -105,6 +105,12 @@ class Stockgroup extends Model
         return new HasOne($this->stocks()->latest()->getQuery(), $this,'stockgroup_id', 'id');
     }
 
+
+    public function stock()
+    {
+        return $this->hasOne(Stock::class, 'stockgroup_id');
+    }
+
     public function getLastPurchaseDate(){
         $stocks = $this->stocks()->get();
         if($stocks->count() == 0) return 'N/A';

@@ -134,10 +134,9 @@ final class NearOsDatatable extends PowerGridComponent
             })
             ->addColumn('category_name', function (Nearoutofstock $nearoutofstock){
                 if($nearoutofstock->stockgroup_id === NULL) return $nearoutofstock->category_name;
-                if($nearoutofstock->stockgroup_id !== NULL) return $nearoutofstock->stockgroup->oneStock->category->name;
+                if($nearoutofstock->stockgroup_id !== NULL) return $nearoutofstock->stockgroup->stock->category->name;
             })
             ->addColumn('os_type')
-            ->addColumn('qty_to_buy')
             ->addColumn('supplier_name')
             ->addColumn('threshold_value')
             ->addColumn('current_qty')
