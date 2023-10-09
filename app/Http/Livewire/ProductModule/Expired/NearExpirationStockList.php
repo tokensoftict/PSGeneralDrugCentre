@@ -49,6 +49,7 @@ final class NearExpirationStockList extends PowerGridComponent
 
         return Stockbatch::with(['stock'])->select(
             'stock_id',
+                    'expiry_date',
             DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(bulksales) as bs'),
             DB::raw( 'SUM(quantity) as ms'),
