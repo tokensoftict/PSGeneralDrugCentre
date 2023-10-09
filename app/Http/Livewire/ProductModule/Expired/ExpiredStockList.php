@@ -136,6 +136,7 @@ final class ExpiredStockList extends PowerGridComponent
             ->addColumn('carton', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->carton;
             })
+            ->addColumn('expiry_date')
             ->addColumn('formatted_expiry_date', function(Stockbatch $stockbatch){
                 return $stockbatch->expiry_date;
             })
