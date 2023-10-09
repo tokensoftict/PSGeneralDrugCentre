@@ -67,7 +67,7 @@ final class NearExpirationStockList extends PowerGridComponent
             })
             ->orderBy('id','DESC')
             ->whereBetween('expiry_date',[$from,$to])
-            ->groupBy(['stock_id', 'expiry_date']);
+            ->groupBy('expiry_date');
     }
 
     /*
