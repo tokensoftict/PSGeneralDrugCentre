@@ -177,7 +177,7 @@ final class NearExpirationStockList extends PowerGridComponent
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
             Column::make('Wholesales', 'ws'),
-            Column::make('Expiry Date', 'expiry_date'),
+            Column::make('Expiry Date', 'formatted_expiry_date'),
             Column::make('Bulksales', 'bs'),
             Column::make('Retail', 'rt'),
             Column::make('Main Store', 'ms'),

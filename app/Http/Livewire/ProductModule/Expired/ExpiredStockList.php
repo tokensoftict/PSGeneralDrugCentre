@@ -46,6 +46,7 @@ final class ExpiredStockList extends PowerGridComponent
 
         return Stockbatch::with(['stock'])->select(
             'stock_id',
+            'expiry_date',
             DB::raw( 'SUM(bulksales) as bs'),
             DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(quantity) as ms'),
@@ -64,7 +65,7 @@ final class ExpiredStockList extends PowerGridComponent
             })
             ->orderBy('id','DESC')
             ->where('expiry_date',"<=",date('Y-m-d'))
-            ->groupBy('stock_id');
+            ->groupBy(['expiry_date', 'stock_id']);
     }
 
     /*
@@ -172,7 +173,7 @@ final class ExpiredStockList extends PowerGridComponent
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
             Column::make('Wholesales', 'ws'),
-            Column::make('Expiry Date', 'expiry_date'),
+            Column::make('Expiry Date', 'formatted_expiry_date'),
             Column::make('Bulksales', 'bs'),
             Column::make('Retail', 'rt'),
             Column::make('Main Store', 'ms'),
