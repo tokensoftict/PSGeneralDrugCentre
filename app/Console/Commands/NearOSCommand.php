@@ -135,7 +135,7 @@ class NearOSCommand extends Command
                         'last_purchase_date'=>(isset($po->purchase->date_completed) ? $po->purchase->date_completed : NULL),
                         'qty_to_buy'=> $qty_to_buy,
                         'current_sold'=>$qty,
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                        'is_grouped'=> in_array($stock->stockgroup_id, [341, 350]) ? 0 : ($stock->stockgroup_id ? 1 : 0),
                         'group_os_id'=>$stock->stockgroup_id,
                         'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
                         'threshold_value'=> $thresholad_score,
@@ -143,7 +143,6 @@ class NearOSCommand extends Command
                         'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                     ];
                     Nearoutofstock::create($insert);
-                    continue;
                 }else if($now_qty < 2){
                     $qty_to_buy = $qty * $threshold_day;
                     $last_supplier = $stock->stockBatches()->orderBy('id','DESC')->get()->first();
@@ -158,14 +157,13 @@ class NearOSCommand extends Command
                         'qty_to_buy'=> $qty_to_buy,
                         'current_sold'=>$qty,
                         'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                        'is_grouped'=> in_array($stock->stockgroup_id, [341, 350]) ? 0 : ($stock->stockgroup_id ? 1 : 0),
                         'group_os_id'=>$stock->stockgroup_id,
                         'threshold_value'=> $thresholad_score,
                         'current_qty'=> $stock->totalBalance(),
                         'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                     ];
                     Nearoutofstock::create($insert);
-                    continue;
                 }else{
                     //remember you did not create migration for this
                     //threshold_type to be NOT-NORMAL
@@ -182,14 +180,13 @@ class NearOSCommand extends Command
                         'qty_to_buy'=> $qty_to_buy,
                         'current_sold'=>$qty,
                         'last_po_batch'=>(isset($po->id) ? $po->id : NULL),
-                        'is_grouped'=>($stock->stockgroup_id ? 1 : 0),
+                        'is_grouped'=> in_array($stock->stockgroup_id, [341, 350]) ? 0 : ($stock->stockgroup_id ? 1 : 0),
                         'group_os_id'=>$stock->stockgroup_id,
                         'threshold_value'=> $thresholad_score,
                         'current_qty'=> $stock->totalBalance(),
                         'supplier_id'=> !empty($last_supplier->supplier_id) ? $last_supplier->supplier_id : NULL
                     ];
                     Nearoutofstock::create($insert);
-                    continue;
                 }
             }
         });

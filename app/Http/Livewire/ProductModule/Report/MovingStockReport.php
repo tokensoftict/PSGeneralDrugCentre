@@ -94,6 +94,9 @@ final class MovingStockReport extends PowerGridComponent
             ->addColumn('box')
             ->addColumn('threshold')
             ->addColumn('cartoon')
+            ->addColumn('formatted_carton', function (Movingstock $movingstock){
+                return $movingstock->cartoon ?? $movingstock->stock->carton;
+            })
             ->addColumn('supplier_name')
             ->addColumn('av_cost_price')
             ->addColumn('av_rt_cost_price')
@@ -129,7 +132,7 @@ final class MovingStockReport extends PowerGridComponent
             Column::make('Name', 'name') ->sortable()->searchable(),
             Column::make('Category', 'category') ->sortable()->searchable(),
             Column::make('Box', 'box'),
-            Column::make('Carton', 'carton'),
+            Column::make('Carton', 'formatted_carton'),
             Column::make('Threshold', 'threshold'),
             Column::make('Av.Cost price', 'av_cost_price'),
             Column::make('Av. Rt .Cost price', 'av_rt_cost_price'),
