@@ -394,7 +394,7 @@ trait StockModelTrait
 
         $ex = $this->getOnlineExpiryDate();
         if( $ex ) {
-            $data['expiry_date'] =  $ex->format('Y-m-d');
+            $data['expiry_date'] =  $ex;
         }
 
         // for OnlineSuperMarket Push
@@ -415,7 +415,7 @@ trait StockModelTrait
             return ($item->wholesales > 0 || $item->bulksales > 0 || $item->quantity > 0);
         })->first();
 
-        if($batch) return $batch->expiry_date;
+        if($batch) return $batch->expiry_date->format('Y-m-d');
 
         return false;
     }
