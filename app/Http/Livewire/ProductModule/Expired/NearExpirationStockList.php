@@ -47,16 +47,14 @@ final class NearExpirationStockList extends PowerGridComponent
         $to = date('Y-m-d', strtotime(' + '.$countDays.' days'));
         $from = date('Y-m-d');
 
-        return Stockbatch::with(['stock'])->select(
+        return Stockbatch::with(['stock', 'supplier'])->select(
             'stock_id',
-                    'expiry_date',
-            DB::raw( 'SUM(wholesales) as ws'),
+            'expiry_date', 'cost_price', 'retail_cost_price', 'supplier_id',
             DB::raw( 'SUM(bulksales) as bs'),
+            DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(quantity) as ms'),
             DB::raw( 'SUM(retail) as rt'),
             DB::raw( 'COUNT(stock_id) as tt_batch'),
-            DB::raw( 'SUM(cost_price) as total_cost_price'),
-            DB::raw( 'SUM(retail_cost_price) as total_retail_cost_price')
         )->whereHas('stock', function ($q) {
             $q->where('status','1');
         })
@@ -68,7 +66,7 @@ final class NearExpirationStockList extends PowerGridComponent
             })
             ->orderBy('id','DESC')
             ->whereBetween('expiry_date',[$from,$to])
-            ->groupBy(['expiry_date', 'stock_id']);
+            ->groupBy(['expiry_date', 'stock_id', 'cost_price', 'retail_cost_price', 'supplier_id']);
     }
 
     /*
@@ -111,37 +109,31 @@ final class NearExpirationStockList extends PowerGridComponent
                 return $stockbatch->stock->box;
             })
             ->addColumn('stock_id')
-
             ->addColumn('name', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->name;
             })
             ->addColumn('carton', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->carton;
             })
-            ->addColumn('av_cost_price_rt', function(Stockbatch $stockbatch){
-                $average_cost_price =  abs((($stockbatch->total_retail_cost_price / (max($stockbatch->rt, 1)))*(max($stockbatch->rt, 1))));
-
-                return money($average_cost_price);
+            ->addColumn('retail_cost_price', function (Stockbatch $stockbatch){
+                return money($stockbatch->retail_cost_price);
             })
-            ->addColumn('av_cost_price',function(Stockbatch $stockbatch){
-                $average_cost_price = @(round(abs(( divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
-                ));
-                return number_format($average_cost_price,2);
+            ->addColumn('tt_av_rt_cost_price', function (Stockbatch $stockbatch){
+                return money($stockbatch->retail_cost_price * $stockbatch->rt);
             })
-            ->addColumn('tt_av_cost_price',function(Stockbatch $stockbatch){
-                $average_cost_price = @(round(abs((
-                        divide($stockbatch->total_cost_price, ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))) )
-                ));
-                return number_format(($average_cost_price * ($stockbatch->bs+$stockbatch->ws+$stockbatch->ms+round(abs((divide($stockbatch->rt,$stockbatch->stock->box)))))),2);
+            ->addColumn('tt_av_cost_price', function (Stockbatch $stockbatch){
+                return money($stockbatch->cost_price * ($stockbatch->bs + $stockbatch->ws + $stockbatch->ms));
             })
-            ->addColumn('tt_av_rt_cost_price',function(Stockbatch $stockbatch){
-                $average_cost_price =  abs((($stockbatch->total_retail_cost_price / (max($stockbatch->rt, 1)))*(max($stockbatch->rt, 1))));
-                return number_format(($average_cost_price * $stockbatch->rt) ,2);
+            ->addColumn('cost_price', function (Stockbatch $stockbatch){
+                return money($stockbatch->cost_price);
             })
             ->addColumn('carton', function(Stockbatch $stockbatch){
                 return $stockbatch->stock->carton;
             })
             ->addColumn('expiry_date')
+            ->addColumn('supplier_name', function(Stockbatch $stockbatch){
+                return $stockbatch->supplier->name ?? "N/A";
+            })
             ->addColumn('formatted_expiry_date', function(Stockbatch $stockbatch){
                 return $stockbatch->expiry_date->format('d/m/Y');
             })
@@ -150,7 +142,7 @@ final class NearExpirationStockList extends PowerGridComponent
             ->addColumn('ms')
             ->addColumn('rt')
             ->addColumn('total', function(Stockbatch $stockbatch){
-                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs(divide($stockbatch->rt,$stockbatch->stock->box)));
+                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs(divide($stockbatch->rt, $stockbatch->stock->box)));
             });
     }
 
@@ -172,7 +164,7 @@ final class NearExpirationStockList extends PowerGridComponent
     {
         return [
             Column::make('SN' ,'')->index(),
-            Column::make('Stock ID' ,'stock_id')->sortable(),
+            Column::make('Stock ID', 'stock_id'),
             Column::make('Name', 'name')->sortable()->searchable(),
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
@@ -182,10 +174,11 @@ final class NearExpirationStockList extends PowerGridComponent
             Column::make('Retail', 'rt'),
             Column::make('Main Store', 'ms'),
             Column::make('Total', 'total'),
-            Column::make('Av Cost Price', 'av_cost_price'),
-            Column::make('Av. Retail Cost Price', 'av_cost_price_rt'),
+            Column::make('Cost Price', 'cost_price'),
+            Column::make('Retail Cost Price', 'retail_cost_price'),
             Column::make('Total Retail Cost', 'tt_av_rt_cost_price'),
             Column::make('Total Cost', 'tt_av_cost_price'),
+            Column::make('Supplier', 'supplier_name'),
         ];
     }
 
