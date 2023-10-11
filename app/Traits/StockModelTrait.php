@@ -415,7 +415,7 @@ trait StockModelTrait
             return ($item->wholesales > 0 || $item->bulksales > 0 || $item->quantity > 0);
         })->first();
 
-        if($batch) return $batch->expiry_date->format('Y-m-d');
+        if($batch) return $batch->expiry_date;
 
         return false;
     }
