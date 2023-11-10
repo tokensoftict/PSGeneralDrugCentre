@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoiceactivitylogs', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId("invoice_id")->constrained()->cascadeOnDelete();
             $table->string("invoice_number")->nullable();

@@ -42,6 +42,7 @@ class TaskGenerate extends Command
             'ProductManager'=>"Stock Manager",
             'StockTransfer'=>"Stock Transfer",
             'PurchaseOrder' => 'Purchase Orders',
+            'Expenses' => 'Expenses',
             'InvoiceAndSales'=>"Invoice & Sales",
             'RetailSales'=> "Retail Sales",
             'PaymentManager' => "Payment Manager",
@@ -52,7 +53,8 @@ class TaskGenerate extends Command
             'StockTransferReport' => 'Stock Transfer Report(s)',
             'CustomerReport' => 'Customer Report(s)',
             'ProductReport' => 'Product Report(s)',
-            'StaffPerformanceReport' => 'Staff Performance Report'
+            'ExpensesReport' => 'Expenses Report(s)',
+            //'StaffPerformanceReport' => 'Staff Performance Report'
         ];
 
 
@@ -63,6 +65,7 @@ class TaskGenerate extends Command
             'ProductManager'=>"grid",
             "StockTransfer"=>"book",
             'PurchaseOrder'=>"briefcase",
+            'Expenses'=>"briefcase",
             'InvoiceAndSales'=>"shopping-cart",
             'RetailSales'=>"shopping-cart",
             'PaymentManager' => "credit-card",
@@ -73,7 +76,8 @@ class TaskGenerate extends Command
             'StockTransferReport' => 'Stock Transfer Report(s)',
             'CustomerReport' => '',
             'ProductReport' => 'Product Report(s)',
-            'StaffPerformanceReport' => 'Staff Performance Report'
+            'ExpensesReport' => 'Expenses Report(s)',
+            //'StaffPerformanceReport' => 'Staff Performance Report'
         ];
 
         $taskList = DB::table('tasks')->pluck('route', 'id');

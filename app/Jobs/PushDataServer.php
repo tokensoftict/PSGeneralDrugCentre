@@ -31,6 +31,8 @@ class PushDataServer implements ShouldQueue
      */
     public function handle()
     {
+        if(config('app.sync_with_online')== 0)  return;
+
 		_POST('update_data',$this->data);
 	
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Classes\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
@@ -13,7 +14,8 @@ class LoginController extends Controller
     public function index()
     {
         if(auth()->check())   return redirect()->route('dashboard');
-        return view('auth.login');
+        $data['store'] = app(Settings::class)->store();
+        return view('auth.login', $data);
     }
 
     public function loginprocess(Request $request)

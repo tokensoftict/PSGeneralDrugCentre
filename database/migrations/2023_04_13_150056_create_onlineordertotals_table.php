@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('onlineordertotals', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
             $table->string('name', 80)->nullable()->index();

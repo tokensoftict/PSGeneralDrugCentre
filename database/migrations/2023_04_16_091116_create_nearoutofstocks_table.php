@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('nearoutofstocks', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('stock_id')->constrained()->cascadeOnDelete();
             $table->biginteger("stockgroup_id")->constrained()->cascadeOnDelete();

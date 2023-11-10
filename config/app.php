@@ -17,6 +17,10 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'loginBG' => env('LOGIN_BG', false),
+
+    'sync_with_online' => env('SYNC_WITH_ONLINE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

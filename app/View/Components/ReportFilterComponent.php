@@ -4,6 +4,7 @@ namespace App\View\Components;
 
 use App\Models\Customer;
 use App\Models\Department;
+use App\Models\ExpensesType;
 use App\Models\Paymentmethod;
 use App\Models\Production;
 use App\Models\Productionline;
@@ -83,6 +84,10 @@ class ReportFilterComponent extends Component
 
         if(isset($this->filters['department_to'])){
 
+        }
+
+        if(isset($this->filters['expenses_type_id'])){
+            $data['expenses_types'] = ExpensesType::where('status',1)->select('id','name')->get();
         }
         return view('components.report-filter-component', $data);
     }

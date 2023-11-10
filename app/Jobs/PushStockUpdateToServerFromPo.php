@@ -30,6 +30,8 @@ class PushStockUpdateToServerFromPo implements ShouldQueue
      */
     public function handle()
     {
+        if(config('app.sync_with_online')== 0)  return;
+
         $items = Stock::whereIn('id',$this->stock_array)->get();
         $stock = [];
         foreach ($items as $item){

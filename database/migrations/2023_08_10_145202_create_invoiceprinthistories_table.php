@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoiceprinthistories', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
             $table->date('print_date')->nullable();

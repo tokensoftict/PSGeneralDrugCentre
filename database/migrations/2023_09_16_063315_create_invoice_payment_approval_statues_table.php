@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoice_payment_approval_statuses', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->string('type');
             $table->date('date');

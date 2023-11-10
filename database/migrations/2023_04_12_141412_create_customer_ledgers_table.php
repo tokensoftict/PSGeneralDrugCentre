@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('customer_ledgers', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();

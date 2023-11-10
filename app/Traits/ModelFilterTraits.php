@@ -50,7 +50,7 @@ trait ModelFilterTraits
                 $function_name();
             }
 
-            if(method_exists($model, 'newonlinePush'))
+            if(method_exists($model, 'newonlinePush') && config('app.sync_with_online')== 1)
             {
                 $model->newonlinePush(); // if the model is syncing with online push any update
             }
@@ -76,7 +76,7 @@ trait ModelFilterTraits
                 $function_name();
             }
 
-            if(method_exists($model, 'updateonlinePush'))
+            if(method_exists($model, 'updateonlinePush') && config('app.sync_with_online')== 1)
             {
                 $model->updateonlinePush();
             }

@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('pricechangehistories', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('from')->nullable();

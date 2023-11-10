@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('promoitems', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('promo_id')->constrained()->cascadeOnDelete();
             $table->foreignId('stock_id')->constrained()->cascadeOnDelete();

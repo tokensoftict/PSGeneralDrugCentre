@@ -24,6 +24,21 @@
 <script>
     const BASE_URL = '{{ asset('') }}';
 </script>
+
+@if(config('app.loginBG') != false)
+<style>
+    .auth-bg {
+        background-image: url({{ config('app.loginBG') }}) !important;
+    }
+</style>
+@else
+    <style>
+        .auth-bg {
+            background-image: none !important;
+            background-color: blue !important;
+        }
+    </style>
+@endif
 <body>
 
 <!-- <body data-layout="horizontal"> -->
@@ -36,14 +51,14 @@
                         <div class="d-flex flex-column h-100">
                             <div class="mb-4 mb-md-5 text-center">
                                 <a href="{{ asset('') }}" class="d-block auth-logo">
-                                    <img src="{{ asset('images/logo.jpg') }}" alt="" style="width: 60%"><br/>
-                                    <span class="logo-txt">PS General Drugs Centre</span>
+                                    <img src="{{ asset("logo/".$store->logo) }}" alt="" style="width: 60%"><br/>
+                                    <span class="logo-txt">{{ config('app.name', 'Tokensoft Inventory') }}</span>
                                 </a>
                             </div>
                             <div class="auth-content my-auto">
                                 <div class="text-center">
                                     <h5 class="mb-0">Welcome Back !</h5>
-                                    <p class="text-muted mt-2">Sign in to continue to {{ config('app.name', 'Peace Factory') }}.</p>
+                                    <p class="text-muted mt-2">Sign in to continue to {{ config('app.name', 'Tokensoft Inventory') }}.</p>
                                 </div>
                                 @if(session()->has('message'))
                                     <span class="text-danger text-center d-block">{{ session()->get('message') }}</span>
@@ -78,7 +93,7 @@
 
                             </div>
                             <div class="mt-4 mt-md-5 text-center">
-                                <p class="mb-0">&copy; Pharmcy Licensed to General Drug Centre, Muritala  Designed Tokensoft ICT {{ date('Y') }} - 08130610626</p>
+                                <p class="mb-0">&copy;Licensed to {{ config('app.name', 'Tokensoft Inventory') }}  Designed By Tokensoft ICT  - 08130610626</p>
                             </div>
                         </div>
                     </div>

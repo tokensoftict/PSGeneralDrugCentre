@@ -75,10 +75,9 @@ class PurchaseorderDatatable extends ExportDataTableComponent
                         if (auth()->user()->can("delete", $row)) {
                             $html .= '<a href="#" wire:click.prevent="delete('.$value.')"  onclick="confirm(\'Are you sure you want to delete this purchase ?, this can not be reversed\') || event.stopImmediatePropagation()"  class="dropdown-item">Delete Purchase</a></li>';
                         }
-
+                        $html .= '</ul>';
                     }
 
-                    $html .= '</ul>';
                     return $html;
                 }) ->html()
         ];

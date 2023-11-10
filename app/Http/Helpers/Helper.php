@@ -28,6 +28,8 @@ function divide($num1, $num2)
 
 function _GET($endpoint, $payload = []) : array|bool
 {
+    if(config('app.sync_with_online')== 0)  return false;
+
     $response = Http::timeout(10000)->get(onlineBase() . 'api/data/' . $endpoint);
     if($response->status() == 200 )
     {
@@ -38,6 +40,8 @@ function _GET($endpoint, $payload = []) : array|bool
 
 function _FETCH($url) : array|bool
 {
+    if(config('app.sync_with_online')== 0)  return false;
+
     $response = Http::timeout(10000)->get($url);
 
     if($response->status() == 200 )
@@ -49,6 +53,8 @@ function _FETCH($url) : array|bool
 
 function _POST($endpoint, $payload = []) : array|bool
 {
+    if(config('app.sync_with_online')== 0)  return false;
+
     $response =   Http::timeout(10000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
     if($response->status() == 200 )
@@ -122,6 +128,12 @@ function paymentmethods($active = false)
     return $paymentmethods;
 }
 
+function paymentmethodsOnly($only = [])
+{
+    return paymentmethods(true)->filter(function($method) use ($only){
+       return  in_array($method->name, $only) || in_array($method->id, $only);
+    });
+}
 
 function manufacturers($active = false)
 {
@@ -492,6 +504,7 @@ function str_date($time = false, $pad = false)
 
 function str_date2($time = false, $pad = false)
 {
+    if(!$time) return NULL;
     if (!$time) $time = time() + time_offset();
     else $time = strtotime($time);
     if ($pad) $pad = ". h:i:s A";

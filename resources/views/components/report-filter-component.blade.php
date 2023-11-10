@@ -265,6 +265,19 @@
                 </div>
             @endif
 
+            @if(isset($filters['expenses_type_id']))
+                <div class="col-lg-3">
+                    <div class="mb-3">
+                        <label class="form-label">Expenses Type</label>
+                        <select class="form-control" data-trigger name="filter[expenses_type_id]" id="choices-single-default" placeholder="Select Expense Type">
+                            @foreach($expenses_types as $expenses_type)
+                                <option {{ $filters['expenses_type_id'] == $expenses_type->id ? 'selected' : '' }} value="{{ $expenses_type->id }}">{{ $expenses_type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
+
 
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>

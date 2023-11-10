@@ -26,6 +26,8 @@ class CancelledOnlineOrder
      */
     public function handle(UpdateOnlineOrderStatusEvent $event)
     {
+        if(config('app.sync_with_online')== 0)  return;
+
         if($event->invoice->online_order_status == "1") {
             if($event->invoice->status_id == status('Deleted')) {
                 _GET('processorder/' . $event->invoice->onliner_order_id . "/5");

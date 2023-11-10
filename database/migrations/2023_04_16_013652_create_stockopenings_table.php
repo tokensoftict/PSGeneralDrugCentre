@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('stockopenings', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId("stock_id")->constrained()->cascadeOnDelete();
             $table->decimal('average_retail_cost_price')->nullable();

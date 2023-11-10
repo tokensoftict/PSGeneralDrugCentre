@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('stockbincards', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('stock_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string("bin_card_type",100)->index(); //['APP//RECEIVED','APP//TRANSFER','APP//SOLD','APP//RETURN','APP//DEPARTMENT','APP//BRANCH']

@@ -21,7 +21,7 @@ class CustomerDataTable extends ExportDataTableComponent
 
     public function builder(): Builder
     {
-        return  Customer::query()->select('*')->with(['creditpaymentlog','invoice'])->filterdata($this->filters);
+        return  Customer::query()->select('*')->with(['creditpaymentlog','invoice', 'payment'])->filterdata($this->filters);
     }
 
     public function refresh($what)
@@ -57,6 +57,11 @@ class CustomerDataTable extends ExportDataTableComponent
                 ->format(fn($value, $row, Column $column) => money($value))
                 ->sortable(),
             Column::make("Last Payment Date", "id")
+                ->format(function($value, $row, Column $column){
+                    $date = isset($row->payment->payment_date) ? $row->payment->payment_date : false;
+                    return $date ? convert_date($date) : "N/A";
+                }),
+            Column::make("Last Credit Payment Date", "id")
                 ->format(function($value, $row, Column $column){
                     $date = isset($row->creditpaymentlog->payment_date) ? $row->creditpaymentlog->payment_date : false;
                     return $date ? convert_date($date) : "N/A";

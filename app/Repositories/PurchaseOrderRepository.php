@@ -8,9 +8,12 @@ use App\Models\Purchase;
 use App\Models\Purchaseitem;
 use App\Models\Stock;
 use App\Models\Stockbatch;
+use App\Models\Supplier;
+use App\Models\SupplierCreditPaymentHistory;
 use Arr;
 use DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PurchaseOrderRepository
 {
@@ -193,6 +196,10 @@ class PurchaseOrderRepository
         $purchase->date_completed = todaysDate();
         $purchase->completed_by = \auth()->id();
         $purchase->update();
+
+
+        //add amount of purchase to credit payment history
+        self::createSupplierCreditHistory($purchase);
     }
 
 
@@ -207,6 +214,49 @@ class PurchaseOrderRepository
     public function delete(Purchase $purchase)
     {
         return $purchase->delete();
+    }
+
+
+    public static function createSupplierCreditHistory(Purchase $purchase)
+    {
+        SupplierCreditPaymentHistory::updateOrCreate([
+            'user_id' => \auth()->id(),
+            'supplier_id' => $purchase->supplier_id,
+            'purchase_id' => $purchase->id,
+            'paymentmethod_id' => NULL,
+            'amount' => -($purchase->purchaseitems->sum('total')),
+            'payment_date' => $purchase->date_completed,
+            'payment_info' => NULL
+        ],
+            ['purchase_id' =>  $purchase->id]
+        );
+    }
+
+
+    public static function createSupplierPaymentHistory(array $data)
+    {
+        SupplierCreditPaymentHistory::create([
+            'user_id' => \auth()->id(),
+            'supplier_id' => $data['supplier_id'],
+            'type' => 'PAYMENT',
+            'paymentmethod_id' => $data['paymentmethod_id'],
+            'amount' => Str::replace(",","",$data['amount']),
+            'payment_date' => $data['payment_date'],
+            'payment_info' => $data['payment_info'],
+        ]);
+    }
+
+
+    public static function updateSupplierPaymentHistory($id ,array $data)
+    {
+        SupplierCreditPaymentHistory::where('id', $id)->update([
+            'user_id' => \auth()->id(),
+            'supplier_id' => $data['supplier_id'],
+            'type' => 'PAYMENT',
+            'paymentmethod_id' => $data['paymentmethod_id'],
+            'amount' => Str::replace(",","",$data['amount']),
+            'payment_info' => $data['payment_info'],
+        ]);
     }
 
 }

@@ -26,6 +26,8 @@ class WaitingForPaymentOnlineOrder
      */
     public function handle(UpdateOnlineOrderStatusEvent $event)
     {
+        if(config('app.sync_with_online')== 0)  return;
+
         if($event->invoice->online_order_status == "1") {
             _GET('processorder/' . $event->invoice->invoice->onliner_order_id . "/6");
 

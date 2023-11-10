@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('batchstocks', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId("stock_id")->constrained()->cascadeOnDelete();
             $table->integer("quantity")->nullable();

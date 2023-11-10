@@ -86,8 +86,20 @@ class Customer extends Model
 
     public function creditpaymentlog()
     {
-        return $this->hasOne(Creditpaymentlog::class)
-            ->where('amount','>',0)->latestOfMany('id');
+        return $this->hasOne(Creditpaymentlog::class)->ofMany(['id' => 'MAX'], function($query){
+            $query->where('amount', '>', 0);
+        });
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class)->ofMany(['id' => 'MAX'], function($query){
+            $query->where('total_paid', '>', 0);
+        });
+    }
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class)->latestOfMany();
     }
 
 	public function customer_ledgers()
@@ -105,10 +117,7 @@ class Customer extends Model
 		return $this->hasMany(Invoice::class);
 	}
 
-    public function invoice()
-    {
-        return $this->hasOne(Invoice::class)->latestOfMany();
-    }
+
 
 	public function paymentmethoditems()
 	{

@@ -46,7 +46,7 @@
     <div class="row mt-3">
         <div class="col-6">
             <address class="pt-1">
-                <strong>General Drug Store:</strong><br>
+                <strong>{{ config('app.name') }}:</strong><br>
                 <span class="d-block pb-1 pt-1"> Created By : {{ $this->purchase->user->name }}</span>
                 <span class="d-block pb-1 pt-1"> Completed By : {{ $this->purchase->complete_by->name ?? "" }}</span>
                 <span class="d-block pb-1">Date Created : {{ str_date2($this->purchase->date_created) }}</span>
