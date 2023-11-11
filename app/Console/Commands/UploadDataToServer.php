@@ -72,6 +72,7 @@ class UploadDataToServer extends Command
             sleep(4);
         }
 
+        /*
         //now we begin with category data
         $this->info('Gathering Category Data');
         $categories = Category::all();
@@ -109,7 +110,7 @@ class UploadDataToServer extends Command
             sleep(4);
         }
 
-
+*/
         //now we begin with group data
 
         $this->info('Gathering Stock Group Data');
