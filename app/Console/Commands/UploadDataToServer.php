@@ -150,7 +150,7 @@ class UploadDataToServer extends Command
             sleep(4);
         }
 
-
+/*
         //now finally lets hanle stock pushing
           $this->info('Gathering Bulk Stock Data');
         $stocks = Stock::where(function($query){
@@ -225,7 +225,7 @@ class UploadDataToServer extends Command
             $this->info('Purchase Orders data has been posted successfully');
             sleep(4);
         }
-
+*/
         $this->info('Data has been uploaded to server successfully');
 
         return ;
