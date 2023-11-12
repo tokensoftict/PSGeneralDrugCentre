@@ -33,7 +33,7 @@ class UploadImageToServer extends Command
 
         $image = public_path($stockImage->image_path);
 
-        $url = 'http://admin.generaldrugcentre.com/api/data/uploadImage';
+        $url = 'https://admin.generaldrugcentre.com/api/data/uploadImage';
 
         $path = explode("/",$stockImage->image_path);
 
