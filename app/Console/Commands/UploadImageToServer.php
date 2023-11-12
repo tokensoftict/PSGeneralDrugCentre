@@ -52,10 +52,9 @@ class UploadImageToServer extends Command
         $result = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            dd($result);
             $stockImage->image_uploaded = 2;
         }else{
-            $this->info('output :'.$result);
+            $this->info('Error output :'.$stockImage->id);
             $stockImage->image_uploaded = 1;
         }
 
