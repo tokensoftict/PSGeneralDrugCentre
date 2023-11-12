@@ -6,6 +6,7 @@ use App\Models\Usergroup;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Classes\Settings;
@@ -66,6 +67,12 @@ function _POST($endpoint, $payload = []) : array|bool
 
     return false;
 }
+
+function _RAWPOST($url, $payload =[]) : \Illuminate\Http\Client\Response
+{
+    return Http::timeout(10000)->withHeaders(['Accept'=>'application/json'])->post($url, $payload);
+}
+
 
 if (!function_exists('isJson')) {
     function isJson($string)
