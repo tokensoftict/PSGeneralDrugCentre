@@ -74,6 +74,13 @@ function _RAWPOST($url, $payload =[]) : \Illuminate\Http\Client\Response
 }
 
 
+function uploadFile($url, array $file, $payload)
+{
+    return Http::timeout(10000)
+        ->attach($file['name'], $file['file'], $file['label'])
+        ->post($url, $payload);
+}
+
 if (!function_exists('isJson')) {
     function isJson($string)
     {
