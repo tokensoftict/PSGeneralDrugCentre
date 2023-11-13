@@ -41,10 +41,12 @@ class SyncCustomer extends Command
             $this->info('Posting Customer Data to '.onlineBase());
             $response = _POST('sync_customer',$postdata);
 
-            if($response['status'] == true){
+            if($response == true){
                 $chunk_numbers = $chunk_numbers-1;
                 $this->info('Customer data has been posted successfully '.$chunk_numbers);
                 sleep(4);
+            }else{
+                dd($response);
             }
         });
 
