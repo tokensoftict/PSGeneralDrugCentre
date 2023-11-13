@@ -39,7 +39,7 @@ class SyncCustomer extends Command
             $postdata = ['table'=>'existing_customer','data'=> $all_data];
             $this->info('Parsing Customer Data Complete');
             $this->info('Posting Customer Data to '.onlineBase());
-            $response = _POST('sync_customer',$postdata);
+            $response = _POST2('sync_customer',$postdata);
 
             if($response == true){
                 $chunk_numbers = $chunk_numbers-1;
