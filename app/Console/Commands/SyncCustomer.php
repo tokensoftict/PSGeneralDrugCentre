@@ -30,8 +30,8 @@ class SyncCustomer extends Command
     {
         $this->info('Gathering Customer Data');
         $customers = Customer::where('status',1);
-        $chunk_numbers = round(($customers->count() / 200));
-        $customers->chunk(200,function($customer) use (&$chunk_numbers){
+        $chunk_numbers = round(($customers->count() / 500));
+        $customers->chunk(500,function($customer) use (&$chunk_numbers){
             $all_data = [];
             foreach($customer as $cus){
                 $all_data[] = $cus->getBulkPushData();
