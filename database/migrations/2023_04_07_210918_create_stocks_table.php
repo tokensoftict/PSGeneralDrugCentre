@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->mediumText('name')->index()->nullable();
+            $table->string('name')->index()->nullable();
             $table->mediumText("description")->nullable();
             $table->string("code",20)->nullable()->index();
             $table->foreignId("category_id")->nullable()->constrained()->nullOnDelete();
