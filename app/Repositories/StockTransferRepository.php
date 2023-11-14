@@ -254,8 +254,9 @@ class StockTransferRepository
 
         $stocktransfer->update();
 
-        dispatch(new PushStockUpdateToServerFromTransfer(array_column($stocktransfer->stockTransferItems->toArray(), 'stock_id')));
-
+        if(config('app.sync_with_online')== 1) {
+            dispatch(new PushStockUpdateToServerFromTransfer(array_column($stocktransfer->stockTransferItems->toArray(), 'stock_id')));
+        }
         return $stocktransfer;
     }
 

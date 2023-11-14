@@ -262,7 +262,9 @@ class InvoiceRepository
 
         logActivity($invoice->id, $invoice->invoice_number, "Invoice was created".$invoice->status->name);
 
-        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+        if(config('app.sync_with_online')== 1) {
+            dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+        }
 
         return $invoice;
     }
@@ -415,8 +417,9 @@ class InvoiceRepository
                 'user_id' => auth()->id(),
             ]));
         }
-
-        dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+        if(config('app.sync_with_online')== 1) {
+            dispatch(new PushStockUpdateToServer(array_column($invoice->invoiceitems->toArray(), 'stock_id')));
+        }
 
         //$this->initiateBinCard($invoice);
 
