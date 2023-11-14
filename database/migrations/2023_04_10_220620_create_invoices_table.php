@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->mediumText("invoice_number")->unique();
+            $table->bigInteger("invoice_number")->unique();
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
             $table->bigInteger("payment_id")->nullable(); // related to payment informtion
             $table->mediumText('department')->nullable()->index();
