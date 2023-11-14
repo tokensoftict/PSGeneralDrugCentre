@@ -19,8 +19,8 @@ return new class extends Migration
             $table->bigInteger("invoice_number")->unique();
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
             $table->bigInteger("payment_id")->nullable(); // related to payment informtion
-            $table->mediumText('department')->nullable()->index();
-            $table->mediumText('in_department')->nullable()->index();
+            $table->string('department')->nullable()->index();
+            $table->string('in_department')->nullable()->index();
             $table->decimal("discount_amount",20,5)->nullable();
             $table->enum("discount_type", ['Fixed','Percentage','None'])->nullable(); //['Fixed','Percentage','None']
             $table->decimal("discount_value",20,5)->default(0);
