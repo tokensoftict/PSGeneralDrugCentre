@@ -32,7 +32,16 @@ class SupplierPaymentDatatable extends ExportDataTableComponent
             Column::make("Type", "type")
                 ->sortable(),
             Column::make("Payment Method", "paymentmethod_id")
-                ->format(fn($value, $row, Column $column) =>$row->paymentmethod->name ?? "")
+                ->format(function($value, $row, Column $column){
+                    if($row->paymentmethod_id === 8)
+                    {
+                        $date = $row->payment_info['cheque_date'];
+
+                        return $row->paymentmethod->name."(".$date.")";
+                    }
+
+                    return $row->paymentmethod->name ?? "";
+                })
                 ->sortable(),
             Column::make("Amount", "amount")
                 ->format(fn($value, $row, Column $column) =>money($row->amount))

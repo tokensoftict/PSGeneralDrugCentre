@@ -9,7 +9,7 @@
 
             <div class="mb-3">
                 <label>Supplier</label>
-                <select class="form-control" wire:model.defer="payment_data.supplier_id">
+                <select class="form-control"  wire:model.defer="payment_data.supplier_id">
                     <option value="">Select Supplier</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
@@ -26,7 +26,7 @@
 
             <div class="mb-3">
                 <label>Payment Method</label>
-                <select class="form-control" wire:model.defer="payment_data.paymentmethod_id">
+                <select class="form-control" id="paymentMthod" wire:model.defer="payment_data.paymentmethod_id">
                     <option value="">Select Payment Method</option>
                     @foreach($paymentMethods as $paymentMethod)
                         <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
@@ -34,6 +34,13 @@
                 </select>
                 @error('payment_data.paymentmethod_id') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
+
+            <div class="mb-3" id="cheque_date" style="display: none;">
+                <label>Cheque Date</label>
+                <input type="text" wire:model.defer="payment_data.payment_info.cheque_date" placeholder="Cheque Date"   class="form-control datepicker-basic" >
+                @error('payment_data.payment_info.cheque_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
+            </div>
+
 
             <div class="col-lg-12">
                 <div class="col-lg-12 mt-4">
@@ -49,4 +56,21 @@
             </div>
         </div>
     </form>
+
+    <script>
+        window.addEventListener('load', function (){
+           $(document).ready(function(){
+              $('#paymentMthod').on('change', function(){
+                 if($(this).val() == "8")
+                 {
+                     $('#cheque_date').removeAttr('style');
+                 }else{
+                     $('#cheque_date').attr('style', 'display:none');
+                 }
+              });
+              $('.select2Product').select2({
+                  placeholder: 'Select Supplier'});
+              });
+        });
+    </script>
 </div>

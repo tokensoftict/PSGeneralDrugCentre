@@ -26,7 +26,7 @@ class SupplierPaymentComponent extends Component
 
     public function booted()
     {
-        $this->paymentMethods = paymentmethodsOnly([1,2,3,]);
+        $this->paymentMethods = paymentmethodsOnly([1,2,3,8]);
         $this->suppliers = suppliers(true);
     }
 
@@ -38,9 +38,10 @@ class SupplierPaymentComponent extends Component
             'type' => NULL,
             'purchase_id' => NULL,
             'paymentmethod_id' => NULL,
-            'payment_info' => NULL,
+            'payment_info' => ['cheque_date' => NULL],
             'amount' => NULL,
-            'payment_date' => NULL
+            'payment_date' => NULL,
+            'cheque_date' => NULL
         ];
 
         if(isset($this->supplierCreditPaymentHistory->id))
@@ -66,6 +67,8 @@ class SupplierPaymentComponent extends Component
             "payment_data.supplier_id"=>"bail|required",
             "payment_data.paymentmethod_id"=>"bail|required",
         ];
+
+
 
 
         $this->validate($data);

@@ -45,7 +45,8 @@ class SupplierCreditPaymentHistory extends Model
 		'purchase_id' => 'int',
 		'paymentmethod_id' => 'int',
 		'amount' => 'float',
-		'payment_date' => 'datetime'
+		'payment_date' => 'datetime',
+        'payment_info' => 'json'
 	];
 
 	protected $fillable = [
