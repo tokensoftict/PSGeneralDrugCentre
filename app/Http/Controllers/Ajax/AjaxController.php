@@ -52,7 +52,7 @@ class AjaxController extends Controller
     }
 
 
-    public function andlossprofitdatatablebydepartment(Request $request)
+    public function profitandlossdatatable(Request $request)
     {
         $invoiceItems = InvoiceItem::select('stock_id',
             DB::raw( 'SUM(quantity) as total_qty'),
@@ -99,7 +99,7 @@ class AjaxController extends Controller
             ->make(true);
     }
 
-    public function andlossprofitdatatablebydepartment(Request $request)
+    public function profitandlossdatatablebydepartment(Request $request)
     {
         $invoiceItems = InvoiceItem::select('stock_id',
             DB::raw( 'SUM(quantity) as total_qty'),
