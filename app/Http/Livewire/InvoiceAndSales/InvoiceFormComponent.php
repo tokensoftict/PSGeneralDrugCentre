@@ -70,16 +70,12 @@ class InvoiceFormComponent extends Component
             1 => departments(true)->filter(function($item){
                 return $item->id == 1;
             })->reverse(),
-        };
 
-        if(!isset($this->invoice->id) && config('app.sync_with_online') === 0){
-            $this->department_id = 1;
-        }
+        };
 
         if(isset($this->invoice->id)){
             $this->department_id = department_by_quantity_column($this->invoice->department)->id;
         }
-
 
         if($this->department_id == ""){
             $this->selectedDepartment = (array) $this->departments->first();

@@ -10,11 +10,11 @@
                 <i class="fa fa-fw fa-bars"></i>
             </button>
 
-            <div class="d-block m-3">
+            <div class="d-block m-3 d-none d-lg-block">
             <span class="font-size-20 font-bold">Department : </span> <span class="font-size-20 font-bold text-primary">{{ auth()->user()->department->label }}</span>
             </div>
 
-            <div class="d-block m-3">
+            <div class="d-block m-3 d-none d-lg-block">
                 <span class="font-size-20 font-bold">Group : </span> <span class="font-size-20 font-bold text-primary">{{ auth()->user()->usergroup->name }}</span>
             </div>
         </div>
