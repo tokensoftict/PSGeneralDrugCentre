@@ -74,7 +74,7 @@ class InvoiceFormComponent extends Component
         };
 
         if(isset($this->invoice->id)){
-            $this->department_id = department_by_quantity_column($this->invoice->department)->id;
+            $this->department_id = config('app.sync_with_online') === 1 ? department_by_quantity_column($this->invoice->department)->id : 1;
         }
 
         if($this->department_id == ""){

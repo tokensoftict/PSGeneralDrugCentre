@@ -88,7 +88,7 @@ class ProductComponent extends Component
            "product_data.location"=>"required"
        ];
 
-        if($this->product_data['image_path'] === "logo/" . app(Settings::class)->store()->logo)
+        if(config('app.sync_with_online') === 1 && $this->product_data['image_path'] === "logo/" . app(Settings::class)->store()->logo)
         {
             $data['product_data.image_path'] = 'mimes:jpeg,jpg,png,bmp|required|max:10000';
         }
