@@ -119,7 +119,7 @@ class Stockimports implements ToCollection, WithChunkReading, ShouldQueue,WithHe
                         $group = $gp->id;
                     }
 
-                    $stock->group_id = $group;
+                    $stock->stockgroup_id = $group;
                 }
             }
 
