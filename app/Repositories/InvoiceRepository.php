@@ -370,9 +370,11 @@ class InvoiceRepository
 
             $invoice->retail_printed = "0";
 
-            $invoice->date_voided = todaysDate();
+            if( $invoice->date_voided === NULL) {
+                $invoice->date_voided = todaysDate();
+            }
 
-            $invoice->void_reason = $invoice->void_reason === NULL ? 1 :( $invoice->void_reason +1)
+            $invoice->void_reason = $invoice->void_reason === NULL ? 1 :( $invoice->void_reason +1);
 
             $invoice->update();
 
