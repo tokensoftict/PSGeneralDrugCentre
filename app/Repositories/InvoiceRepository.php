@@ -370,6 +370,10 @@ class InvoiceRepository
 
             $invoice->retail_printed = "0";
 
+            $invoice->date_voided = todaysDate();
+
+            $invoice->void_reason = $invoice->void_reason === NULL ? 1 :( $invoice->void_reason +1)
+
             $invoice->update();
 
             logActivity($invoice->id, $invoice->invoice_number, 'invoice was returned RETURNED');
