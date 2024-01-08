@@ -371,6 +371,8 @@ class InvoiceRepository
             $invoice->retail_printed = "0";
 
             $invoice->update();
+
+            logActivity($invoice->id, $invoice->invoice_number, 'invoice was returned RETURNED');
         }
 
         $columns = [];
