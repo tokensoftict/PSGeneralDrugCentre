@@ -145,7 +145,7 @@ class CustomerReportController extends Controller
             DB::raw('count(customer_id) as invoice_count'),
             DB::raw('SUM(total_amount_paid) as total_invoice_amount')
         )
-            ->whereIn('in_department', Department::whereIn("id", $department)->pluck('name')->toArray())
+            ->whereIn('in_department', Department::whereIn("id", $department)->pluck('quantity_column')->toArray())
             ->whereBetween('invoice_date', $data['filters']['filters']['between.invoice_date'])
             ->where(function($qq){
                 $qq->orWhere("invoices.status_id",status("Paid"))
