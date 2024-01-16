@@ -28,6 +28,7 @@
 
         $(function () {
             var table =  $('#invoice-list').DataTable({
+                dom: 'Bfrtip',
                 buttons: [
                     'copy', 'excel', 'pdf'
                 ],
