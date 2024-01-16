@@ -89,15 +89,19 @@ class CustomerReportController extends Controller
         $items = [
             [
                 'id' =>2,
-                'name' => department_by_id(2)->name
+                'name' => "Only Wholesales",
             ],
             [
                 'id' =>3,
-                'name' => department_by_id(3)->name
+                'name' => "Only Bulksales",
             ],
             [
                 'id' =>4,
-                'name' => department_by_id(4)->name
+                'name' =>"Only Retail",
+            ],
+            [
+                'id' =>"2-3",
+                'name' => "Wholesales and Bulksales"
             ],
             [
                 'id' =>"2-3-4",
@@ -105,8 +109,8 @@ class CustomerReportController extends Controller
             ]
         ];
         $data = [
-            'title' => 'Customer Ledger  Report',
-            'subtitle' => 'View Customer  Ledger Report By Date Range and customer',
+            'title' => 'Customer Ranking  Report',
+            'subtitle' => 'View Customer  Ranking Report By Date Range and department',
             'filters' => [
                 'custom_dropdown_id' => 2,
                 'label_name' => 'Departments',

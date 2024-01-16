@@ -11,14 +11,14 @@ class CustomerController extends Controller
         $data = [
             'filters' => []
         ];
-        return setPageContent('customermanager.index', $data);
+        return view('customermanager.index', $data);
     }
 
     public function retails(){
         $data = [
             'filters' => ['retail_customer' => 1]
         ];
-        return setPageContent('customermanager.index', $data);
+        return view('customermanager.index', $data);
     }
 
 
