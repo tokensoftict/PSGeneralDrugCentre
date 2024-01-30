@@ -384,6 +384,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['get','post'],'supplier_credit', ['as' => 'supplier_credit', 'uses' => 'PurchaseReportsController@supplier_credit', 'custom_label'=>'Supplier Credit Report']);
 
                 Route::match(['get','post'],'balance_sheet', ['as' => 'balance_sheet', 'uses' => 'PurchaseReportsController@balance_sheet', 'custom_label'=>'Supplier Balance Sheet']);
+                Route::match(['get','post'],'supplier_ranking', ['as' => 'supplier_ranking', 'uses' => 'PurchaseReportsController@supplier_ranking', 'custom_label'=>'Supplier Ranking Report']);
             });
 
             Route::prefix('paymentReport')->as('payment.')->namespace('PaymentReport')->group(function(){

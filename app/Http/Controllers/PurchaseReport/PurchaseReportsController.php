@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\PurchaseReport;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\Purchase;
 use App\Models\Stock;
 use App\Models\Supplier;
 use App\Models\SupplierCreditPaymentHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseReportsController extends Controller
 {
@@ -241,5 +244,71 @@ class PurchaseReportsController extends Controller
         return view('reports.purchases.supplier.balance_sheet', $data);
 
     }
+
+
+
+    public function supplier_ranking(Request $request)
+    {
+        $items = [
+            [
+                'id' =>4,
+                'name' => "Retail",
+            ],
+            [
+                'id' =>1,
+                'name' => "Main Store",
+            ],
+            [
+                'id' =>"1-4",
+                'name' => "Retail And Main Store"
+            ]
+        ];
+        $data = [
+            'title' => 'Supplier Ranking  Report',
+            'subtitle' => 'View Supplier  Ranking Report By Date Range and department',
+            'filters' => [
+                'custom_dropdown_id' => 2,
+                'label_name' => 'Departments',
+                'items' => $items,
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'items' => $items ,
+                'label_name' => 'Departments',
+                'filters' => [
+                    'between.invoice_date' => monthlyDateRange(),
+                    'custom_dropdown_id' => 2,
+                ]
+            ]
+        ];
+
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['items'] = $items;
+            $data['filters']['label_name'] = 'Departments';
+            $data['filters']['custom_dropdown_id'] = $data['filters']['custom_dropdown_id'];
+            $data['filters']['filters']['between.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['custom_dropdown_id'] = $data['filters']['custom_dropdown_id'];
+            $data['filters']['filters']['items'] = $items;
+            $data['filters']['filters']['label_name'] = 'Departments';
+        }
+
+        $department = explode("-",  $data['filters']['filters']['custom_dropdown_id']);
+
+        $reports =  Purchase::with(['supplier'])->select(
+            'purchases.supplier_id',
+            DB::raw('count(purchases.supplier_id) as purchase_count'),
+            DB::raw('SUM(purchaseitems.cost_price * purchaseitems.qty) as purchase_total_amount')
+        )->join('purchaseitems', "purchaseitems.purchase_id","=","purchases.id")
+            ->whereIn('purchases.department', Department::whereIn("id", $department)->pluck('quantity_column')->toArray())
+            ->whereBetween('purchases.date_completed', $data['filters']['filters']['between.invoice_date'])
+            ->where("purchases.status_id", status("Complete"))
+            ->orderBy('purchase_total_amount','DESC')
+            ->groupBy('purchases.supplier_id')->get();
+
+        $data['reports'] = $reports;
+        return view('reports.purchases.supplier_ranking_report', $data);
+    }
+
 
 }
