@@ -43,8 +43,11 @@ class InvoiceFormComponent extends Component
     public String $city_id = "";
 
 
+    public string $invoice_number = "";
+
     public function mount()
     {
+        $this->invoice_number = time().mt_rand();
         $this->invoiceData = InvoiceRepository::invoice($this->invoice, $this);
 
         $this->cities = City::all();
@@ -221,7 +224,7 @@ class InvoiceFormComponent extends Component
         }
         if(!isset($this->invoice->id))
         {
-            $this->invoiceData['invoice_number'] = time();
+            //$this->invoiceData['invoice_number'] = time();
 
             $response = null;
             DB::transaction(function() use (&$response){

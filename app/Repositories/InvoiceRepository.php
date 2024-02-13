@@ -67,7 +67,7 @@ class InvoiceRepository
         }else {
 
             return [
-                'invoice_number' => time(),
+                'invoice_number' => $component->invoice_number,
                 'customer_id' => ['firstname'=>""],
                 'department' => NULL,
                 'in_department' => department_by_id(auth()->user()->department_id)->quantity_column,
@@ -198,6 +198,14 @@ class InvoiceRepository
 
     public function createInvoice(array $invoiceData, $validate = true) : Invoice|array
     {
+
+        $invoice = Invoice::where('invoice_number', $invoiceData['invoice_number'])->first();
+
+        if($invoice) {
+            logActivity($invoice->id, $invoice->invoice_number, "Duplicate Invoice found, [Duplicate prevented]");
+            return $invoice;
+        }
+
         $items = json_decode($invoiceData['invoiceitems'],true);
 
         Arr::forget($invoiceData, ['invoiceitems']);

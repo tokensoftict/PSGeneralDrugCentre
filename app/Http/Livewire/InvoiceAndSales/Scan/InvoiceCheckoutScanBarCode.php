@@ -55,7 +55,22 @@ class InvoiceCheckoutScanBarCode extends Component
                     'text' => 'Invoice ('.$this->invoice_number.') not found, Please make sure you are scanning the correct invoice number'
                 ]
             );
-        } else{
+        }else if($invoice->status_id !== status('Complete')){
+            $this->alert(
+                "error",
+                "Invoice Checkout",
+                [
+                    'position' => 'center',
+                    'toast' => false,
+                    'timer' => 100000000000,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Okay',
+                    'onConfirmed' => 'confirmed',
+                    'text' => 'You can not scan invoice that has not been completed!.'
+                ]
+            );
+        }
+        else{
             $checkout = $invoiceRepo->checkOut($invoice);
 
             if($checkout['status'] === true){

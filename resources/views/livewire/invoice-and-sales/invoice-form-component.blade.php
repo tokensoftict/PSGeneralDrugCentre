@@ -116,9 +116,13 @@
                                     <span wire:loading wire:target="newCustomer" class="spinner-border spinner-border-sm me-2" role="status"></span>
                                     <i class="fa fa-user" wire:loading.remove wire:target="newCustomer"> Add Customer</i>
                                 </button>
-
-
                             </h4>
+
+                            <div class="mb-3">
+                                <strong>Invoice Number : </strong>
+                                <b>{{ $invoice_number }}</b>
+                            </div>
+
                             <div class="mb-3">
                                 <label>Search For Customer :</label>
                                 <input class="form-control input-sm" id="customer-search-text" x-model="searchCustomerString" class="form-control" x-on:keyup.debounce="searchCustomer(this.value)"  placeholder="Search for customer by phone number, name or email address">
