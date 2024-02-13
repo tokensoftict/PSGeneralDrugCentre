@@ -141,7 +141,7 @@ class InvoicePolicy
      */
     public function pay(User $user, Invoice $invoice) : bool
     {
-        if(!userCanView('payment.createInvoicePayment')) return false;
+        if(!userCanView('payment.createInvoicePayment') && !userCanView('payment.create')) return false;
 
         if($invoice->onliner_order_id !== NULL){ //if it is an online invoice
             if($invoice->status_id === status("Draft"))  return false;
