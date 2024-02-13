@@ -50,6 +50,8 @@ class InvoiceDataTable extends ExportDataTableComponent
             Column::make("Status", "status.name")
                 ->format(fn($value, $row, Column $column) => showStatus($value))->html()
                 ->sortable()->searchable(),
+            Column::make("Returned Times", "void_reason")
+                ->sortable(),
             Column::make("Discount", "discount_amount")
                 ->format(fn($value, $row, Column $column)=> money($row->discount_amount))
                 ->sortable()
@@ -77,14 +79,23 @@ class InvoiceDataTable extends ExportDataTableComponent
             Column::make("Action","id")
                 ->format(function($value, $row, Column $column){
                     $html = "No Action";
-                    if(can(['view','edit','printAfour','printThermal','printWaybill','delete', 'return'], $row)) {
+                    if(can(['view','edit','printAfour','printThermal','printWaybill','delete', 'return', 'processOnlineInvoice'], $row)) {
                         $html = '<div class="dropdown"><button class="btn btn-link font-size-16 shadow-none py-0 text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded"></i></button>';
                         $html .= '<ul class="dropdown-menu dropdown-menu-end">';
                         if (auth()->user()->can('view', $row)) {
                             $html .= '<li><a href="' . route('invoiceandsales.view', $row->id) . '" class="dropdown-item">Invoice Details</a></li>';
                         }
+
                         if (auth()->user()->can('edit', $row)) {
                             $html .= '<li><a href="' . route('invoiceandsales.edit', $row->id) . '" class="dropdown-item">Edit Invoice</a></li>';
+                        }
+
+                        if (auth()->user()->can('processOnlineInvoice', $row)){
+                            $html .= '<li><a data-msg="Are you sure, you want to Process/Pack Invoice this invoice, this can not be reversed"  href="' . route('invoiceandsales.processOnlineInvoice', $row->id) . '" class="dropdown-item confirm_action">Process/Pack Invoice</a></li>';
+                        }
+
+                        if (auth()->user()->can('packOnlineInvoice', $row)){
+                            $html .= '<li><a data-msg="Are you sure, you want to Mark the Invoice has Packed, this can not be reversed"  href="' . route('invoiceandsales.packOnlineInvoice', $row->id) . '" class="dropdown-item confirm_action">Mark Invoice has Packed</a></li>';
                         }
 
                         if (auth()->user()->can('return', $row)) {

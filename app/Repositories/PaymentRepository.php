@@ -469,7 +469,7 @@ class PaymentRepository
             ];
         }
 
-
+    /*
         if(isset( $obj->invoice) && $obj->invoice->online_order_status == "1"){
 
             if((int)$obj->payment_method === 4){
@@ -482,7 +482,7 @@ class PaymentRepository
 
             }
         }
-
+    */
 
         $payment_data['methods'] = $payment_data_items;
     }
@@ -610,6 +610,14 @@ class PaymentRepository
 
     public function completePayment(&$obj, $payment_id)
     {
+        if($obj->invoice->online_order_status !== NULL)
+        {
+            _GET('processorder/' . $obj->invoice->onliner_order_id . "/3");
+
+            $in = Invoice::find($obj->invoice->id);
+            $in->online_order_debit = 0;
+            $in->update();
+        }
 
         if(session()->get('current_route') == "payment.create"){
 

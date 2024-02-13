@@ -162,4 +162,27 @@ class InvoiceReportController extends Controller
     }
 
 
+    public function return_invoice(Request $request)
+    {
+        $data = [
+            'title' => 'Return Invoice Report By Date',
+            'subtitle' => 'View Return Invoice Report By Date Range',
+            'filters' => [
+                'from' =>todaysDate(),
+                'to'=>todaysDate(),
+                'filters' => [
+                    'between.invoice_date' => [todaysDate(),todaysDate()],
+                    'is_not_null.void_reason' => "",
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['between.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['is_not_null.void_reason'] = "";
+        }
+        return view('reports.invoice.return', $data);
+    }
+
 }

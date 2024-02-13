@@ -31,7 +31,7 @@
         <x-show-payment-component :payment="$invoice->payment"/>
     @endif
 
-    @if($invoice->status_id === status('Draft'))
+    @if($invoice->status_id === status('Draft') || $invoice->status_id === status('Packed-Waiting-For-Payment'))
         <x-create-payment-component :invoice="$invoice"/>
     @endif
 

@@ -9,7 +9,7 @@
         <div class="col-8">
 
             <div class="float-end">
-                @if(can(['edit','showPayment','pay','dispatched','printAfour','printThermal','printWaybill','delete', 'return', 'applyForCredit', 'applyForCheque', 'approveChequePayment' ,'approveCreditPayment'],$this->invoice))
+                @if(can(['edit','showPayment','pay','dispatched','printAfour','printThermal','printWaybill','delete', 'return', 'applyForCredit', 'applyForCheque', 'approveChequePayment' ,'approveCreditPayment', 'processOnlineInvoice', 'packOnlineInvoice'],$this->invoice))
                     <div class="btn-group" role="group">
                         <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             Invoice  Action <i class="mdi mdi-chevron-down"></i>
@@ -18,6 +18,18 @@
                             @can('edit', $this->invoice)
                                 <li>
                                     <a href="{{ route('invoiceandsales.edit',$this->invoice->id) }}" class="dropdown-item">Edit Invoice</a>
+                                </li>
+                            @endcan
+
+                            @can('processOnlineInvoice', $this->invoice)
+                                <li>
+                                    <a class="dropdown-item confirm_action" data-msg="Are you sure, you want to Process/Pack Invoice this invoice, this can not be reversed" href="{{ route('invoiceandsales.processOnlineInvoice',$this->invoice->id) }}">Process/Pack Invoice</a>
+                                </li>
+                            @endcan
+
+                            @can('packOnlineInvoice', $this->invoice)
+                                <li>
+                                    <a class="dropdown-item confirm_action" data-msg="Are you sure, you want to Mark the Invoice has Packed, this can not be reversed" href="{{ route('invoiceandsales.packOnlineInvoice',$this->invoice->id) }}">Mark Invoice has Packed</a>
                                 </li>
                             @endcan
 

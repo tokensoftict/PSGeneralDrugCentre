@@ -19,6 +19,9 @@ trait ModelFilterTraits
                 $key = str_replace('between.','', $key);
 
                 $query->whereBetween($this->getQueryTable($key, true).$key,$value );
+            }else if(str_contains($key, 'is_not_null')){
+                $key = str_replace('is_not_null.', '', $key);
+                $query->whereNotNull($key);
             }
             else {
                 $query->where($this->getQueryTable($key).$key, $value);

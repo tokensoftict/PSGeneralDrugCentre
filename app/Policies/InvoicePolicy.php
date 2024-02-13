@@ -72,6 +72,8 @@ class InvoicePolicy
     {
         if(!userCanView(type()."edit")) return false;
 
+        if($invoice->onliner_order_id !== NULL) return false;
+
         if(in_array($invoice->status_id, [
             status('Dispatched'),
             status('Complete'),
@@ -141,6 +143,11 @@ class InvoicePolicy
     {
         if(!userCanView('payment.createInvoicePayment')) return false;
 
+        if($invoice->onliner_order_id !== NULL){ //if it is an online invoice
+            if($invoice->status_id === status("Draft"))  return false;
+            if($invoice->status_id === status('Packed-Waiting-For-Payment')) return true;
+        }
+
         if($invoice->status_id !== status("Draft"))  return false;
 
         return true;
@@ -156,6 +163,12 @@ class InvoicePolicy
     public function printAfour(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.print_afour")) return false;
+
+        if($invoice->onliner_order_id !== NULL){ //if it is an online invoice
+            if($invoice->status_id === status("Draft"))  return false;
+            if($invoice->status_id === status('Packing')) return true;
+            if($invoice->status_id === status('Packed-Waiting-For-Payment')) return true;
+        }
 
         if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['a4'], $invoice)) return false;
 
@@ -184,6 +197,11 @@ class InvoicePolicy
     {
         if(!userCanView(type()."pos_print")) return false;
 
+        if($invoice->onliner_order_id !== NULL){ //if it is an online invoice
+            if($invoice->status_id === status("Draft"))  return false;
+            if($invoice->status_id === status('Packing')) return true;
+            if($invoice->status_id === status('Packed-Waiting-For-Payment')) return true;
+        }
 
         if(!userCanView('invoiceandsales.rePrintInvoice') && !canPrint(Settings::$printType['thermal'], $invoice)) return false;
 
@@ -299,6 +317,11 @@ class InvoicePolicy
     }
 
 
+    /**]
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
     public function applyForCredit(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.applyForCredit")) return false;
@@ -309,6 +332,11 @@ class InvoicePolicy
     }
 
 
+    /**
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
     public function applyForCheque(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.applyForCheque")) return false;
@@ -318,6 +346,11 @@ class InvoicePolicy
         return false;
     }
 
+    /**
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
     public function approveCreditPayment(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.approve_or_decline_credit_payment")) return false;
@@ -327,6 +360,11 @@ class InvoicePolicy
         return false;
     }
 
+    /**
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
     public function approveChequePayment(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.approve_or_decline_cheque_payment")) return false;
@@ -334,6 +372,40 @@ class InvoicePolicy
         if($invoice->status_id === status('Waiting-For-Cheque-Approval')) return true;
 
         return false;
+    }
+
+
+    /**
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
+    public function processOnlineInvoice(User $user, Invoice $invoice)
+    {
+        if($invoice->onliner_order_id === NULL) return false; //check if this is an online invoice
+
+        if(!userCanView("invoiceandsales.processOnlineInvoice")) return false;
+
+        if($invoice->status_id === status('Draft')) return true;
+
+        return false;
+    }
+
+
+    /**
+     * @param User $user
+     * @param Invoice $invoice
+     * @return bool
+     */
+    public function packOnlineInvoice(User $user, Invoice $invoice)
+    {
+        if($invoice->onliner_order_id === NULL) return false; //check if this is an online invoice
+
+        if($invoice->status_id !== status('Packing')) return false;
+
+        if(!userCanView("invoiceandsales.packOnlineInvoice")) return false;
+
+        return true;
     }
 
 }

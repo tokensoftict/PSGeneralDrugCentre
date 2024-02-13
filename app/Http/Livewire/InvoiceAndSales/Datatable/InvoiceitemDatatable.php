@@ -85,7 +85,7 @@ class InvoiceitemDatatable extends ExportDataTableComponent
             Column::make("Action","id")
                 ->format(function($value, $row, Column $column){
                     $html = "No Action";
-                    if(can(['view','edit','printAfour','printThermal','printWaybill','delete'], $row->invoice)) {
+                    if(can(['view','edit','printAfour','printThermal','printWaybill','delete', 'processOnlineInvoice'], $row->invoice)) {
                         $html = '<div class="dropdown"><button class="btn btn-link font-size-16 shadow-none py-0 text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded"></i></button>';
                         $html .= '<ul class="dropdown-menu dropdown-menu-end">';
                         if (auth()->user()->can('view', $row->invoice)) {
@@ -97,6 +97,15 @@ class InvoiceitemDatatable extends ExportDataTableComponent
                         if (auth()->user()->can('printAfour', $row->invoice)) {
                             $html .= '<li><a href="' . route('invoiceandsales.print_afour', $row->invoice_id) . '" class="dropdown-item">Print A4</a></li>';
                         }
+
+                        if (auth()->user()->can('processOnlineInvoice', $row->invoice)){
+                            $html .= '<li><a data-msg="Are you sure, you want to Process/Pack Invoice this invoice, this can not be reversed"  href="' . route('invoiceandsales.processOnlineInvoice', $row->invoice_id) . '" class="dropdown-item confirm_action">Process/Pack Invoice</a></li>';
+                        }
+
+                        if (auth()->user()->can('packOnlineInvoice', $row->invoice)){
+                            $html .= '<li><a data-msg="Are you sure, you want to Mark the Invoice has Packed, this can not be reversed"  href="' . route('invoiceandsales.packOnlineInvoice', $row->invoice_id) . '" class="dropdown-item confirm_action">Mark Invoice has Packed</a></li>';
+                        }
+
                         if (auth()->user()->can('printThermal', $row->invoice)) {
                             $html .= '<li><a href="' . route('invoiceandsales.pos_print', $row->invoice_id) . '" class="dropdown-item">Print Thermal</a></li>';
                         }

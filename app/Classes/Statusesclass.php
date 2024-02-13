@@ -80,6 +80,14 @@ class Statusesclass
             'name'=>'Waiting-For-Cheque-Approval',
             'label'=>'primary'
         ],
+        [
+            'name'=>'Packing',
+            'label'=>'warning'
+        ],
+        [
+            'name'=>'Packed-Waiting-For-Payment',
+            'label'=>'primary'
+        ],
     ];
 
 

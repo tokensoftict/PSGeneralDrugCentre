@@ -93,7 +93,7 @@ trait InvoiceTrait
 
         logActivity($invoice->id, $invoice->invoice_number,'Invoice viewed :'.status_name($invoice->status_id));
 
-        return setPageContent('invoiceandsales.show', $data);
+        return view('invoiceandsales.show', $data);
     }
 
     public function edit(Invoice $invoice)

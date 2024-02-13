@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
 use App\Traits\InvoiceTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class InvoiceController extends Controller
@@ -62,6 +63,68 @@ class InvoiceController extends Controller
 
         return setPageContent('invoiceandsales.index', $data);
     }
+
+
+    public function packing(Request $request)
+    {
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
+
+        $data['title'] = 'Packing Invoice(s)';
+        $data['subtitle'] = 'List of Invoice Currently Being Packed - '.$data['filters']['filters']['invoice_date'];
+
+        if(auth()->user()->department_id !== 5) {
+            $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
+            $data['filters']['filters']['in_department'] = $dpt;
+        }
+
+        $data['filters']['filters']['status_id'] = status('Packing');
+
+        return setPageContent('invoiceandsales.index', $data);
+    }
+
+
+
+    public function alredy_packed(Request $request)
+    {
+        $data = [
+            'filters' => [
+                'invoice_date' =>dailyDate(),
+                'filters' => [
+                    'invoice_date' => todaysDate()
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['invoice_date'] = $request->get('filter')['invoice_date'];
+        }
+
+        $data['title'] = 'List of Already Packed Invoice(s)';
+        $data['subtitle'] = 'List of Invoice(s) already packed and Waiting for Payment - '.$data['filters']['filters']['invoice_date'];
+
+        if(auth()->user()->department_id !== 5) {
+            $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
+            $data['filters']['filters']['in_department'] = $dpt;
+        }
+
+        $data['filters']['filters']['status_id'] = status('Packed-Waiting-For-Payment');
+
+        return setPageContent('invoiceandsales.index', $data);
+    }
+
 
     public function waiting_for_credit_approval(Request $request)
     {
@@ -401,5 +464,29 @@ class InvoiceController extends Controller
     }
 
 
+
+    public function processOnlineInvoice(Invoice $invoice)
+    {
+       DB::transaction(function() use ($invoice){
+           $invoice->status_id = status('Packing');
+           $invoice->update();
+           logActivity($invoice->id, $invoice->invoice_number, "online invoice was updated to Packing");
+       });
+
+       return redirect()->back()->with('success', 'Invoice status as been changed to Packing successfully');
+    }
+
+
+    public function packOnlineInvoice(Invoice $invoice)
+    {
+        DB::transaction(function() use ($invoice){
+            _GET('processorder/' . $invoice->onliner_order_id . "/6");
+            $invoice->status_id = status('Packed-Waiting-For-Payment');
+            $invoice->online_order_debit = 1;
+            $invoice->update();
+            logActivity($invoice->id, $invoice->invoice_number, "online invoice was updated to Packed-Waiting-For-Payment");
+        });
+        return redirect()->back()->with('success', 'Invoice status as been changed to Packed successfully, and customer has been notify');
+    }
 
 }
