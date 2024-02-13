@@ -610,7 +610,7 @@ class PaymentRepository
 
     public function completePayment(&$obj, $payment_id)
     {
-        if($obj->invoice->online_order_status !== NULL)
+        if(isset($obj->invoice) && $obj->invoice->online_order_status !== NULL)
         {
             _GET('processorder/' . $obj->invoice->onliner_order_id . "/3");
 
