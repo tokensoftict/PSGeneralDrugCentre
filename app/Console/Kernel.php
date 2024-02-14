@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
 
         //$schedule->command('download:product-image')->withoutOverlapping()->everyMinute()->appendOutputTo('storage/app/imageDownload.txt');
 
-        $schedule->command('uploadproduct:image')->withoutOverlapping()->everyMinute()->appendOutputTo('storage/app/imageUpload.txt');
+        //$schedule->command('uploadproduct:image')->withoutOverlapping()->everyMinute()->appendOutputTo('storage/app/imageUpload.txt');
     }
 
     /**
