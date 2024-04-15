@@ -17,7 +17,7 @@ function onlineBase(){
     if(config('app.env') === "local"){
         return 'http://localhost/rest-ecommerce-github/general_drug/public/';
     }
-    return  'http://admin.generaldrugcentre.com/';
+    return  'https://admin.generaldrugcentre.com/';
 }
 
 function divide($num1, $num2)
@@ -43,7 +43,7 @@ function _FETCH($url) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response = Http::timeout(40000)->get($url);
+    $response = Http::timeout(4000000000)->get($url);
 
     if($response->status() == 200 )
     {
