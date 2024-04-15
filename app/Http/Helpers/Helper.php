@@ -31,7 +31,7 @@ function _GET($endpoint, $payload = []) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response = Http::timeout(10000)->get(onlineBase() . 'api/data/' . $endpoint);
+    $response = Http::timeout(40000)->get(onlineBase() . 'api/data/' . $endpoint);
     if($response->status() == 200 )
     {
         return json_decode($response->body(), true) ??  true;
@@ -43,7 +43,7 @@ function _FETCH($url) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response = Http::timeout(10000)->get($url);
+    $response = Http::timeout(40000)->get($url);
 
     if($response->status() == 200 )
     {
@@ -56,7 +56,7 @@ function _POST($endpoint, $payload = []) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response =   Http::timeout(10000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(40000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
     if($response->status() == 200 )
     {
