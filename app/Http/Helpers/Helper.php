@@ -17,7 +17,7 @@ function onlineBase(){
     if(config('app.env') === "local"){
         return 'http://localhost/rest-ecommerce-github/general_drug/public/';
     }
-    return  'https://admin.generaldrugcentre.com/';
+    return  'http://admin.generaldrugcentre.com/';
 }
 
 function divide($num1, $num2)
