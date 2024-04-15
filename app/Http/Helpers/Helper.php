@@ -72,7 +72,7 @@ function _POST2($endpoint, $payload = []) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response =   Http::timeout(10000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(40000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
 
     if($response->status() == 200 )
     {
@@ -85,7 +85,7 @@ function _POST2($endpoint, $payload = []) : array|bool
 
 function _RAWPOST($url, $payload =[]) : \Illuminate\Http\Client\Response
 {
-    return Http::timeout(10000)->withHeaders(['Accept'=>'application/json'])->post($url, $payload);
+    return Http::timeout(40000)->withHeaders(['Accept'=>'application/json'])->post($url, $payload);
 }
 
 
