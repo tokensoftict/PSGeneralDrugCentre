@@ -133,7 +133,12 @@ class FetchNewOrder extends Command
         $products = [];
 
         array_walk( $orderproducts, function($item) use(&$products){
-            $products[$item['localid']]['item'] = $item;
+            if($item['localid'] =="0"){
+                $products[$item['local_id']]['item'] = $item;
+            }else{
+                $products[$item['localid']]['item'] = $item;
+            }
+
         });
 
         $stocks = Stock::with(['activeBatches'])->whereIn('id',array_keys($products))->get();
