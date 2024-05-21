@@ -305,6 +305,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{invoice}/approve_or_decline_cheque_payment', ['as' => 'approve_or_decline_cheque_payment', 'uses' => 'InvoiceController@approve_or_decline_cheque_payment', "custom_label"=>"Approve/Decline Cheque Payment"]);
 
                 Route::get('{invoice}/applyProductDiscount', ['as' => 'applyProductDiscount', 'uses' => 'InvoiceController@applyProductDiscount', "custom_label"=>"Apply Product Discount"]);
+                Route::get('{invoice}/applyInvoiceDiscount', ['as' => 'applyInvoiceDiscount', 'uses' => 'InvoiceController@applyInvoiceDiscount', "custom_label"=>"Apply Invoice Discount"]);
                 Route::match(['get', 'post'],'requestForDiscount', ['as' => 'requestForDiscount', 'uses' => 'InvoiceController@requestForDiscount', 'custom_label'=>'Request For Discount']);
                 Route::get('{invoice}/edit', ['as' => 'edit', 'uses' => 'InvoiceController@edit']);
                 Route::get('{invoice}/return', ['as' => 'return', 'uses' => 'InvoiceController@return']);

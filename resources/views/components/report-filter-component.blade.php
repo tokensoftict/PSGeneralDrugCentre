@@ -12,20 +12,20 @@
                 </div>
             @endif
 
-            @if(isset($filters['invoice_date']))
-                <div class="col-auto">
-                    <div class="mb-3">
-                        <label class="form-label">Date</label>
-                        <input type="text" value="{{ $filters['invoice_date'] }}" class="form-control datepicker-basic" name="filter[invoice_date]" id="datepicker-basic">
-                    </div>
-                </div>
-            @endif
-
             @if(isset($filters['to']))
                 <div class="col-auto">
                     <div class="mb-3">
                         <label class="form-label">To</label>
                         <input type="text" value="{{ $filters['to'] }}" class="form-control datepicker-basic" name="filter[to]" id="datepicker-basic">
+                    </div>
+                </div>
+            @endif
+
+            @if(isset($filters['invoice_date']))
+                <div class="col-auto">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="text" value="{{ $filters['invoice_date'] }}" class="form-control datepicker-basic" name="filter[invoice_date]" id="datepicker-basic">
                     </div>
                 </div>
             @endif
@@ -70,6 +70,20 @@
                 </div>
             @endif
 
+            @if(isset($filters['array.customer_id']))
+                <div class="col-lg-3">
+                    <div class="mb-3">
+                        <label class="form-label">Customer</label>
+                        <select class="form-control select2Product" multiple name="filter[customer_id][]" id="choices-single-default" placeholder="Select Customers">
+                            @foreach($customers as $customer)
+                                @if(in_array($customer->id, $filters['array.customer_id']))
+                                    <option selected value="{{ $customer->id }}">{{ $customer->firstname }} {{ $customer->lastname }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
 
             @if(isset($filters['department_id']))
                 <div class="col-lg-4">

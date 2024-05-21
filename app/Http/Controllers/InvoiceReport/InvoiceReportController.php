@@ -39,10 +39,10 @@ class InvoiceReportController extends Controller
             'filters' => [
                 'from' =>todaysDate(),
                 'to'=>todaysDate(),
-                'customer_id' => 1,
+                'array.customer_id' => [],
                 'filters' => [
                     'between.invoice_date' =>[todaysDate(),todaysDate()],
-                    'customer_id' => 1
+                    'array.customer_id' => []
                 ]
             ]
         ];
@@ -50,7 +50,10 @@ class InvoiceReportController extends Controller
         {
             $data['filters'] = $request->get('filter');
             $data['filters']['filters']['between.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
-            $data['filters']['filters']['customer_id'] = $data['filters']['customer_id'];
+            $data['filters']['array.customer_id'] = $data['filters']['customer_id'];
+            $data['filters']['filters']['array.customer_id'] = $data['filters']['customer_id'];
+            unset( $data['filters']['customer_id']);
+
         }
         return setPageContent('reports.invoice.index', $data);
     }

@@ -401,7 +401,7 @@ class InvoiceController extends Controller
 
         logActivity($invoice->id, $invoice->invoice_number,'Apply invoice discount was page was viewed :'.$invoice->status->name);
 
-        return setPageContent('invoiceandsales.applyproductdiscount', $data);
+        return view('invoiceandsales.applyproductdiscount', $data);
     }
 
     public function destroy(Invoice $invoice)

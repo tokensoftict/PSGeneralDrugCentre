@@ -98,6 +98,12 @@ final class MovingStockReport extends PowerGridComponent
                 return $movingstock->cartoon ?? $movingstock->stock->carton;
             })
             ->addColumn('supplier_name')
+            ->addColumn('whole_price', function($movingstock){
+                return $movingstock->stock->whole_price ? number_format($movingstock->stock->whole_price) : "";
+            })
+            ->addColumn('retail_price', function($movingstock){
+                return $movingstock->stock->retail_price ? number_format($movingstock->stock->retail_price) : "";
+            })
             ->addColumn('av_cost_price')
             ->addColumn('av_rt_cost_price')
             ->addColumn('rt_qty')
@@ -134,6 +140,8 @@ final class MovingStockReport extends PowerGridComponent
             Column::make('Box', 'box'),
             Column::make('Carton', 'formatted_carton'),
             Column::make('Threshold', 'threshold'),
+            Column::make('Whole Price', 'whole_price'),
+            Column::make('Retail Price', 'retail_price'),
             Column::make('Av.Cost price', 'av_cost_price'),
             Column::make('Av. Rt .Cost price', 'av_rt_cost_price'),
             Column::make('Rt Qty', 'rt_qty'),

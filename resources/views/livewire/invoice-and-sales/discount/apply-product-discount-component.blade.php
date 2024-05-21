@@ -66,6 +66,23 @@
                                 <th class="text-right" style="width: 10%;font-size: 14px">Total</th>
                             </tr>
                             </thead>
+                            <thead>
+                            <tr>
+                                <th colspan="3">Apply Discount To All</th>
+                                <th>
+                                    <select x-model="alldiscount" x-on:change="setDiscountToAll()" class="form-control">
+                                        <option value="None">None</option>
+                                        <option value="Percentage">Percentage</option>
+                                        <option value="Fixed">Fixed</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <input x-model="alldiscountValue" x-on:keyup="setDiscountToAll()"  class="form-control input-sm child_value" value="0" />
+                                </th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
                             <tbody>
 
                             @foreach($invoice->invoiceitems as $item)
@@ -143,73 +160,82 @@
         {
             return {
                 discounts : @this.get('_discounts') ? JSON.parse( @this.get('_discounts')) : [],
-                netTotal : 0.00,
-                allTotal : 0.00,
-                setDiscountType(index){
-                  this.calculateDiscount(index);
-                },
-                calculateDiscount(index){
-                    let value = 0;
-                    if(this.discounts[index]['discount_type'] === "Percentage")
-                    {
-                        value = (this.discounts[index]['discount_value'] / 100) * this.discounts[index].selling_price;
+            alldiscount : "Fixed",
+            alldiscountValue : 0,
+            netTotal : 0.00,
+            allTotal : 0.00,
+            setDiscountType(index){
+            this.calculateDiscount(index);
+        },
+            calculateDiscount(index){
+            let value = 0;
+            if(this.discounts[index]['discount_type'] === "Percentage")
+            {
+                value = (this.discounts[index]['discount_value'] / 100) * this.discounts[index].selling_price;
 
-                    }else if(this.discounts[index]['discount_type'] === "Fixed")
-                    {
-                        value = this.discounts[index]['discount_value'];
+            }else if(this.discounts[index]['discount_type'] === "Fixed")
+            {
+                value = this.discounts[index]['discount_value'];
 
-                    }else{
-                        value = 0;
-                    }
-                    this.discounts[index]['discount_amount'] = value;
-                    this.discounts[index]['total_selling_price'] =  (this.discounts[index].quantity * (this.discounts[index].selling_price - this.discounts[index]['discount_amount']));
-                    this.discounts[index]['profit'] =  (this.discounts[index].selling_price - this.discounts[index]['discount_amount']) -this.discounts[index].cost_price;
-                    this.discounts[index]['total_profit'] = (this.discounts[index].quantity * (this.discounts[index].selling_price - this.discounts[index]['discount_amount'])) - (this.discounts[index].cost_price * this.discounts[index].quantity)
+            }else{
+                value = 0;
+            }
+            this.discounts[index]['discount_amount'] = value;
+            this.discounts[index]['total_selling_price'] =  (this.discounts[index].quantity * (this.discounts[index].selling_price - this.discounts[index]['discount_amount']));
+            this.discounts[index]['profit'] =  (this.discounts[index].selling_price - this.discounts[index]['discount_amount']) -this.discounts[index].cost_price;
+            this.discounts[index]['total_profit'] = (this.discounts[index].quantity * (this.discounts[index].selling_price - this.discounts[index]['discount_amount'])) - (this.discounts[index].cost_price * this.discounts[index].quantity)
 
-                    this.totalInvoice();
-                },
-                totalInvoice() {
-                    let total = 0;
-                    for (var key of Object.keys(this.discounts)) {
-                        this.discounts[key]['total_selling_price'] = (this.discounts[key].quantity * (this.discounts[key].selling_price - this.discounts[key].discount_amount))
-                        console.log( this.discounts[key]['total_selling_price']);
-                        total += (this.discounts[key].quantity * (this.discounts[key].selling_price - this.discounts[key].discount_amount))
-                    }
-                    this.allTotal = this.numberFormat(total - {{ $invoice->discount_amount }});
-                    this.netTotal = this.numberFormat(total);
-                },
-                numberFormat(amount, decimalCount = 2, decimal = ".", thousands = ",") {
-                    try {
-                        decimalCount = Math.abs(decimalCount);
-                        decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+            this.totalInvoice();
+        },
+            totalInvoice() {
+            let total = 0;
+            for (var key of Object.keys(this.discounts)) {
+                this.discounts[key]['total_selling_price'] = (this.discounts[key].quantity * (this.discounts[key].selling_price - this.discounts[key].discount_amount))
+                total += (this.discounts[key].quantity * (this.discounts[key].selling_price - this.discounts[key].discount_amount))
+            }
+            this.allTotal = this.numberFormat(total - {{ $invoice->discount_amount }});
+            this.netTotal = this.numberFormat(total);
+        },
+            numberFormat(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
 
-                        const negativeSign = amount < 0 ? "-" : "";
+                const negativeSign = amount < 0 ? "-" : "";
 
-                        let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-                        let j = (i.length > 3) ? i.length % 3 : 0;
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
 
-                        return "&#8358;"+negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-                    } catch (e) {
-                        console.log(e)
-                    }
-                },
+                return "&#8358;"+negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        },
 
-                applyDiscount()
-                {
-                    @this.set('_discounts', JSON.stringify(this.discounts));
-                    @this.applyProductDiscount();
-                },
+            applyDiscount()
+            {
+                @this.set('_discounts', JSON.stringify(this.discounts));
+                @this.applyProductDiscount();
+            },
 
-                customEvent()
-                {
-                    window.addEventListener('refreshBrowser', (e) => {
-                        setTimeout(()=>{
-                            window.location.href = e.detail.link;
-                        }, 2000);
-                    });
+            customEvent()
+            {
+                window.addEventListener('refreshBrowser', (e) => {
+                    setTimeout(()=>{
+                        window.location.href = e.detail.link;
+                    }, 2000);
+                });
+            },
+            setDiscountToAll()
+            {
+                for(var index of Object.keys(this.discounts)){
+                    this.discounts[index]['discount_type'] = this.alldiscount;
+                    this.discounts[index]['discount_value'] = this.alldiscountValue;
+                    this.calculateDiscount(index);
                 }
+            }
 
-            };
+        };
         }
 
 
