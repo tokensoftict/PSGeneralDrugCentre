@@ -99,10 +99,10 @@ final class MovingStockReport extends PowerGridComponent
             })
             ->addColumn('supplier_name')
             ->addColumn('whole_price', function($movingstock){
-                return $movingstock->stock->whole_price ? number_format($movingstock->stock->whole_price) : "";
+                return isset($movingstock->stock->whole_price) ? number_format($movingstock->stock->whole_price) : "";
             })
             ->addColumn('retail_price', function($movingstock){
-                return $movingstock->stock->retail_price ? number_format($movingstock->stock->retail_price) : "";
+                return isset($movingstock->stock->retail_price) ? number_format($movingstock->stock->retail_price) : "";
             })
             ->addColumn('av_cost_price')
             ->addColumn('av_rt_cost_price')
