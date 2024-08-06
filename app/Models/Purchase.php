@@ -37,34 +37,34 @@ class Purchase extends Model
 {
 
 
-	protected $table = 'purchases';
+    protected $table = 'purchases';
 
     use ModelFilterTraits;
 
-	protected $casts = [
-		'status_id' => 'int',
-		'user_id' => 'int',
-		'completed_by' => 'int',
-		'supplier_id' => 'int',
-		'date_created' => 'datetime',
-		'date_completed' => 'datetime'
-	];
+    protected $casts = [
+        'status_id' => 'int',
+        'user_id' => 'int',
+        'completed_by' => 'int',
+        'supplier_id' => 'int',
+        'date_created' => 'datetime',
+        'date_completed' => 'datetime'
+    ];
 
-	protected $fillable = [
-		'status_id',
-		'user_id',
-		'completed_by',
-		'supplier_id',
-		'department',
-		'date_created',
-		'date_completed',
+    protected $fillable = [
+        'status_id',
+        'user_id',
+        'completed_by',
+        'supplier_id',
+        'department',
+        'date_created',
+        'date_completed',
         'created_by'
-	];
+    ];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'user_id');
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function complete_by()
     {
@@ -76,20 +76,20 @@ class Purchase extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-	public function status()
-	{
-		return $this->belongsTo(Status::class);
-	}
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
 
-	public function supplier()
-	{
-		return $this->belongsTo(Supplier::class);
-	}
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 
-	public function purchaseitems()
-	{
-		return $this->hasMany(Purchaseitem::class);
-	}
+    public function purchaseitems()
+    {
+        return $this->hasMany(Purchaseitem::class);
+    }
 
 
     public function newonlinePush()
@@ -107,18 +107,26 @@ class Purchase extends Model
     {
         if($this->status_id ===  status('Complete'))
         {
-            if($this->department === "quantity") {
-                foreach ($this->purchaseitems as  $purchaseitem) {
-                    if ($purchaseitem->stock->bulk_price > 0) {
-                        $data = [
+
+            $data = [];
+            foreach ($this->purchaseitems as  $purchaseitem) {
+                if ($purchaseitem->stock->bulk_price > 0 || $purchaseitem->stock->retail_price > 0) {
+
+                    if(isset($data[$purchaseitem->stock_id])){
+                        $data[$purchaseitem->stock_id]['qty']+=$purchaseitem->qty;
+                    }else {
+                        $data[$purchaseitem->stock_id] = [
                             'stock_id' => $purchaseitem->stock_id,
                             'po_id' => $purchaseitem->purchase->id,
                             'qty' => $purchaseitem->qty,
                         ];
-                        dispatch(new PushDataServer(['action' => 'update', 'table' => 'new_arrivals', 'data' => $data]));
                     }
                 }
             }
+
+            $store = $this->department == "quantity" ? 5 : 6;
+            dispatch(new PushDataServer(['store' => $store, 'action' => 'update', 'endpoint'=>'new_arrivals', 'table' => 'new_arrivals', 'data' => $data]));
+
         }
     }
 

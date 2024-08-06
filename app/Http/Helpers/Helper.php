@@ -12,12 +12,9 @@ use Illuminate\Support\Str;
 use App\Classes\Settings;
 use Spatie\Valuestore\Valuestore;
 
-function onlineBase(){
+function onlineBase($endpoint = ""){
 
-    if(config('app.env') === "local"){
-        return 'http://localhost/rest-ecommerce-github/general_drug/public/';
-    }
-    return  'https://admin.generaldrugcentre.com/';
+    return  config('app.online_store_url').$endpoint;
 }
 
 function divide($num1, $num2)
@@ -27,11 +24,13 @@ function divide($num1, $num2)
     return ($num1/$num2);
 }
 
-function _GET($endpoint, $payload = []) : array|bool
+function _GET($endpoint) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response = Http::timeout(40000)->get(onlineBase() . 'api/data/' . $endpoint);
+    $response = Http::timeout(config("app.push_to_server_timeout"))
+        ->withHeaders(['Accept'=>'application/json'])
+        ->get(onlineBase($endpoint));
     if($response->status() == 200 )
     {
         return json_decode($response->body(), true) ??  true;
@@ -43,7 +42,9 @@ function _FETCH($url) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response = Http::timeout(4000000000)->get($url);
+    $response = Http::timeout(config("app.push_to_server_timeout"))
+        ->withHeaders(['Accept'=>'application/json'])
+        ->get($url);
 
     if($response->status() == 200 )
     {
@@ -56,7 +57,9 @@ function _POST($endpoint, $payload = []) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response =   Http::timeout(40000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(config("app.push_to_server_timeout"))
+        ->withHeaders(['Accept'=>'application/json'])
+        ->post(onlineBase($endpoint), $payload);
 
     if($response->status() == 200 )
     {
@@ -72,7 +75,9 @@ function _POST2($endpoint, $payload = []) : array|bool
 {
     if(config('app.sync_with_online')== 0)  return false;
 
-    $response =   Http::timeout(40000)->post(onlineBase() . 'api/data/' . $endpoint, $payload);
+    $response =   Http::timeout(config("app.push_to_server_timeout"))
+        ->withHeaders(['Accept'=>'application/json'])
+        ->post(onlineBase($endpoint), $payload);
 
     if($response->status() == 200 )
     {
@@ -85,13 +90,15 @@ function _POST2($endpoint, $payload = []) : array|bool
 
 function _RAWPOST($url, $payload =[]) : \Illuminate\Http\Client\Response
 {
-    return Http::timeout(40000)->withHeaders(['Accept'=>'application/json'])->post($url, $payload);
+    return Http::timeout(config("app.push_to_server_timeout"))
+        ->withHeaders(['Accept'=>'application/json'])
+        ->post($url, $payload);
 }
 
 
 function uploadFile($url, array $file, $payload)
 {
-    return Http::timeout(10000)
+    return Http::timeout(config("app.push_to_server_timeout"))
         ->attach($file['name'], $file['file'], $file['label'])
         ->post($url, $payload);
 }

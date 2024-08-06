@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Exception;
 
-class PushDataServer implements ShouldQueue
+class PushDataServer //implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,9 +31,11 @@ class PushDataServer implements ShouldQueue
      */
     public function handle()
     {
-        if(config('app.sync_with_online')== 0)  return;
+        if(config('app.sync_with_online') == 0)  return;
 
-		_POST('update_data',$this->data);
-	
+        if(!isset($this->data['endpoint'])) return; // no endpoint to called
+
+		_POST($this->data['endpoint'] ,$this->data);
+
     }
 }

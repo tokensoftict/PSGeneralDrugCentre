@@ -43,19 +43,19 @@ class Manufacturer extends Model
         return [
             'id'=>$this->id,
             'name'=> $this->name,
-            'status'=>$this->status
+            'status'=>$this->status,
         ];
     }
 
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'manufacturers','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'manufacturers','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'update','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
     }
 
 }

@@ -55,12 +55,12 @@ class Classification extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'classifications','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'new','table'=>'classifications', 'endpoint' => 'classifications', 'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'classifications','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'update','table'=>'classifications', 'endpoint' => 'classifications' ,'data'=>$this->getBulkPushData()]));
     }
 
 

@@ -50,12 +50,12 @@ class Category extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'product_category','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'new','table'=>'product_category', 'endpoint' => 'productcategories' ,'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'product_category','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['action'=>'update','table'=>'product_category', 'endpoint' => 'productcategories', 'data'=>$this->getBulkPushData()]));
     }
 
 }

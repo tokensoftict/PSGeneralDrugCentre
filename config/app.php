@@ -21,6 +21,10 @@ return [
 
     'sync_with_online' => env('SYNC_WITH_ONLINE', false),
 
+    'online_store_url' => env('ONLINE_STORE_URL', 'https://admin.generaldrugcentre.com/'),
+
+    'push_to_server_timeout' => 4000,
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -4,18 +4,13 @@ namespace App\Traits;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushDataServer;
 use App\Models\Invoice;
-use App\Models\Purchaseitem;
-use App\Models\Stock;
 use App\Models\Stockbatch;
 use App\Models\Stocktransfer;
-use Arr;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 trait StockModelTrait
 {
-
 
     public function activeBatches()
     {
@@ -50,8 +45,6 @@ trait StockModelTrait
     }
 
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
-
-        //Stockbatch::upsert($batches, ['id'], $columns);
 
         $bincards = [];
 
@@ -361,8 +354,6 @@ trait StockModelTrait
         }
 
 
-
-
         dispatch(new AddLogToProductBinCard($bincards));
 
         return true;
@@ -370,40 +361,58 @@ trait StockModelTrait
 
 
 
-    public function getBulkPushData() : array{
+    public function getBulkPushData() : array
+    {
         $data =  [
             'local_stock_id'=>$this->id,
             'description'=>$this->description,
             'name'=>$this->name,
             'classification_id'=>$this->classification_id,
-            'category_id'=>$this->category_id,
-            'brand_id'=>$this->brand_id,
+            'productcategory_id'=>$this->category_id,
             'manufacturer_id'=>$this->manufacturer_id,
-            'group_id'=>$this->stockgroup_id,
-            'price'=>$this->bulk_price,
-            'quantity'=>$this->getOnlineQuantity(),
-            'retail_quantity' => $this->getRetailQuantity(),
+            'productgroup_id'=>$this->stockgroup_id,
             'box'=>$this->box,
             'is_wholesales'=>($this->bulk_price > 0 ? 1 : 0 ),
             'max'=>"0",
-            'cartoon'=>$this->carton,
+            'carton'=>$this->carton,
             'sachet'=>1,
-            'status'=>$this->status,
-            'retail_status'=>$this->status,
         ];
+
+        $stockPrices = [];
+        $expiry_date = NULL;
+        $re_expiry_date = NULL;
 
         $ex = $this->getOnlineExpiryDate();
         if( $ex ) {
-            $data['expiry_date'] =  $ex->format('Y-m-d');
+            $expiry_date =  $ex->format('Y-m-d');
+        }
+
+        $re = $this->getOnlineRetailExpiryDate();
+        if( $re ) {
+            $re_expiry_date =  $re->format('Y-m-d');
+        }
+        if($this->bulk_price > 0) {
+            $stockPrices['wholesales'] = [
+                "app_id" => 5,
+                "price" => $this->bulk_price,
+                "quantity" => $this->getOnlineQuantity(),
+                "status" => $this->status,
+                "expiry_date" => $expiry_date,
+            ];
         }
 
         // for OnlineSuperMarket Push
         if($this->retail_price > 0){
-
-            $data['retail_price'] = $this->retail_price;
-
-            $data['retail_quantity'] = $this->retail;
+            $stockPrices['supermarket'] = [
+                "app_id" => 6,
+                "price" => $this->retail_price,
+                "quantity" => $this->getRetailQuantity(),
+                "status" => $this->status,
+                "expiry_date" => $re_expiry_date,
+            ];
         }
+
+        $data['stock_prices'] = $stockPrices;
 
         return $data;
     }
@@ -413,6 +422,17 @@ trait StockModelTrait
     {
         $batch = $this->activeBatches->filter(function($item, $index){
             return ($item->wholesales > 0 || $item->bulksales > 0 || $item->quantity > 0);
+        })->first();
+
+        if($batch) return $batch->expiry_date;
+
+        return false;
+    }
+
+    public function getOnlineRetailExpiryDate()
+    {
+        $batch = $this->activeBatches->filter(function($item, $index){
+            return ($item->retail > 0);
         })->first();
 
         if($batch) return $batch->expiry_date;
@@ -443,13 +463,13 @@ trait StockModelTrait
     public function totalBalance()
     {
         return $this->stockbatches()->sum(DB::raw('bulksales + quantity + wholesales'))+
-           divide($this->stockbatches()->sum('retail') , $this->box);
+            divide($this->stockbatches()->sum('retail') , $this->box);
     }
 
     public function newonlinePush()
     {
         if($this->bulk_price > 0 || $this->retail_price > 0) {
-            dispatch(new PushDataServer(['action' => 'new', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
+            dispatch(new PushDataServer(['action' => 'new', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
         }
 
     }
@@ -457,7 +477,7 @@ trait StockModelTrait
     public function updateonlinePush()
     {
         if(($this->bulk_price > 0 || $this->retail_price > 0)  && !$this->isDirty('batched')) {
-            dispatch(new PushDataServer(['action' => 'update', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
+            dispatch(new PushDataServer(['action' => 'update', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
         }
     }
 
