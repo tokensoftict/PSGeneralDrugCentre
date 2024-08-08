@@ -123,18 +123,22 @@ class StockTransferReportController extends Controller
                 'from' =>todaysDate(),
                 'to'=>todaysDate(),
                 'stock_id' => 1,
+                'status_id' => 1,
                 'filters' => [
                     'between.transfer_date' =>[todaysDate(),todaysDate()],
                     'stock_id' => 1,
+                    'status_id' => 1
                 ]
             ]
         ];
+
         if($request->get('filter'))
         {
             $data['filters'] = $request->get('filter');
             $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
             $data['filters']['filters']['between.transfer_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
+            $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
         }
         return view('reports.stocktransfer.stocktransferbyproduct', $data);
     }

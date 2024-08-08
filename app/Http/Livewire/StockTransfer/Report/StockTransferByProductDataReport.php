@@ -34,7 +34,7 @@ final class StockTransferByProductDataReport extends PowerGridComponent
             $query->whereBetween('transfer_date', $this->filters['between.transfer_date'])
                 ->where("transfer_date",  $this->filters['between.transfer_date'])
                 ->where('stock_id',$this->filters['stock_id'])
-                //->where('status_id',$this->filters['status_id'])
+                ->where('status_id',$this->filters['status_id'])
                 ->orderBy("id","DESC");
         });
     }
@@ -72,6 +72,7 @@ final class StockTransferByProductDataReport extends PowerGridComponent
     {
         return PowerGrid::eloquent()
             ->addColumn('name', fn(Stocktransferitem $stocktransferitem) => $stocktransferitem->stock->name)
+            ->addColumn('status', fn(Stocktransferitem $stocktransferitem) => showStatus($stocktransferitem->stocktransfer->status_id))
             ->addColumn('rem_quantity')
             ->addColumn('quantity')
             ->addColumn('selling_price', fn(Stocktransferitem $stocktransferitem) => money($stocktransferitem->selling_price))
@@ -99,6 +100,7 @@ final class StockTransferByProductDataReport extends PowerGridComponent
             Column::add()->index()->title('SN')->visibleInExport(false),
             Column::make('Name', 'name'),
             Column::make('Transfer date', 'transfer_date_formatted', 'transfer_date')->sortable(),
+            Column::make('Status', 'status'),
             Column::make('Remaining quantity', 'rem_quantity'),
             Column::make('Quantity', 'quantity'),
             Column::make('Selling price', 'selling_price')->sortable()->searchable(),
