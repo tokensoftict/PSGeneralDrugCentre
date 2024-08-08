@@ -441,7 +441,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'by_status', ['as' => 'by_status', 'uses' => 'StockTransferReportController@by_status', 'custom_label'=>'Stock Transfer By Status']);
 
-                Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'StockTransferReportController@by_product', 'custom_label'=>'Invoice Report By Product']);
+                Route::match(['get','post'],'by_product', ['as' => 'by_product', 'uses' => 'StockTransferReportController@by_product', 'custom_label'=>'Stock Transfer By Product']);
 
                 Route::match(['get','post'],'transfer_summary', ['as' => 'transfer_summary', 'uses' => 'StockTransferReportController@transfer_summary', 'custom_label'=>'Transfer Summary Report']);
 
