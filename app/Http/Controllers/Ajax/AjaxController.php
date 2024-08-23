@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Ajax;
 use App\Classes\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Invoiceitem;
+use App\Models\Stockopening;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ProductionRepository;
 use App\Repositories\ProductRepository;
 use App\Repositories\PurchaseOrderRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -146,4 +148,47 @@ class AjaxController extends Controller
             ->escapeColumns(null)
             ->make(true);
     }
+
+
+
+
+    public function supplierdboverview(Request $request)
+    {
+        $costPriceColumn = $request->get('department') === "retail" ? "average_retail_cost_price" : "average_cost_price";
+        $quantityColumn = $request->get('department') === "retail" ? "stockopenings.retail" : "(stockopenings.wholesales+stockopenings.bulksales+stockopenings.quantity)";
+
+
+        $supplierDBOverview = Stockopening::query()
+            ->select(
+                DB::raw("SUM(stockopenings.$costPriceColumn * ($quantityColumn)) as total_opening_cost_price"),
+                DB::raw("SUM($quantityColumn) as total_opening_quantity"),
+                DB::raw("SUM(supplier_credit_payment_histories.amount) as total_supplier_outstanding"),
+                DB::raw("MAX(purchases.date_completed) as last_supplier_date"),
+                DB::raw( "suppliers.name as supplier_name"),
+                DB::raw("suppliers.id as supplier_id")
+            )
+            ->join("suppliers", "stockopenings.supplier_id", "=", "suppliers.id")
+            ->join("stocks", "stocks.id", "=", "stockopenings.stock_id")
+            ->join("supplier_credit_payment_histories", "supplier_credit_payment_histories.supplier_id", "=", "stockopenings.supplier_id")
+            ->join("purchases", "stockopenings.supplier_id", "=", "purchases.supplier_id")
+            ->where("stockopenings.date_added", $request->get('payment_date'))
+            ->groupBy("stockopenings.supplier_id");
+
+
+        return Datatables::of($supplierDBOverview)
+            ->addIndexColumn()
+            ->editColumn('total_opening_cost_price',function ($item){
+                return money($item->total_opening_cost_price);
+            })
+            ->editColumn('total_supplier_outstanding',function ($item){
+                return money($item->total_supplier_outstanding);
+            })
+            ->editColumn('last_supplier_date',function ($item){
+                return (new Carbon($item->last_supplier_date))->format("d/m/Y");
+            })
+            ->escapeColumns(null)
+            ->make(true);
+
+    }
+
 }

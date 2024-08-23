@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/findcustomer', ['as' => 'findcustomer', 'uses' => 'AjaxController@findcustomer']);
         Route::get('/profitandlossdatatable', ['as' => 'profitandlossdatatable', 'uses' => 'AjaxController@profitandlossdatatable']);
         Route::get('/profitandlossdatatablebydepartment', ['as' => 'profitandlossdatatablebydepartment', 'uses' => 'AjaxController@profitandlossdatatablebydepartment']);
+        Route::get('/supplierdboverview', ['as' => 'supplierdboverview', 'uses' => 'AjaxController@supplierdboverview']);
     });
 
 
@@ -480,6 +481,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['get','post'],'balance_stock_worth', ['as' => 'balance_stock_worth', 'uses' => 'ProductReportController@balance_stock_worth', 'custom_label'=>'Balance Stock Worth Report']);
 
                 Route::match(['get','post'],'product_price_change_history', ['as' => 'product_price_change_history', 'uses' => 'ProductReportController@product_price_change_history', 'custom_label'=>'Stock Price Change History Report']);
+
+                Route::match(['get','post'],'supplierDBOverviewReport', ['as' => 'supplierDBOverviewReport', 'uses' => 'ProductReportController@supplierDBOverviewReport', 'custom_label'=>'Supplier DB Overview Report']);
 
             });
 

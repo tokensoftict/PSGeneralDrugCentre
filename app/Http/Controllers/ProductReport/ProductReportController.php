@@ -195,4 +195,30 @@ class ProductReportController extends Controller
     }
 
 
+
+    public function supplierDBOverviewReport(Request $request)
+    {
+        $data = [
+            'title' => 'Supplier DB Overview Report',
+            'subtitle' => 'Supplier DB Overview Report',
+            'department'=> 'wholesales',
+            'filters' => [
+                'from' =>dailyDate(),
+                'department'=> 'wholesales',
+                'filters' => [
+                    'payment_date' => dailyDate(),
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['payment_date'] = $request->get('filter')['from'];
+            $data['filters']['filters']['department'] = $data['filters']['department'];
+        }
+
+
+        return view('reports.product.supplierdboverviewreport', $data);
+    }
+
 }
