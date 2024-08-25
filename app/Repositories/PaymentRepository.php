@@ -652,8 +652,14 @@ class PaymentRepository
          */
         $returnOnlineOrder = \Cache::get("ReturnedOnlineOrder");
         if(!$returnOnlineOrder) $returnOnlineOrder = [];
-        if(!is_null($obj->invoice->onliner_order_id) and !in_array($obj->invoice->onliner_order_id,$returnOnlineOrder)){
+        if(!is_null($obj->invoice->onliner_order_id) and !in_array($obj->invoice->id , $returnOnlineOrder)){
             $payment_data['payment_date'] = dailyDate();
+            //this means that the invoice is not a return invoice instead its an invoice that is been paid for for the first time
+        }else {
+            // this is a return invoice and its an online invoice
+            $payments = Payment::where('invoice_number', $obj->invoice->invoice_number)->get();
+            $payment_data['payment_date'] = $payments->payment_date;
+            // we still need to maintain the date that has been recorded before
         }
         /*
          * end of online payment login
