@@ -24,7 +24,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/findcustomer', ['as' => 'findcustomer', 'uses' => 'AjaxController@findcustomer']);
         Route::get('/profitandlossdatatable', ['as' => 'profitandlossdatatable', 'uses' => 'AjaxController@profitandlossdatatable']);
         Route::get('/profitandlossdatatablebydepartment', ['as' => 'profitandlossdatatablebydepartment', 'uses' => 'AjaxController@profitandlossdatatablebydepartment']);
-        Route::get('/supplierdboverview', ['as' => 'supplierdboverview', 'uses' => 'AjaxController@supplierdboverview']);
     });
 
 
