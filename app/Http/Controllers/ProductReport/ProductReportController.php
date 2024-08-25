@@ -201,10 +201,8 @@ class ProductReportController extends Controller
         $data = [
             'title' => 'Supplier DB Overview Report',
             'subtitle' => 'Supplier DB Overview Report',
-            'department'=> 'wholesales',
             'filters' => [
                 'from' =>dailyDate(),
-                'department'=> 'wholesales',
                 'filters' => [
                     'payment_date' => dailyDate(),
                 ]
@@ -214,7 +212,6 @@ class ProductReportController extends Controller
         {
             $data['filters'] = $request->get('filter');
             $data['filters']['filters']['payment_date'] = $request->get('filter')['from'];
-            $data['filters']['filters']['department'] = $data['filters']['department'];
         }
 
 

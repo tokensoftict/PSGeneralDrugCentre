@@ -136,7 +136,7 @@ class InvoiceReportController extends Controller
             $data['filters']['filters']['status_id'] = $data['filters']['status_id'];
 
         }
-        return setPageContent('reports.invoice.index', $data);
+        return view('reports.invoice.index', $data);
     }
 
 

@@ -155,22 +155,21 @@ class AjaxController extends Controller
     public function supplierdboverview(Request $request)
     {
         $costPriceColumn = $request->get('department') === "retail" ? "average_retail_cost_price" : "average_cost_price";
-        $quantityColumn = $request->get('department') === "retail" ? "stockopenings.retail" : "(stockopenings.wholesales+stockopenings.bulksales+stockopenings.quantity)";
+        $quantityColumn = $request->get('department') === "retail" ? "stockopenings.retail" : "stockopenings.wholesales+stockopenings.bulksales+stockopenings.quantity";
 
 
         $supplierDBOverview = Stockopening::query()
             ->select(
                 DB::raw("SUM(stockopenings.$costPriceColumn * ($quantityColumn)) as total_opening_cost_price"),
                 DB::raw("SUM($quantityColumn) as total_opening_quantity"),
-                DB::raw("SUM(supplier_credit_payment_histories.amount) as total_supplier_outstanding"),
-                DB::raw("MAX(purchases.date_completed) as last_supplier_date"),
-                DB::raw( "suppliers.name as supplier_name"),
-                DB::raw("suppliers.id as supplier_id")
+                //DB::raw("SUM(supplier_credit_payment_histories.amount) as total_supplier_outstanding"),
+               // DB::raw("MAX(purchases.date_completed) as last_supplier_date"),
+               // DB::raw( "suppliers.name as supplier_name"),
+               //DB::raw("suppliers.id as supplier_id")
             )
-            ->join("suppliers", "stockopenings.supplier_id", "=", "suppliers.id")
-            ->join("stocks", "stocks.id", "=", "stockopenings.stock_id")
-            ->join("supplier_credit_payment_histories", "supplier_credit_payment_histories.supplier_id", "=", "stockopenings.supplier_id")
-            ->join("purchases", "stockopenings.supplier_id", "=", "purchases.supplier_id")
+            //->join("suppliers", "stockopenings.supplier_id", "=", "suppliers.id")
+           // ->join("supplier_credit_payment_histories", "supplier_credit_payment_histories.supplier_id", "=", "stockopenings.supplier_id")
+            //->join("purchases", "stockopenings.supplier_id", "=", "purchases.supplier_id")
             ->where("stockopenings.date_added", $request->get('payment_date'))
             ->groupBy("stockopenings.supplier_id");
 
