@@ -47,7 +47,7 @@ class InvoiceFormComponent extends Component
 
     public function mount()
     {
-        $this->invoice_number = time().mt_rand();
+        $this->invoice_number = generateUniqueNumber();
         $this->invoiceData = InvoiceRepository::invoice($this->invoice, $this);
 
         $this->cities = City::all();

@@ -317,6 +317,19 @@ class InvoiceController extends Controller
         $data['department'] = department_by_quantity_column($invoice->in_department)->id;
         logActivity($invoice->id, $invoice->invoice_number,'Invoice return page was viewed :'.status_name($invoice->status_id));
 
+        /*
+        we need to cache the invoice id because we want to know if they are returning an online order so that we dont set the payment today
+        begining of logic
+        */
+        if(!is_null($invoice->onliner_order_id)) {
+            \Cache::remember("ReturnedOnlineOrder",83400, function () use ($invoice){
+                $existing = \Cache::get("ReturnedOnlineOrder");
+                if(!$existing) $existing = [];
+                $existing[] = $invoice->id;
+                return $existing;
+            });
+        }
+
         return view('invoiceandsales.form', $data);
     }
 

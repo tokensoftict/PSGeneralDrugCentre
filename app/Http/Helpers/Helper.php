@@ -1251,3 +1251,15 @@ function canPrint($type, \App\Models\Invoice $invoice){
 
     return $invoice->invoiceprinthistories()->where('type', $type)->where('status_id', $invoice->status_id)->count() === 0;
 }
+
+function generateUniqueNumber() {
+    do {
+        $number = '';
+        while (strlen($number) < 10) {
+            $randomBytes = random_int(0, 9); // Generates a cryptographically secure random digit
+            $number .= $randomBytes;
+        }
+    } while (\App\Models\Invoice::where('invoice_number', $number)->exists());
+
+    return $number;
+}
