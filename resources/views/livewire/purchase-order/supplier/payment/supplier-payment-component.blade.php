@@ -9,7 +9,7 @@
 
             <div class="mb-3">
                 <label>Supplier</label>
-                <select class="form-control"  wire:model.defer="payment_data.supplier_id">
+                <select class="form-control select2Product"  wire:model.defer="payment_data.supplier_id">
                     <option value="">Select Supplier</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
