@@ -158,4 +158,55 @@ class CustomerReportController extends Controller
         return view('reports.customer.customer_ranking_report', $data);
     }
 
+
+    public function customer_sales_report(Request $request)
+    {
+        $data = [
+            'title' => 'Customer Sales Report',
+            'subtitle' => 'View Customer Sales Report By Date Range',
+            'filters' => [
+                'start_from' =>date("Y-m-d", strtotime("first day of this month last year")),
+                'start_to'=>date("Y-m-d", strtotime("last day of this month last year")),
+                'end_from' =>date("Y-m-d", strtotime("first day of this month this year")),
+                'end_to'=>date("Y-m-d", strtotime("last day of this month this year")),
+            ]
+        ];
+
+        if($request->has("start_from")){
+            $data['filters'] = [
+                'start_from' =>$request->start_from,
+                'start_to'=>$request->start_to,
+                'end_from' =>$request->end_from,
+                'end_to'=>$request->end_to
+            ];
+        }
+
+        $startInvoiceQuery = DB::table('invoices')
+            ->select('customer_id', DB::raw('SUM(sub_total) as start_invoice_amount'))
+            ->whereIn('status_id', [status('Paid'), status('Complete')])
+            ->whereBetween('invoice_date', [$data['filters']['start_from'], $data['filters']['start_to']])
+            ->groupBy('customer_id');
+
+        $endInvoiceQuery = DB::table('invoices')
+            ->select('customer_id', DB::raw('SUM(sub_total) as end_invoice_amount'))
+            ->whereIn('status_id', [status('Paid'), status('Complete')])
+            ->whereBetween('invoice_date', [$data['filters']['end_from'], $data['filters']['end_to']])
+            ->groupBy('customer_id');
+
+        $data['reports'] = Customer::query()
+            ->select('customers.id as customer_id',
+                DB::raw("CONCAT_WS(' ', customers.firstname, customers.lastname) as customer_name"),
+                'customers.phone_number as phone_number',
+                'startInvoices.start_invoice_amount',
+                'endInvoices.end_invoice_amount',
+                DB::raw('(startInvoices.start_invoice_amount - endInvoices.end_invoice_amount) as difference'))
+            ->leftJoinSub($startInvoiceQuery, 'startInvoices', 'startInvoices.customer_id', '=', 'customers.id')
+            ->leftJoinSub($endInvoiceQuery, 'endInvoices', 'endInvoices.customer_id', '=', 'customers.id')
+            ->where("customers.id", ">", '1')
+            ->orderBy( DB::raw('(startInvoices.start_invoice_amount - endInvoices.end_invoice_amount)'))
+            ->get();
+
+        return view('reports.customer.customer_sales_report', $data);
+    }
+
 }

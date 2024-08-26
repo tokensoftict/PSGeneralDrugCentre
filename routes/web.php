@@ -458,6 +458,8 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'customer_ranking', ['as' => 'customer_ranking', 'uses' => 'CustomerReportController@customer_ranking', 'custom_label'=>'Customer Ranking Report']);
 
+                Route::match(['get','post'],'customer_sales_report', ['as' => 'customer_sales_report', 'uses' => 'CustomerReportController@customer_sales_report', 'custom_label'=>'Customer Sales Report']);
+
             });
 
 
