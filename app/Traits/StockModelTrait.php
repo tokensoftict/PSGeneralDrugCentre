@@ -594,26 +594,38 @@ trait StockModelTrait
     {
         if(!isset($this->promotion_item->status_id)) return $this->attributes['whole_price'];
 
-        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['whole_price'];
+        $promo = $this->promotion_items->filter(function ($item)  {
+            return $item->whole_price > 0 && $item->status_id === status('Approved');
+        })->first();
 
-        return (isset($this->promotion_item->whole_price) && $this->promotion_item->whole_price > 0) ? $this->promotion_item->whole_price : $this->attributes['whole_price'];
+        if(!$promo) return $this->attributes['whole_price'];
+
+        return (isset($promo->whole_price) && $promo->whole_price > 0) ? $promo->whole_price : $this->attributes['whole_price'];
     }
 
     public function getBulkPriceAttribute()
     {
         if(!isset($this->promotion_item->status_id)) return $this->attributes['bulk_price'];
 
-        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['bulk_price'];
+        $promo = $this->promotion_items->filter(function ($item)  {
+            return $item->bulk_price > 0 && $item->status_id === status('Approved');
+        })->first();
 
-        return (isset($this->promotion_item->bulk_price) && $this->promotion_item->bulk_price > 0) ? $this->promotion_item->bulk_price : $this->attributes['bulk_price'];
+        if(!$promo) return $this->attributes['bulk_price'];
+
+        return (isset($promo->bulk_price) && $promo->bulk_price > 0) ? $promo->bulk_price : $this->attributes['bulk_price'];
     }
     public function getRetailPriceAttribute()
     {
         if(!isset($this->promotion_item->status_id)) return $this->attributes['retail_price'];
 
-        if($this->promotion_item->status_id !== status('Approved')) return $this->attributes['retail_price'];
+        $promo = $this->promotion_items->filter(function ($item)  {
+            return $item->retail_price > 0 && $item->status_id === status('Approved');
+        })->first();
 
-        return (isset($this->promotion_item->retail_price) && $this->promotion_item->retail_price > 0 ) ? $this->promotion_item->retail_price : $this->attributes['retail_price'];
+        if(!$promo) return $this->attributes['retail_price'];
+
+        return (isset($promo->retail_price) && $promo->retail_price > 0 ) ? $promo->retail_price : $this->attributes['retail_price'];
     }
 
 

@@ -79,7 +79,7 @@ function _POST2($endpoint, $payload = []) : array|bool
         return json_decode($response->body(), true) ??  true;
     }
 
-   return $response->body();
+    return $response->body();
 
 }
 
@@ -160,7 +160,7 @@ function paymentmethods($active = false)
 function paymentmethodsOnly($only = [])
 {
     return paymentmethods(true)->filter(function($method) use ($only){
-       return  in_array($method->name, $only) || in_array($method->id, $only);
+        return  in_array($method->name, $only) || in_array($method->id, $only);
     });
 }
 
@@ -778,9 +778,23 @@ function money($amt)
     return number_format($amt, 2);
 }
 
-function show_promo(Stock $stock, $column){
+function show_promo_init(Stock $stock, $column){
     if($stock->has_promo && $stock->promotion_item->{$column} > 0){
         return '<span>'.money($stock->{$column}).'</span>'.'&nbsp;&nbsp;&nbsp;'.'<span style="text-decoration: line-through;color:red">'.money($stock->getRawOriginal($column));
+    }
+    return money($stock->{$column});
+}
+
+
+function show_promo(Stock $stock, $column) {
+    if($stock->has_promo) {
+        $promo = $stock->promotion_items->filter(function ($item) use ($column) {
+            return $item->{$column} > 0 and $item->status_id === status('Approved');
+        })->first();
+
+        if ($promo) {
+            return '<span>' . money($promo->{$column}) . '</span>' . '&nbsp;&nbsp;&nbsp;' . '<span style="text-decoration: line-through;color:red">' . money($stock->getRawOriginal($column));
+        }
     }
     return money($stock->{$column});
 }
@@ -1146,14 +1160,14 @@ function numberTowords($num)
 
 function logActivity($invoice_id, $invoice_number, $activities){
 
-     \App\Models\Invoiceactivitylog::create([
-         'invoice_id'=>$invoice_id,
-         'invoice_number'=>$invoice_number,
-         'activity'=>$activities,
-         'user_id'=>auth()->id(),
-         'activity_date'=>date('Y-m-d'),
-         'activity_time'=>Carbon::now()->toTimeString()
-     ]);
+    \App\Models\Invoiceactivitylog::create([
+        'invoice_id'=>$invoice_id,
+        'invoice_number'=>$invoice_number,
+        'activity'=>$activities,
+        'user_id'=>auth()->id(),
+        'activity_date'=>date('Y-m-d'),
+        'activity_time'=>Carbon::now()->toTimeString()
+    ]);
 
 }
 
@@ -1225,7 +1239,7 @@ function addOtherDepartment($batch, $department): array
         'wholesales' => $batch->wholesales
     ];
 
-   Arr::forget($nessArray, $department);
+    Arr::forget($nessArray, $department);
 
     return $nessArray;
 

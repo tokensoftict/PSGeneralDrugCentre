@@ -141,6 +141,8 @@ class Stock extends Model
         'image_download_status'
 	];
 
+    protected $with = ['promotion_items'];
+
 	public function brand()
 	{
 		return $this->belongsTo(Brand::class);

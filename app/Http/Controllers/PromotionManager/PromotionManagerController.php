@@ -45,7 +45,6 @@ class PromotionManagerController extends Controller
     public function update(Promotion $promotion)
     {
         $data = [];
-        $promotion->load(['promotion_items', 'promotion_items.stock']);
         $data['promotion'] = $promotion;
         return view('promotion.form', $data);
     }

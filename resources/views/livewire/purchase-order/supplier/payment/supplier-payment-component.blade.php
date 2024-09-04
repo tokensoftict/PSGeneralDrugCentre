@@ -7,7 +7,7 @@
                 @error('payment_data.payment_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" wire:ignore>
                 <label>Supplier</label>
                 <select class="form-control select2Product"  wire:model.defer="payment_data.supplier_id">
                     <option value="">Select Supplier</option>
@@ -15,8 +15,8 @@
                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                     @endforeach
                 </select>
-                @error('payment_data.supplier_id') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
+            @error('payment_data.supplier_id') <span class="text-danger d-block">{{ $message }}</span> @enderror
 
             <div class="mb-3">
                 <label>Amount</label>
@@ -61,16 +61,22 @@
         window.addEventListener('load', function (){
            $(document).ready(function(){
               $('#paymentMthod').on('change', function(){
-                 if($(this).val() == "8")
-                 {
+                 if($(this).val() == "8") {
                      $('#cheque_date').removeAttr('style');
                  }else{
                      $('#cheque_date').attr('style', 'display:none');
                  }
               });
+
               $('.select2Product').select2({
                   placeholder: 'Select Supplier'});
               });
+
+
+            $('.select2Product').on('change', function (e) {
+                var data = $('.select2Product').select2("val");
+                @this.set('payment_data.supplier_id', data, true);
+            });
         });
     </script>
 </div>
