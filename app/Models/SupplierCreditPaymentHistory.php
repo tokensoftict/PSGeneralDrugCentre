@@ -57,6 +57,7 @@ class SupplierCreditPaymentHistory extends Model
 		'paymentmethod_id',
 		'payment_info',
 		'amount',
+        'remark',
 		'payment_date'
 	];
 

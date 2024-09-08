@@ -29,12 +29,13 @@ class ProductRepository
         'location'=> NULL,
         'expiry'=> '1',
         'reorder' => 1,
-        'piece'=> NULL,
-        'box'=> NULL,
-        'carton'=> NULL,
+        'piece'=> 1,
+        'box'=> 1,
+        'carton'=> 1,
         'image_path' =>  NULL,
         'sachet'=> '0',
         'status'=> '1',
+        'minimum_quantity' => NULL
     ];
 
 

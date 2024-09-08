@@ -152,14 +152,19 @@ class InvoiceRepository
 
         $products = Stock::with(['activeBatches'])->whereIn('id', array_keys($stocks))->get();
 
-        $products->each(function($product, $key) use(&$stocks, &$errors, &$from){
+        $products->each(function($product, $key) use(&$stocks, &$errors, &$from) {
             //$stocks[$product->id]['product'] = $product;
             $batch = $product->pingSaleableBatches($from, $stocks[$product->id]['item']['quantity'],  $product->activeBatches);
+
+            $status = $product->pingIfQuantityHasNotExceededTheMinimumQuantity($from, $stocks[$product->id]['item']['quantity']);
+            if($status === true and $batch !== false) {
+                $errors[$product->id] = $product->name." has exceeded the minimum quantity of ".$product->minimum_quantity." set by the administrator";
+            }
 
             $total_cost_batch = collect($batch)->sum('cost_price');
 
             if($batch === false) {
-                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", Available quantity is ". $product->{$from};
+                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", available quantity is ". $product->{$from};
             } else {
                 if($from == "retail") {
                     $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column(4)};

@@ -109,7 +109,7 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="mb-3">
                     <label>Box</label>
-                    <input  class="form-control" required placeholder="Cost Price" wire:model.defer="product_data.box"  type="text">
+                    <input  class="form-control" required placeholder="Box" wire:model.defer="product_data.box"  type="text">
                     @error('product_data.box') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -137,12 +137,20 @@
             <div class="col-lg-3 col-sm-6 col-12" >
                 <div class="mb-3" wire:ignore>
                     <label>Sachet Product ?</label>
-                    <select class="form-control" required name="sarchet" wire:model.defer="product_data.sachet">
+                    <select class="form-control" required name="sachet" wire:model.defer="product_data.sachet">
                         <option value="">Select One</option>
                         <option value="1">Yes</option>
                         <option selected value="0">No</option>
                     </select>
                     @error('expiry') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6 col-12" >
+                <div class="mb-3" wire:ignore>
+                    <label>Minimum Quantity</label>
+                    <input  placeholder="Minimum Quantity" required wire:model.defer="product_data.minimum_quantity" class="form-control" type="number">
+                    @error('product_data.minimum_quantity') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
 
@@ -194,7 +202,7 @@
                     <input type="file" id="formFile"  name="logo" wire:model.defer="product_data.image_path" style="width: 0;height: 0;padding: 0; margin: 0" >
                     <div class="form-control">
                         <br/>
-                        <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
+                        <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:15%; margin: auto; display: block;"/>
                         <br/>
                         <div wire:loading wire:target="product_data.image">Uploading...</div>
                         <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Select Image and Upload</button>

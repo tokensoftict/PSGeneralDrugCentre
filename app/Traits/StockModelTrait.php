@@ -137,6 +137,12 @@ trait StockModelTrait
     }
 
 
+    /**
+     * @param $online_quantity
+     * @param $activeBatches
+     * @param $departments
+     * @return array|bool
+     */
     public function pingStockLocation($online_quantity, $activeBatches = false, $departments = []) : array|bool
     {
         if($activeBatches === false){
@@ -640,4 +646,22 @@ trait StockModelTrait
         return $this->attributes;
     }
 
+
+    /**
+     * @param string $department
+     * @param int $quantity
+     * @return bool
+     */
+    public final function pingIfQuantityHasNotExceededTheMinimumQuantity(string $department, int $quantity) : bool
+    {
+        if (!is_null($this->minimum_quantity) and $this->minimum_quantity > 0) {
+            $minimumQuantity = $this->minimum_quantity;
+            $totalQtyAfterRemovingQuantity = $this->getCurrentlevel($department) - $quantity;
+            if($totalQtyAfterRemovingQuantity < $minimumQuantity) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

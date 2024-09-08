@@ -52,6 +52,7 @@ class SupplierPaymentDatatable extends ExportDataTableComponent
             Column::make("Payment date", "payment_date")
                 ->format(fn($value, $row, Column $column) => eng_str_date($value))
                 ->sortable(),
+            Column::make("Remark", "remark"),
             Column::make("Created By", "user_id")
                 ->format(fn($value, $row, Column $column) =>  $row->user->name ?? "")
                 ->sortable(),

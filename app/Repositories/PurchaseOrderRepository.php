@@ -243,6 +243,7 @@ class PurchaseOrderRepository
             'amount' => Str::replace(",","",$data['amount']),
             'payment_date' => $data['payment_date'],
             'payment_info' => $data['payment_info'],
+            'remark' => $data['remark']
         ]);
     }
 
@@ -256,6 +257,7 @@ class PurchaseOrderRepository
             'paymentmethod_id' => $data['paymentmethod_id'],
             'amount' => Str::replace(",","",$data['amount']),
             'payment_info' => $data['payment_info'],
+            'remark' => $data['remark']
         ]);
     }
 

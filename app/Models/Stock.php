@@ -138,7 +138,8 @@ class Stock extends Model
 		'user_id',
         'image_path',
         'image_uploaded',
-        'image_download_status'
+        'image_download_status',
+        'minimum_quantity'
 	];
 
     protected $with = ['promotion_items'];
