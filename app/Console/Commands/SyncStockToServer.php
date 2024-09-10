@@ -30,7 +30,7 @@ class SyncStockToServer extends Command
     {
         $stocks = Stock::where(function($query){
             $query->orWhere('bulk_price','>',0)->orWhere('retail_price','>',0);
-        })->where('status',1);
+        })->where('status',1)->orderBy('id', 'DESC');
         $chunk_numbers = round(($stocks->count() / 500));
         $stocks->chunk(500,function($stocks) use (&$chunk_numbers){
             $all_data = [];
