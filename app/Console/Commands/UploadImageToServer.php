@@ -29,7 +29,7 @@ class UploadImageToServer extends Command
      */
     public function handle()
     {
-        $stockImage = Stock::where("image_uploaded", 0)->whereNotNull('image_path')->first();
+        $stockImage = Stock::where("image_uploaded", 0)->whereNotNull('image_path')->orderBy('id', 'desc')->first();
 
         $image = public_path($stockImage->image_path);
 
