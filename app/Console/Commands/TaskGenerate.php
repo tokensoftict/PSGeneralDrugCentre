@@ -54,7 +54,7 @@ class TaskGenerate extends Command
             'CustomerReport' => 'Customer Report(s)',
             'ProductReport' => 'Product Report(s)',
             'ExpensesReport' => 'Expenses Report(s)',
-            //'StaffPerformanceReport' => 'Staff Performance Report'
+            'StaffPerformanceReport' => 'Staff Performance Report'
         ];
 
 
@@ -77,7 +77,7 @@ class TaskGenerate extends Command
             'CustomerReport' => '',
             'ProductReport' => 'Product Report(s)',
             'ExpensesReport' => 'Expenses Report(s)',
-            //'StaffPerformanceReport' => 'Staff Performance Report'
+            'StaffPerformanceReport' => 'Staff Performance Report'
         ];
 
         $taskList = DB::table('tasks')->pluck('route', 'id');
