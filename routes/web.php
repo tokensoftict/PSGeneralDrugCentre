@@ -503,13 +503,13 @@ Route::middleware(['auth'])->group(function () {
             });
 
 
-            /*
+
             Route::prefix('staffPerformanceReport')->as('staffPerformanceReport.')->namespace('StaffPerformanceReport')->group(function(){
 
                 Route::match(['get','post'],'sales_order_performancereport', ['as' => 'sales_order_performancereport', 'uses' => 'StaffPerformanceReportController@sales_order_performancereport', 'custom_label'=>'Sales Order Performance Report']);
                 Route::match(['get','post'],'picker_and_packer', ['as' => 'picker_and_packer', 'uses' => 'StaffPerformanceReportController@picker_and_packer', 'custom_label'=>'Picker and Packer Performance Report']);
             });
-            */
+
         });
     });
 
