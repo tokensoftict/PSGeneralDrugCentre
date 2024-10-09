@@ -38,8 +38,15 @@ class SupplierDbOverviewDatatable extends ExportDataTableComponent
             Column::make("Name", "supplier.name")->sortable()->searchable()->sortable(),
             Column::make("Total Opening Cost", "total_opening_cost_price")
             ->format(fn($value, $row, Column $column)=> money($value))->sortable(),
+
             Column::make("Total Opening Retail Cost", "total_opening_retail_cost_price")
             ->format(fn($value, $row, Column $column)=> money($value))->sortable(),
+
+            Column::make("All Total Cost", "total_opening_retail_cost_price")
+                ->format(fn($value, $row, Column $column)=> money($row->total_opening_cost_price+$row->total_opening_retail_cost_price))->sortable(),
+
+            Column::make("Total Opening Cost", "total_opening_retail_cost_price")
+                ->format(fn($value, $row, Column $column)=> money($value))->sortable(),
             Column::make("Total Supplier Our Standing", "total_supplier_outstanding")
             ->format(fn($value, $row, Column $column)=> money($value))->sortable(),
             Column::make("Total Opening Quantity", "total_opening_quantity")
