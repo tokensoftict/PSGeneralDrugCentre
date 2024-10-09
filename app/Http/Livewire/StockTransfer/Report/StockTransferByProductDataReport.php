@@ -32,7 +32,7 @@ final class StockTransferByProductDataReport extends PowerGridComponent
         return Stocktransferitem::query()->with(['stock', 'stocktransfer'])
         ->whereHas('stocktransfer', function ($query) {
             $query->whereBetween('transfer_date', $this->filters['between.transfer_date'])
-                ->where("transfer_date",  $this->filters['between.transfer_date'])
+                //->where("transfer_date",  $this->filters['between.transfer_date'])
                 ->where('stock_id',$this->filters['stock_id'])
                 ->where('status_id',$this->filters['status_id'])
                 ->orderBy("id","DESC");
