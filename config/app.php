@@ -18,6 +18,7 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     'loginBG' => env('LOGIN_BG', false),
+    'invoice_dispatcher' => env('INVOICE_DISPATCHER', false),
 
     'sync_with_online' => env('SYNC_WITH_ONLINE', false),
     'PURCHASE_DEPARTMENT' => env('PURCHASE_DEPARTMENT', false),
