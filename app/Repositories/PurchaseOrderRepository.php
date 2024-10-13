@@ -122,8 +122,7 @@ class PurchaseOrderRepository
 
     public function complete(Purchase $purchase)
     {
-        $items = $purchase->purchaseitems;
-
+        $items = $purchase->purchaseitems->fresh();
         $batchInsert = [];
         $stockUpdate = [];
 

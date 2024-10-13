@@ -84,7 +84,7 @@ class PurchaseOrderComponent extends Component
         DB::transaction(function (){
             $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
 
-            $this->purchaseOrderRepository->complete($this->purchase);
+            $this->purchaseOrderRepository->complete($this->purchase->fresh());
         });
         $this->alert(
             "success",
