@@ -15,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 
-class Stockimports implements ToCollection, WithChunkReading, ShouldQueue,WithHeadingRow
+class Stockimports implements ToCollection, WithChunkReading,WithHeadingRow
 {
 
 
