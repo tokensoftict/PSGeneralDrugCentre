@@ -166,29 +166,34 @@
                     <h4>Product Price Settings</h4>
                     <hr/>
                     <div class="row">
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Bulk Price <span style="color:red;">*</span></label>
-                                <input type="number" required wire:model.defer="product_data.bulk_price" step="0.00001" value=""   class="form-control" name="bulk_price" placeholder="Bulk Price">
-                                @error('product_data.bulk_price') <span class="text-danger">{{ $message }}</span> @enderror
+                        @if(department_by_quantity_column('bulksales', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Bulk Price <span style="color:red;">*</span></label>
+                                    <input type="number" required wire:model.defer="product_data.bulk_price" step="0.00001" value=""   class="form-control" name="bulk_price" placeholder="Bulk Price">
+                                    @error('product_data.bulk_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
-                        </div>
+                        @endif
+                        @if(department_by_quantity_column('wholesales', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Wholesales Price <span style="color:red;">*</span></label>
+                                    <input type="number" required wire:model.defer="product_data.whole_price" step="0.00001" value=""   class="form-control" name="whole_price" placeholder="Wholesales Price">
+                                    @error('product_data.whole_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        @endif
 
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Wholesales Price <span style="color:red;">*</span></label>
-                                <input type="number" required wire:model.defer="product_data.whole_price" step="0.00001" value=""   class="form-control" name="whole_price" placeholder="Wholesales Price">
-                                @error('product_data.whole_price') <span class="text-danger">{{ $message }}</span> @enderror
+                        @if(department_by_quantity_column('retail', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Retail Sales Price<span style="color:red;">*</span></label>
+                                    <input type="number" required  wire:model.defer="product_data.retail_price" step="0.00001" value=""   class="form-control" name="retail_price" placeholder="Retail Sales Price">
+                                    @error('product_data.retail_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Retail Sales Price<span style="color:red;">*</span></label>
-                                <input type="number" required  wire:model.defer="product_data.retail_price" step="0.00001" value=""   class="form-control" name="retail_price" placeholder="Retail Sales Price">
-                                @error('product_data.retail_price') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             @endif

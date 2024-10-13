@@ -27,58 +27,83 @@ class ProductComponentDatatableAvailable extends ExportDataTableComponent
 
     public static function mountColumn() : array
     {
-        return  [
+        $column =   [
             Column::make("Stock ID", "id")->sortable(),
             Column::make("Name", "name")
                 ->sortable()->searchable(),
-            Column::make("WS Price", "whole_price")
-                ->format(fn($value, $row, Column $column)=> money($value))
-                ->sortable(),
-            Column::make("WS Price", "whole_price")
+        ];
+
+        if(department_by_quantity_column('wholesales', false)->status) {
+            $column[] =  Column::make("WS Price", "whole_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'whole_price'))
-                ->sortable()->html(),
-            Column::make("Bulk Price", "bulk_price")
+                ->sortable()->html();
+        }
+
+        if(department_by_quantity_column('bulksales', false)->status) {
+            $column[] =   Column::make("Bulk Price", "bulk_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'bulk_price'))
-                ->sortable()->html(),
-            Column::make("Retail Price", "retail_price")
+                ->sortable()->html();
+        }
+
+        if(department_by_quantity_column('retail', false)->status) {
+            $column[] =     Column::make("Retail Price", "retail_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'retail_price'))
-                ->sortable()->html(),
+                ->sortable()->html();
+        }
+
+
+        $column = array_merge($column,[
             Column::make("Box", "box")
                 ->format(fn($value, $row, Column $column)=> $value)
                 ->sortable(),
             Column::make("Carton", "carton")
                 ->format(fn($value, $row, Column $column)=> $value)
                 ->sortable(),
-            Column::make("WholeSales", "wholesales")
-                ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
-            Column::make("BulkSales", "bulksales")
-                ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
-            Column::make("Retail", "retail")
-                ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
+        ]);
+
+        if(department_by_quantity_column('wholesales', false)->status) {
+            $column[] =  Column::make("WholeSales", "wholesales")
+                ->format(fn($value, $row, Column $column) => $value)
+                ->sortable();
+        }
+
+        if(department_by_quantity_column('bulksales', false)->status) {
+            $column[] = Column::make("BulkSales", "bulksales")
+                ->format(fn($value, $row, Column $column) => $value)
+                ->sortable();
+        }
+
+        if(department_by_quantity_column('retail', false)->status) {
+            $column[] = Column::make("Retail", "retail")
+                ->format(fn($value, $row, Column $column) => $value)
+                ->sortable();
+        }
+
+        if(department_by_quantity_column('quantity', false)->status) {
             Column::make("Main Store", "quantity")
-                ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
+                ->format(fn($value, $row, Column $column) => $value)
+                ->sortable();
+        }
 
-            Column::make("Action","id")
-                ->format(function($value, $row, Column $column){
-                    $html = 'No Action';
-                    if(userCanView('product.edit')){
-                        $html = '<div class="dropdown"><button class="btn btn-link font-size-16 shadow-none py-0 text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded"></i></button>';
+        $column[] = Column::make("Action","id")
+            ->format(function($value, $row, Column $column){
+                $html = 'No Action';
+                if(userCanView('product.edit')){
+                    $html = '<div class="dropdown"><button class="btn btn-link font-size-16 shadow-none py-0 text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded"></i></button>';
 
-                        $html .='<ul class="dropdown-menu dropdown-menu-end">';
-                        if(userCanView('product.edit')) {
-                            $html .= '<a href="' . route('product.edit', $value) . '" class="dropdown-item">Edit Stock</a></li>';
-                        }
-                        $html .='</ul>';
+                    $html .='<ul class="dropdown-menu dropdown-menu-end">';
+                    if(userCanView('product.edit')) {
+                        $html .= '<a href="' . route('product.edit', $value) . '" class="dropdown-item">Edit Stock</a></li>';
                     }
+                    $html .='</ul>';
+                }
 
-                    return $html;
-                })
-                ->html()
-        ];
+                return $html;
+            })
+            ->html();
+
+
+        return $column;
     }
 
 

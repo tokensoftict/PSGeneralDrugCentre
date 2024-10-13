@@ -240,9 +240,20 @@ function department_by_id($id)
     })->first();
 }
 
-function department_by_quantity_column($name)
+function department_by_ids(int | array $id)
 {
-    return departments(true)->filter(function($item) use($name){
+    return departments(true)->filter(function($item) use($id){
+        if(is_array($id)) {
+            return in_array($item->id, $id);
+        } else {
+            return $item->id === $id;
+        }
+    });
+}
+
+function department_by_quantity_column($name, $active = true)
+{
+    return departments($active)->filter(function($item) use($name){
         return $item->quantity_column === $name;
     })->first();
 }
