@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ajax;
 use App\Classes\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Invoiceitem;
+use App\Models\Invoiceitembatch;
 use App\Models\Stockopening;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ProductionRepository;
@@ -23,8 +24,8 @@ class AjaxController extends Controller
     protected CustomerRepository $customerRepository;
 
     public function __construct(
-                                ProductRepository $productRepository,
-                                CustomerRepository $customerRepository
+        ProductRepository $productRepository,
+        CustomerRepository $customerRepository
     )
     {
         $this->productRepository = $productRepository;
@@ -50,7 +51,7 @@ class AjaxController extends Controller
 
     public function findcustomer(Request $request)
     {
-      return  $this->customerRepository->findCustomer($request->get('query') ?? $request->get("searchTerm"));
+        return  $this->customerRepository->findCustomer($request->get('query') ?? $request->get("searchTerm"));
     }
 
 
@@ -150,5 +151,35 @@ class AjaxController extends Controller
     }
 
 
+
+    public function supplier_sales_analysis_table(Request $request)
+    {
+        $department = match ($request->get('department')) {
+            "Retail" => ["quantity", "wholesales", "bulksales", "retail"],
+            default => ["quantity", "wholesales", "bulksales"]
+        };
+        $supplier_sales_analysis = InvoiceItemBatch::select(
+            "suppliers.id as id",
+            DB::raw( 'SUM(invoiceitembatches.quantity) as total_qty'),
+            DB::raw( 'SUM(invoiceitembatches.quantity * (invoiceitembatches.selling_price)) as total_selling_total'),
+            DB::raw( 'SUM(invoiceitembatches.quantity * (invoiceitembatches.cost_price)) as total_cost_total'),
+            DB::raw( '(SUM(invoiceitembatches.quantity * (invoiceitembatches.selling_price)) - SUM(invoiceitembatches.quantity * (invoiceitembatches.cost_price))) as profit'),
+            "suppliers.name as supplier_name",
+            "suppliers.email as supplier_email",
+
+        )->whereIn("department", $department)
+            ->whereHas('invoice',function($q) use(&$request){
+                $q->whereBetween('invoice_date',[$request->get('from'),$request->get('to')])
+                    ->whereIn("status_id",[2,4,6]);
+            })->join("stockbatches", "stockbatches.id", "=", "invoiceitembatches.stockbatch_id")
+            ->join("suppliers", "suppliers.id", "=", "stockbatches.supplier_id")
+            ->groupBy("suppliers.id");
+
+        return Datatables::of($supplier_sales_analysis)
+            ->addIndexColumn()
+            ->escapeColumns(null)
+            ->make(true);
+
+    }
 
 }

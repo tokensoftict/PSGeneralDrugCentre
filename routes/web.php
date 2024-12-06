@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/findcustomer', ['as' => 'findcustomer', 'uses' => 'AjaxController@findcustomer']);
         Route::get('/profitandlossdatatable', ['as' => 'profitandlossdatatable', 'uses' => 'AjaxController@profitandlossdatatable']);
         Route::get('/profitandlossdatatablebydepartment', ['as' => 'profitandlossdatatablebydepartment', 'uses' => 'AjaxController@profitandlossdatatablebydepartment']);
+        Route::get('/supplier_sales_analysis_table', ['as' => 'supplier_sales_analysis_table', 'uses' => 'AjaxController@supplier_sales_analysis_table']);
     });
 
 
@@ -390,6 +391,7 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::match(['get','post'],'balance_sheet', ['as' => 'balance_sheet', 'uses' => 'PurchaseReportsController@balance_sheet', 'custom_label'=>'Supplier Balance Sheet']);
                 Route::match(['get','post'],'supplier_ranking', ['as' => 'supplier_ranking', 'uses' => 'PurchaseReportsController@supplier_ranking', 'custom_label'=>'Supplier Ranking Report']);
+                Route::match(['get','post'],'supplier_sales_analysis', ['as' => 'supplier_sales_analysis', 'uses' => 'PurchaseReportsController@supplier_sales_analysis', 'custom_label'=>'Supplier Sales Analysis']);
             });
 
             Route::prefix('paymentReport')->as('payment.')->namespace('PaymentReport')->group(function(){

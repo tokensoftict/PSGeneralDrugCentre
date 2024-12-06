@@ -245,8 +245,6 @@ class PurchaseReportsController extends Controller
 
     }
 
-
-
     public function supplier_ranking(Request $request)
     {
         $items = [
@@ -310,5 +308,48 @@ class PurchaseReportsController extends Controller
         return view('reports.purchases.supplier_ranking_report', $data);
     }
 
+
+    public function supplier_sales_analysis(Request $request)
+    {
+        $items = [
+            [
+                'id' =>"Retail",
+                'name' => "Retail",
+            ],
+            [
+                'id' =>"1-4",
+                'name' => "Wholesales, Bulk Sales, Main Store",
+            ]
+        ];
+        $data = [
+            'title' => 'Supplier Sales Analysis',
+            'subtitle' => 'View Supplier Sales Analysis By Date Range',
+            'filters' => [
+                'custom_dropdown_id' => "1-4",
+                'label_name' => 'Departments',
+                'items' => $items,
+                'from' =>monthlyDateRange()[0],
+                'to'=>monthlyDateRange()[1],
+                'items' => $items ,
+                'label_name' => 'Departments',
+                'filters' => [
+                    'between.invoice_date' => monthlyDateRange(),
+                    'custom_dropdown_id' => "1-4",
+                ]
+            ]
+        ];
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['items'] = $items;
+            $data['filters']['label_name'] = 'Departments';
+            $data['filters']['custom_dropdown_id'] = $data['filters']['custom_dropdown_id'];
+            $data['filters']['filters']['between.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['custom_dropdown_id'] = $data['filters']['custom_dropdown_id'];
+            $data['filters']['filters']['items'] = $items;
+            $data['filters']['filters']['label_name'] = 'Departments';
+        }
+        return view('reports.purchases.supplier.sales_analysis', $data);
+    }
 
 }
