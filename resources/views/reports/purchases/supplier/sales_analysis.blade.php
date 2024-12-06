@@ -57,7 +57,7 @@
                     "<'row be-datatable-body'<'col-sm-12'tr>>" +
                     "<'row be-datatable-footer'<'col-sm-5'i><'col-sm-7'p>>",
                 "lengthMenu": [[100, 250, 1000, -1], [100, 250, 1000, "All"]],
-                ajax: '{!! route('supplier_sales_analysis_table') !!}?from={{ $filters['filters']['between.invoice_date'][0] }}&to={{ $filters['filters']['between.invoice_date'][1] }}',
+                ajax: '{!! route('supplier_sales_analysis_table') !!}?from={{ $filters['filters']['between.invoice_date'][0] }}&to={{ $filters['filters']['between.invoice_date'][1] }}&department={{ $filters['filters']['custom_dropdown_id'] }}',
                 columns: [
 
                     {data: 'supplier_name', name: 'supplier_name',orderable: true, searchable: true},

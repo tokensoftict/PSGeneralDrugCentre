@@ -263,19 +263,11 @@ class Stockimports implements ToCollection, WithChunkReading, ShouldQueue,WithHe
                 $stock->reorder = (int)$row['reorder'];
             }
 
-
             if(isset($row['box'])){
 
                 $stock->box = $row['box'];
             }
 
-            $stock->update();
-
-
-            if(isset($row['box'])){
-
-                $stock->box = $row['box'];
-            }
 
             $stock->update();
         }
