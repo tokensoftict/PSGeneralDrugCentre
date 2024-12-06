@@ -177,6 +177,15 @@ class AjaxController extends Controller
 
         return Datatables::of($supplier_sales_analysis)
             ->addIndexColumn()
+            ->editColumn('total_selling_total',function($item) use (&$request){
+                return money($item->total_selling_total);
+            })
+            ->editColumn('total_cost_total',function($item) use (&$request){
+                return money($item->total_cost_total);
+            })
+            ->editColumn('profit',function($item) use (&$request){
+                return money($item->profit);
+            })
             ->escapeColumns(null)
             ->make(true);
 
