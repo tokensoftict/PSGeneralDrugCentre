@@ -24,7 +24,10 @@ class InvoiceDispatcherComponent extends Component
 
     public function mount()
     {
-        $invoiceDispatcher = config('app.invoice_dispatcher') ?? 11;
+        $invoiceDispatcher = config('app.invoice_dispatcher', 11);
+        if($invoiceDispatcher === false) {
+            $invoiceDispatcher = 11;
+        }
         $this->users = User::where('usergroup_id',$invoiceDispatcher)->where('status',1)->get();
 
         $this->data['picked_by'] = "";

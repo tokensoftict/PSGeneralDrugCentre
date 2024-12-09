@@ -158,6 +158,12 @@ class AjaxController extends Controller
             "Retail" => ["quantity", "wholesales", "bulksales", "retail"],
             default => ["quantity", "wholesales", "bulksales"]
         };
+
+        $cost_price = match ($request->get('department')) {
+            "Retail" => ["quantity", "wholesales", "bulksales", "retail"],
+            default => ["quantity", "wholesales", "bulksales"]
+        };
+
         $supplier_sales_analysis = InvoiceItemBatch::select(
             "suppliers.id as id",
             DB::raw( 'SUM(invoiceitembatches.quantity) as total_qty'),
