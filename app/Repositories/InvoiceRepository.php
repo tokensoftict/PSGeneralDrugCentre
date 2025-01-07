@@ -191,7 +191,7 @@ class InvoiceRepository
             return $item['quantity'] * $item['selling_price'];
         });
         $invoiceData['total_cost'] =  $items->sum(function($item){
-            return $item['quantity'] * $item['cost_price'];
+            return $item['quantity'] * $item['cost_price'] ?? 0;
         });
 
         $invoiceData['total_profit'] =  $invoiceData['sub_total'] -  $invoiceData['total_cost'];
@@ -212,6 +212,13 @@ class InvoiceRepository
         }
 
         $items = json_decode($invoiceData['invoiceitems'],true);
+
+        //set the cost price of items that does not have cost price to zero
+        foreach($items as $key => $item){
+            if(!isset($items[$key]['cost_price']) || $items[$key]['cost_price'] == "" || is_null($items[$key]['cost_price'])) {
+                $items[$key]['cost_price'] = 0;
+            }
+        }
 
         Arr::forget($invoiceData, ['invoiceitems']);
 
@@ -241,7 +248,7 @@ class InvoiceRepository
                     'invoice_id' => $invoice->id,
                     'stock_id' => $item['stock_id'],
                     'stockbatch_id' => $batch['id'],
-                    'cost_price' => $batch['cost_price'],
+                    'cost_price' => $batch['cost_price'] ?? 0,
                     'selling_price' => $item['selling_price'],
                     'department' => $batch['department'],
                     'quantity' => $batch['qty'],
@@ -305,6 +312,13 @@ class InvoiceRepository
     public function updateInvoice(Invoice $invoice ,array $invoiceData) : Invoice|array
     {
         $items = json_decode($invoiceData['invoiceitems'],true);
+
+        //set the cost price of items that does not have cost price to zero
+        foreach($items as $key => $item){
+            if(!isset($items[$key]['cost_price']) || $items[$key]['cost_price'] == "" || is_null($items[$key]['cost_price'])) {
+                $items[$key]['cost_price'] = 0;
+            }
+        }
 
         Arr::forget($invoiceData, ['invoiceitems']);
 
@@ -407,7 +421,7 @@ class InvoiceRepository
                     'invoice_id' => $invoice->id,
                     'stock_id' => $item['stock_id'],
                     'stockbatch_id' => $batch['id'],
-                    'cost_price' => $batch['cost_price'],
+                    'cost_price' => $batch['cost_price'] ?? 0,
                     'selling_price' => $item['selling_price'],
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']

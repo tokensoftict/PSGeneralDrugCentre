@@ -89,6 +89,9 @@ class PurchaseOrderRepository
 
         foreach ($items as $item)
         {
+            if(!isset($item['cost_price']) || $item['cost_price'] == "" || is_null($item['cost_price'])){
+                $item['cost_price'] = 0;
+            }
             $purchaseItems[] = new Purchaseitem($item);
         }
 
