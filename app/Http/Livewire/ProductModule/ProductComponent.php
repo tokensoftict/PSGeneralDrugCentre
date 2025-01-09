@@ -95,9 +95,15 @@ class ProductComponent extends Component
 
         if(userCanView('product.changeSellingPrice'))
         {
-            $data["product_data.whole_price"] ="required";
-            $data["product_data.bulk_price"] ="required";
-            $data["product_data.retail_price"] ="required";
+            if(department_by_quantity_column('wholesales', false)->status) {
+                $data["product_data.whole_price"] = "required";
+            }
+            if(department_by_quantity_column('bulksales', false)->status) {
+                $data["product_data.bulk_price"] = "required";
+            }
+            if(department_by_quantity_column('retail', false)->status) {
+                $data["product_data.retail_price"] = "required";
+            }
         }
         else {
 
