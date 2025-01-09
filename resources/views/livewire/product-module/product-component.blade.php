@@ -149,7 +149,7 @@
             <div class="col-lg-3 col-sm-6 col-12" >
                 <div class="mb-3" wire:ignore>
                     <label>Minimum Quantity</label>
-                    <input  placeholder="Minimum Quantity" required wire:model.defer="product_data.minimum_quantity" class="form-control" type="number">
+                    <input  placeholder="Minimum Quantity"  wire:model.defer="product_data.minimum_quantity" class="form-control" type="number">
                     @error('product_data.minimum_quantity') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
