@@ -13,7 +13,7 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="mb-3">
                     <label>Location</label>
-                    <input name="location" required class="form-control" placeholder="Location" wire:model.defer="product_data.location" type="text">
+                    <input name="location"  class="form-control" placeholder="Location" wire:model.defer="product_data.location" type="text">
                     @error('product_data.location') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
