@@ -36,13 +36,16 @@ class PurchaseOrderComponent extends Component
     public function booted()
     {
         $this->suppliers = suppliers(true);
-
         $this->depertments = departments(true)->filter(function($item){
             if(in_array(auth()->user()->department_id, [1,2,3,5])){
                 return $item->id === 1 || $item->id == 4;
             }
             return auth()->user()->department_id === 4;
         });
+
+        if(config('app.PURCHASE_DEPARTMENT') !== false) {
+            $this->depertments = department_by_ids(explode(",", config('app.PURCHASE_DEPARTMENT')));
+        }
     }
 
     public function render()
@@ -81,7 +84,7 @@ class PurchaseOrderComponent extends Component
         DB::transaction(function (){
             $this->purchase = $this->purchaseOrderRepository->savePurchaseOrder($this->purchase, $this->data);
 
-            $this->purchaseOrderRepository->complete($this->purchase);
+            $this->purchaseOrderRepository->complete($this->purchase->fresh());
         });
         $this->alert(
             "success",

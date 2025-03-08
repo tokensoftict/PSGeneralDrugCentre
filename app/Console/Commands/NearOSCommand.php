@@ -202,6 +202,8 @@ class NearOSCommand extends Command
 
             foreach($groups as $group) {
                 //if (\App\RetailNearOs::where('group_os_id', $group->id)->get()->count() > 0) {
+                $check = Stock::where('stockgroup_id', $group->id)->count();
+                if($check === 0) continue;
                 $qty = 0;
                 $now_qty = 0;
                 $_product = DB::table('invoiceitembatches as batch_item')

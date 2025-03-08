@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $user_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $transfer_date
  *
  * @property Stock $stock
  * @property Stockbatch|null $stockbatch
@@ -58,7 +59,8 @@ class Stocktransferitem extends Model
 		'cost_price',
 		'stockbatch_id',
 		'user_id',
-        'rem_quantity'
+        'rem_quantity',
+        'transfer_date'
 	];
 
     //protected $with = ['stock'];

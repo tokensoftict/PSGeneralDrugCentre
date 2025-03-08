@@ -67,6 +67,7 @@
                         <th class="text-start">Name</th>
                         <th class="text-center">Location</th>
                         <th class="text-center">Selling Price</th>
+                        <th class="text-center">Remaining Quantity</th>
                         @if($this->stocktransfer->to == "retail")
                             <th class="text-center">Quantity(Retail Quantity)</th>
                         @else
@@ -96,6 +97,7 @@
                             </td>
                             <td class="text-center">{{ $trans->stock->location }}</td>
                             <td class="text-center">{{ number_format($trans->selling_price,2) }}</td>
+                            <td class="text-center">{{ $trans->rem_quantity }}</td>
                             @if($this->stocktransfer->to == "retail")
                                 <td class="text-center">{{ $trans->quantity }}({{ $trans->quantity * $trans->stock->box }})</td>
                             @else

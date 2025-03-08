@@ -110,8 +110,22 @@ final class StockBalanceBySupplier extends PowerGridComponent
             ->addColumn('bs')
             ->addColumn('ms')
             ->addColumn('rt')
-            ->addColumn('total', function(Stockbatch $stockbatch){
-                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs($stockbatch->rt/ $stockbatch->stock->box));
+            ->addColumn('total', function(Stockbatch $stockbatch) {
+                $total = 0;
+                if(department_by_quantity_column('wholesales', false)->status) {
+                    $total += $stockbatch->ws;
+                }
+                if(department_by_quantity_column('bulksales', false)->status) {
+                    $total += $stockbatch->bs;
+                }
+                if(department_by_quantity_column('quantity', false)->status) {
+                    $total += $stockbatch->ms;
+                }
+                if(department_by_quantity_column('retail', false)->status) {
+                    $total+=round(abs($stockbatch->rt/ $stockbatch->stock->box));
+                }
+
+                return $total;
             });
     }
 
@@ -124,24 +138,38 @@ final class StockBalanceBySupplier extends PowerGridComponent
     |
     */
 
-     /**
-      * PowerGrid Columns.
-      *
-      * @return array<int, Column>
-      */
+    /**
+     * PowerGrid Columns.
+     *
+     * @return array<int, Column>
+     */
     public function columns(): array
     {
-        return [
+        $columns =  [
             Column::make('SN' ,'')->index(),
             Column::make('Name', 'name')->sortable()->searchable(),
             Column::make('Box', 'box'),
-            Column::make('Carton', 'carton'),
-            Column::make('Wholesales', 'ws'),
-            Column::make('Bulksales', 'bs'),
-            Column::make('Retail', 'rt'),
-            Column::make('Main Store', 'ms'),
-            Column::make('Total', 'total'),
+            Column::make('Carton', 'carton')
         ];
+
+        if(department_by_quantity_column('wholesales', false)->status) {
+            $columns[] =  Column::make('Wholesales', 'ws');
+        }
+        if(department_by_quantity_column('bulksales', false)->status) {
+            $columns[] =  Column::make('Bulksales', 'bs');
+        }
+        if(department_by_quantity_column('retail', false)->status) {
+            $columns[] =Column::make('Retail', 'rt');
+        }
+        if(department_by_quantity_column('quantity', false)->status) {
+            $columns[] = Column::make('Main Store', 'ms');
+        }
+
+        $columns = array_merge($columns, [
+            $columns[] = Column::make('Total', 'total'),
+        ]);
+
+        return  $columns;
     }
 
     /**

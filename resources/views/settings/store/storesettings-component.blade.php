@@ -69,7 +69,7 @@
                     <input type="file" id="formFile"  name="logo" wire:model.defer="store.logo" style="width: 0;height: 0;padding: 0; margin: 0" >
                     <div class="form-control">
                         <br/>
-                        <img src="{{$this->store['logo'] !== NULL ? (is_string($this->store['logo']) ? asset('logo/'.$this->store['logo']) : $this->store['logo']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
+                        <img src="{{ $this->store['logo'] !== NULL ? (is_string($this->store['logo']) ? asset('logo/'.$this->store['logo']) : $this->store['logo']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
                         <br/>
                         <div wire:loading wire:target="store.logo">Uploading...</div>
                         <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Upload</button>

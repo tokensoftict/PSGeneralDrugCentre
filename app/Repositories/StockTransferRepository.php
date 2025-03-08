@@ -238,6 +238,7 @@ class StockTransferRepository
                 "quantity" => $transfer['quantity'],
                 "selling_price" => $transfer['selling_price'],
                 "rem_quantity"=>$sk->getCurrentlevel($stocktransfer->from),
+                "transfer_date" =>$stocktransfer->transfer_date,
                 "batch_id" => $b_id,
                 "added_by" => auth()->id()
             ];

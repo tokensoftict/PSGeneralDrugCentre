@@ -40,6 +40,7 @@ class SupplierPaymentComponent extends Component
             'paymentmethod_id' => NULL,
             'payment_info' => ['cheque_date' => NULL],
             'amount' => NULL,
+            'remark' => NULL,
             'payment_date' => NULL,
             'cheque_date' => NULL
         ];
@@ -73,7 +74,7 @@ class SupplierPaymentComponent extends Component
 
         $this->validate($data);
 
-        if(!isset($this->expense->id)) {
+        if(!isset($this->supplierCreditPaymentHistory->id)) {
             $message = "created";
             $this->payment_data['user_id'] = auth()->id();
             PurchaseOrderRepository::createSupplierPaymentHistory($this->payment_data);

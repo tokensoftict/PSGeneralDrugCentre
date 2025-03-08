@@ -52,8 +52,7 @@ class Supplier extends Model
 		'phonenumber',
 		'status'
 	];
-
-    protected $appends = ['credit_balance'];
+    
 
 
     public function getCreditBalanceAttribute(){

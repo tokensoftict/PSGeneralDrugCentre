@@ -28,7 +28,7 @@ class ProductComponentDatatable extends ExportDataTableComponent
 
     public static function mountColumn() : array
     {
-        return  [
+        $column = [
             Column::make("Stock ID", "id")->sortable(),
             Column::make("Name", "name")
                 ->sortable()->searchable(),
@@ -48,7 +48,7 @@ class ProductComponentDatatable extends ExportDataTableComponent
                 ->format(function ($value, $row, Column $column) {
                     if (userCanView('product.toggle')){
                         return '<div class="form-check form-switch mb-3" dir="ltr">
-                                        <input wire:change="toggle(' . $row->id . ')" id="user' . $row->id . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->reorder ? 'checked' : '') . '>
+                                        <input wire:change="toggleReOrder(' . $row->id . ')" id="user' . $row->id . '" type="checkbox" class="form-check-input" id="customSwitch1" ' . ($row->reorder ? 'checked' : '') . '>
                                         <label class="form-check-label" for="customSwitch1">' . ($row->reorder ? 'Active' : 'Inactive') . '</label>
                                     </div>';
                     }
@@ -56,18 +56,30 @@ class ProductComponentDatatable extends ExportDataTableComponent
                         return  $value === 1 ? label('success', 'Active') : label('danger', 'In-active');
                     }
                 })->html(),
-            Column::make("WS Price", "whole_price")
+        ];
+
+        if(department_by_quantity_column('wholesales', false)->status) {
+            $column[] = Column::make("WS Price", "whole_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'whole_price'))
-                ->sortable()->html(),
-            Column::make("Bulk Price", "bulk_price")
+                ->sortable()->html();
+        }
+
+        if(department_by_quantity_column('bulksales', false)->status) {
+            $column[] =  Column::make("Bulk Price", "bulk_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'bulk_price'))
-                ->sortable()->html(),
-            Column::make("Retail Price", "retail_price")
+                ->sortable()->html();
+        }
+
+        if(department_by_quantity_column('retail', false)->status) {
+            $column[] = Column::make("Retail Price", "retail_price")
                 ->format(fn($value, $row, Column $column)=> show_promo($row, 'retail_price'))
-                ->sortable()->html(),
-            Column::make("Code", "code")
-                ->format(fn($value, $row, Column $column)=> $value)
-                ->sortable(),
+                ->sortable()->html();
+        }
+
+
+        $column = array_merge($column, [ Column::make("Code", "code")
+            ->format(fn($value, $row, Column $column)=> $value)
+            ->sortable(),
             Column::make("Box", "box")
                 ->format(fn($value, $row, Column $column)=> $value)
                 ->sortable(),
@@ -92,8 +104,9 @@ class ProductComponentDatatable extends ExportDataTableComponent
 
                     return $html;
                 })
-                ->html()
-        ];
+                ->html()]);
+
+        return $column;
     }
 
 

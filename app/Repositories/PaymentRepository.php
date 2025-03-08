@@ -645,6 +645,28 @@ class PaymentRepository
             'payment_date' => $obj->invoice->invoice_date
         ];
 
+        /*
+         *  This logic was added for online invoice order, the issue is that when the system process the online order today and the customer did not make
+         *  payment today and makes the payment the next day the system use the invoice date has the payment date which in turns does not make accounting
+         *  easy for them at the end of the day
+         */
+        $returnOnlineOrder = \Cache::get("ReturnedOnlineOrder");
+        if(!$returnOnlineOrder) $returnOnlineOrder = [];
+        if(!is_null($obj->invoice->onliner_order_id) and !in_array($obj->invoice->id , $returnOnlineOrder)){
+            $payment_data['payment_date'] = dailyDate();
+            //this means that the invoice is not a return invoice instead its an invoice that is been paid for for the first time
+        }else {
+            // this is a return invoice and its an online invoice
+            $payments = Payment::where('invoice_number', $obj->invoice->invoice_number)->first();
+            if(!is_null($payments)){
+                $payment_data['payment_date'] = $payments->payment_date;
+            }
+            // we still need to maintain the date that has been recorded before
+        }
+        /*
+         * end of online payment login
+         */
+
         $this->bridgePayment($obj, $payment_data, $payment_data_items);
 
         $payment = $this->addPayment($payment_data, $obj);

@@ -162,24 +162,41 @@ final class NearExpirationStockList extends PowerGridComponent
       */
     public function columns(): array
     {
-        return [
+        $columns =  [
             Column::make('SN' ,'')->index(),
             Column::make('Stock ID', 'stock_id'),
             Column::make('Name', 'name')->sortable()->searchable(),
             Column::make('Box', 'box'),
             Column::make('Carton', 'carton'),
-            Column::make('Wholesales', 'ws'),
             Column::make('Expiry Date', 'formatted_expiry_date'),
-            Column::make('Bulksales', 'bs'),
-            Column::make('Retail', 'rt'),
-            Column::make('Main Store', 'ms'),
+        ];
+
+        if(department_by_quantity_column('wholesales', false)->status) {
+            $columns[] = Column::make('Wholesales', 'ws');
+        }
+        if(department_by_quantity_column('bulksales', false)->status) {
+            $columns[] = Column::make('Bulksales', 'bs');
+        }
+
+        if(department_by_quantity_column('retail', false)->status) {
+            $columns[] = Column::make('Retail', 'rt');
+        }
+
+        if(department_by_quantity_column('quantity', false)->status) {
+            $columns[] = Column::make('Main Store', 'ms');
+        }
+
+
+        $columns = array_merge($columns, [
             Column::make('Total', 'total'),
             Column::make('Cost Price', 'cost_price'),
             Column::make('Retail Cost Price', 'retail_cost_price'),
-            Column::make('Total Retail Cost', 'tt_av_rt_cost_price'),
             Column::make('Total Cost', 'tt_av_cost_price'),
-            Column::make('Supplier', 'supplier_name'),
-        ];
+            Column::make('Total Retail Cost', 'tt_av_rt_cost_price'),
+            Column::make('Supplier', 'supplier_name')
+        ]);
+
+        return $columns;
     }
 
     /**

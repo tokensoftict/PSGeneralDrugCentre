@@ -38,8 +38,11 @@ final class PromotionDataList extends PowerGridComponent
             parent::getListeners(), [
             'delete_promo' => 'confirm_delete_promo',
             'approve_promo' => 'confirm_approve_promo',
+            'stop_promo' => 'confirm_stop_promo',
             'deletePromo' => 'deletePromo',
-            'approvePromo' => 'approvePromo'
+            'approvePromo' => 'approvePromo',
+            'stopPromo' => 'stopPromo',
+
         ]);
     }
 
@@ -160,6 +163,10 @@ final class PromotionDataList extends PowerGridComponent
                 ->class('btn btn-sm btn-success')
                 ->emit('approve_promo', fn (Promotion $promotion) => ['id'=> $promotion->id]),
 
+            Button::make('stop-promotion', 'Stop Promotion')
+                ->class('btn btn-sm btn-warning')
+                ->emit('stop_promo', fn (Promotion $promotion) => ['id'=> $promotion->id]),
+
             Button::make('view', 'View')
                 ->class('btn btn-sm btn-secondary')
                 ->route('promo.show', ['promotion' =>'id']),
@@ -203,6 +210,9 @@ final class PromotionDataList extends PowerGridComponent
                 ->hide(),
             Rule::button('approve')
                 ->when(fn($promotion) => !(userCanView('promo.approve') && $promotion->status_id === status('Pending')))
+                ->hide(),
+            Rule::button('stop-promotion')
+                ->when(fn($promotion) => !(userCanView('promo.approve') && $promotion->status_id === status('Approved')))
                 ->hide(),
         ];
     }
@@ -248,11 +258,38 @@ final class PromotionDataList extends PowerGridComponent
     }
 
 
+    public function confirm_stop_promo( array $data){
+
+        $this->promoId = $data['id'];
+
+        $this->alert('warning', 'Are you sure , you want to stop running this promo ? ' , [
+            'icon'=>'warning',
+            'showConfirmButton' => true,
+            'showCancelButton' => true,
+            'confirmButtonText' => 'Stop Promotion',
+            'cancelButtonText' => 'Cancel',
+            'allowOutsideClick' => false,
+            'timer' => null ,
+            'position' => 'center',
+            'onConfirmed' => 'stopPromo'
+        ]);
+    }
+
+
     public function approvePromo( array $data)
     {
         $promo = Promotion::findorfail($this->promoId);
         $promo->status_id = status('Approved');
         $promo->promotion_items()->update(['status_id'=> status('Approved')]);
+        $promo->update();
+        $this->refresh();
+    }
+
+    public function stopPromo( array $data)
+    {
+        $promo = Promotion::findorfail($this->promoId);
+        $promo->status_id = status('Pending');
+        $promo->promotion_items()->update(['status_id'=> status('Pending')]);
         $promo->update();
         $this->refresh();
     }

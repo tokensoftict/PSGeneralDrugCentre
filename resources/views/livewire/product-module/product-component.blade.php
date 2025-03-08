@@ -13,7 +13,7 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="mb-3">
                     <label>Location</label>
-                    <input name="location" required class="form-control" placeholder="Location" wire:model.defer="product_data.location" type="text">
+                    <input name="location"  class="form-control" placeholder="Location" wire:model.defer="product_data.location" type="text">
                     @error('product_data.location') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -109,7 +109,7 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="mb-3">
                     <label>Box</label>
-                    <input  class="form-control" required placeholder="Cost Price" wire:model.defer="product_data.box"  type="text">
+                    <input  class="form-control" required placeholder="Box" wire:model.defer="product_data.box"  type="text">
                     @error('product_data.box') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -137,12 +137,20 @@
             <div class="col-lg-3 col-sm-6 col-12" >
                 <div class="mb-3" wire:ignore>
                     <label>Sachet Product ?</label>
-                    <select class="form-control" required name="sarchet" wire:model.defer="product_data.sachet">
+                    <select class="form-control" required name="sachet" wire:model.defer="product_data.sachet">
                         <option value="">Select One</option>
                         <option value="1">Yes</option>
                         <option selected value="0">No</option>
                     </select>
                     @error('expiry') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6 col-12" >
+                <div class="mb-3" wire:ignore>
+                    <label>Minimum Quantity</label>
+                    <input  placeholder="Minimum Quantity"  wire:model.defer="product_data.minimum_quantity" class="form-control" type="number">
+                    @error('product_data.minimum_quantity') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
 
@@ -158,29 +166,34 @@
                     <h4>Product Price Settings</h4>
                     <hr/>
                     <div class="row">
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Bulk Price <span style="color:red;">*</span></label>
-                                <input type="number" required wire:model.defer="product_data.bulk_price" step="0.00001" value=""   class="form-control" name="bulk_price" placeholder="Bulk Price">
-                                @error('product_data.bulk_price') <span class="text-danger">{{ $message }}</span> @enderror
+                        @if(department_by_quantity_column('bulksales', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Bulk Price <span style="color:red;">*</span></label>
+                                    <input type="number" required wire:model.defer="product_data.bulk_price" step="0.00001" value=""   class="form-control" name="bulk_price" placeholder="Bulk Price">
+                                    @error('product_data.bulk_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
-                        </div>
+                        @endif
+                        @if(department_by_quantity_column('wholesales', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Wholesales Price <span style="color:red;">*</span></label>
+                                    <input type="number" required wire:model.defer="product_data.whole_price" step="0.00001" value=""   class="form-control" name="whole_price" placeholder="Wholesales Price">
+                                    @error('product_data.whole_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        @endif
 
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Wholesales Price <span style="color:red;">*</span></label>
-                                <input type="number" required wire:model.defer="product_data.whole_price" step="0.00001" value=""   class="form-control" name="whole_price" placeholder="Wholesales Price">
-                                @error('product_data.whole_price') <span class="text-danger">{{ $message }}</span> @enderror
+                        @if(department_by_quantity_column('retail', false)->status)
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Retail Sales Price<span style="color:red;">*</span></label>
+                                    <input type="number" required  wire:model.defer="product_data.retail_price" step="0.00001" value=""   class="form-control" name="retail_price" placeholder="Retail Sales Price">
+                                    @error('product_data.retail_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="col-lg-3 col-sm-6 col-12">
-                            <div class="mb-3">
-                                <label>Retail Sales Price<span style="color:red;">*</span></label>
-                                <input type="number" required  wire:model.defer="product_data.retail_price" step="0.00001" value=""   class="form-control" name="retail_price" placeholder="Retail Sales Price">
-                                @error('product_data.retail_price') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -194,7 +207,7 @@
                     <input type="file" id="formFile"  name="logo" wire:model.defer="product_data.image_path" style="width: 0;height: 0;padding: 0; margin: 0" >
                     <div class="form-control">
                         <br/>
-                        <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:30%; margin: auto; display: block;"/>
+                        <img src="{{$this->product_data['image_path'] !== NULL ? (is_string($this->product_data['image_path']) ? asset($this->product_data['image_path']) : $this->product_data['image_path']->temporaryUrl()) : asset('images/brands/placholder.jpg') }}"   class="img-responsive" style="width:15%; margin: auto; display: block;"/>
                         <br/>
                         <div wire:loading wire:target="product_data.image">Uploading...</div>
                         <button type="button" onclick="formFile.click()" class="btn btn-sm btn-success">Select Image and Upload</button>

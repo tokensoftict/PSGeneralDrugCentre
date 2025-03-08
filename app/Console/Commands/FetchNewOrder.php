@@ -7,6 +7,7 @@ use App\Jobs\AddLogToCustomerLedger;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushStockUpdateToServerFromDeletedFetchInvoice;
 use App\Models\Creditpaymentlog;
+use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\Invoice;
 use App\Models\Onlineordertotal;
@@ -177,6 +178,13 @@ class FetchNewOrder extends Command
         //oya lets do normal local sales computation first
 
         $customer = $order['user']['cus_exist'] ?? 1;
+
+        if($customer == "1") {
+           $localCustomer = Customer::where('phone_number', $order['user']['phone'])->first();
+           if($localCustomer) {
+               $customer = $localCustomer->id;
+           }
+        }
 
         $invoiceData = InvoiceRepository::invoice(new Invoice(), new InvoiceFormComponent());
 

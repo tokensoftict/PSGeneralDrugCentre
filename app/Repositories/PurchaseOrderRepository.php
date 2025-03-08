@@ -89,6 +89,9 @@ class PurchaseOrderRepository
 
         foreach ($items as $item)
         {
+            if(!isset($item['cost_price']) || $item['cost_price'] == "" || is_null($item['cost_price'])){
+                $item['cost_price'] = 0;
+            }
             $purchaseItems[] = new Purchaseitem($item);
         }
 
@@ -122,8 +125,7 @@ class PurchaseOrderRepository
 
     public function complete(Purchase $purchase)
     {
-        $items = $purchase->purchaseitems;
-
+        $items = $purchase->purchaseitems->fresh();
         $batchInsert = [];
         $stockUpdate = [];
 
@@ -243,6 +245,7 @@ class PurchaseOrderRepository
             'amount' => Str::replace(",","",$data['amount']),
             'payment_date' => $data['payment_date'],
             'payment_info' => $data['payment_info'],
+            'remark' => $data['remark']
         ]);
     }
 
@@ -256,6 +259,7 @@ class PurchaseOrderRepository
             'paymentmethod_id' => $data['paymentmethod_id'],
             'amount' => Str::replace(",","",$data['amount']),
             'payment_info' => $data['payment_info'],
+            'remark' => $data['remark']
         ]);
     }
 

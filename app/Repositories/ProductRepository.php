@@ -29,12 +29,13 @@ class ProductRepository
         'location'=> NULL,
         'expiry'=> '1',
         'reorder' => 1,
-        'piece'=> NULL,
-        'box'=> NULL,
-        'carton'=> NULL,
+        'piece'=> 1,
+        'box'=> 1,
+        'carton'=> 1,
         'image_path' =>  NULL,
         'sachet'=> '0',
         'status'=> '1',
+        'minimum_quantity' => NULL
     ];
 
 
@@ -129,9 +130,10 @@ class ProductRepository
             'promotion_items.end_date',
             'promotion_items.'.$selling_price." as promo_selling_price"
         )
-            ->leftJoin('promotion_items', function($join){
+            ->leftJoin('promotion_items', function($join) use ($selling_price){
                 $join->on('stocks.id', '=', 'promotion_items.stock_id')
-                    ->on('promotion_items.status_id', '=', DB::raw(status('Approved')));
+                    ->where('promotion_items.status_id', '=', DB::raw(status('Approved')))
+                    ->where('promotion_items.'.$selling_price, '>', 0);
             })
             ->where(function($query) use(&$name){
             foreach ($name as $char) {

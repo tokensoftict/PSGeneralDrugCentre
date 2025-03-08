@@ -152,14 +152,19 @@ class InvoiceRepository
 
         $products = Stock::with(['activeBatches'])->whereIn('id', array_keys($stocks))->get();
 
-        $products->each(function($product, $key) use(&$stocks, &$errors, &$from){
+        $products->each(function($product, $key) use(&$stocks, &$errors, &$from) {
             //$stocks[$product->id]['product'] = $product;
             $batch = $product->pingSaleableBatches($from, $stocks[$product->id]['item']['quantity'],  $product->activeBatches);
+
+            $status = $product->pingIfQuantityHasNotExceededTheMinimumQuantity($from, $stocks[$product->id]['item']['quantity']);
+            if($status === true and $batch !== false) {
+                $errors[$product->id] = $product->name." has exceeded the minimum quantity of ".$product->minimum_quantity." set by the administrator";
+            }
 
             $total_cost_batch = collect($batch)->sum('cost_price');
 
             if($batch === false) {
-                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", Available quantity is ". $product->{$from};
+                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", available quantity is ". $product->{$from};
             } else {
                 if($from == "retail") {
                     $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column(4)};
@@ -186,7 +191,7 @@ class InvoiceRepository
             return $item['quantity'] * $item['selling_price'];
         });
         $invoiceData['total_cost'] =  $items->sum(function($item){
-            return $item['quantity'] * $item['cost_price'];
+            return $item['quantity'] * $item['cost_price'] ?? 0;
         });
 
         $invoiceData['total_profit'] =  $invoiceData['sub_total'] -  $invoiceData['total_cost'];
@@ -207,6 +212,13 @@ class InvoiceRepository
         }
 
         $items = json_decode($invoiceData['invoiceitems'],true);
+
+        //set the cost price of items that does not have cost price to zero
+        foreach($items as $key => $item){
+            if(!isset($items[$key]['cost_price']) || $items[$key]['cost_price'] == "" || is_null($items[$key]['cost_price'])) {
+                $items[$key]['cost_price'] = 0;
+            }
+        }
 
         Arr::forget($invoiceData, ['invoiceitems']);
 
@@ -236,7 +248,7 @@ class InvoiceRepository
                     'invoice_id' => $invoice->id,
                     'stock_id' => $item['stock_id'],
                     'stockbatch_id' => $batch['id'],
-                    'cost_price' => $batch['cost_price'],
+                    'cost_price' => $batch['cost_price'] ?? 0,
                     'selling_price' => $item['selling_price'],
                     'department' => $batch['department'],
                     'quantity' => $batch['qty'],
@@ -300,6 +312,13 @@ class InvoiceRepository
     public function updateInvoice(Invoice $invoice ,array $invoiceData) : Invoice|array
     {
         $items = json_decode($invoiceData['invoiceitems'],true);
+
+        //set the cost price of items that does not have cost price to zero
+        foreach($items as $key => $item){
+            if(!isset($items[$key]['cost_price']) || $items[$key]['cost_price'] == "" || is_null($items[$key]['cost_price'])) {
+                $items[$key]['cost_price'] = 0;
+            }
+        }
 
         Arr::forget($invoiceData, ['invoiceitems']);
 
@@ -402,7 +421,7 @@ class InvoiceRepository
                     'invoice_id' => $invoice->id,
                     'stock_id' => $item['stock_id'],
                     'stockbatch_id' => $batch['id'],
-                    'cost_price' => $batch['cost_price'],
+                    'cost_price' => $batch['cost_price'] ?? 0,
                     'selling_price' => $item['selling_price'],
                     'department' => $batch['department'],
                     'quantity' => $batch['qty']
