@@ -3,17 +3,17 @@ namespace App\Traits;
 
 use App\Classes\Settings;
 use Illuminate\Database\Eloquent\Model;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 trait SimpleComponentTrait
 {
-    use LivewireAlert;
 
     public $model;
 
     protected $cacheModel = null;
 
     public array $data;
+
+    public array $formData = [];
 
     public String $modalTitle = "New";
 
@@ -44,11 +44,27 @@ trait SimpleComponentTrait
 
     public function initControls()
     {
-        foreach($this->data as $key=>$value)
-        {
-            $this->{$key} = "";
+        $validateRules = [];
+        $updateValidationRules = [];
+        foreach ($this->data as $key => $value) {
+
+            if($value['type'] == "hidden"){
+                $this->formData[$key] = $value['value'];
+            }else {
+                $this->formData[$key] = "";
+            }
+
+            if(isset($this->newValidateRules[$key])) {
+                $validateRules['formData.' . $key] = $this->newValidateRules[$key];
+            }
+
+            if(isset($this->updateValidateRules[$key])) {
+                $updateValidationRules['formData.' . $key] = $this->updateValidateRules[$key];
+            }
         }
 
+        $this->newValidateRules = $validateRules;
+        $this->updateValidateRules = $updateValidationRules;
     }
 
     public function save()
@@ -58,8 +74,8 @@ trait SimpleComponentTrait
         $model = new $this->model();
         $model = $this->parseData($model);
         $model->save();
-        $this->emit('refreshData',[]);
-        $this->dispatchBrowserEvent("closeModal", []);
+        $this->dispatch('refreshData',[]);
+        $this->dispatch("closeModal", []);
     }
 
 
@@ -68,14 +84,14 @@ trait SimpleComponentTrait
         foreach($this->data as $key=>$value)
         {
             if($key === "password") {
-                if(!empty($this->{$key})){
-                    $model->{$key} = bcrypt($this->{$key});
+                if(!empty($this->formData[$key])){
+                    $model->{$key} = bcrypt($this->formData[$key]);
                     continue;
                 }else {
                     continue;
                 }
             }
-            $model->{$key} = $this->{$key} === "" ? NULL : $this->{$key};
+            $model->{$key} = $this->formData[$key] === "" ? NULL : $this->formData[$key];
         }
         return $model;
     }
@@ -90,9 +106,9 @@ trait SimpleComponentTrait
         $model = $this->parseData($model);
         $model->save();
 
-        $this->emit('refreshData',[]);
-        $this->emit(":refresh");
-        $this->dispatchBrowserEvent("closeModal", []);
+        $this->dispatch('refreshData',[]);
+        $this->dispatch(":refresh");
+        $this->dispatch("closeModal", []);
     }
 
 
@@ -120,15 +136,16 @@ trait SimpleComponentTrait
         foreach($this->data as $key=>$value)
         {
            if(empty($data->{$key})){
-               $this->{$key} = "";
+               $this->formData[$key] = "";
            }else {
-               $this->{$key} = $data->{$key};
+               $this->formData[$key] = $data->{$key};
            }
         }
 
-        if(isset($this->password)){
-            $this->password = "";
+        if(isset($this->formData['password'])){
+            $this->formData['password']= "";
         }
+
 
         $this->modalTitle = "Update";
 
@@ -144,8 +161,8 @@ trait SimpleComponentTrait
         }
 
 
-        $this->emit('refreshData',[]);
-        $this->dispatchBrowserEvent("openModal", []);
+        $this->dispatch('refreshData',[]);
+        $this->dispatch("openModal", []);
     }
 
 
@@ -153,14 +170,14 @@ trait SimpleComponentTrait
     {
         foreach($this->data as $key=>$value)
         {
-            $this->{$key} = "";
+            $this->formData[$key] = "";
         }
 
         $this->modalTitle = "New";
 
         $this->saveButton = "Save";
 
-        $this->dispatchBrowserEvent("openModal", []);
+        $this->dispatch("openModal", []);
     }
 
     public function toggle($id)
@@ -169,14 +186,14 @@ trait SimpleComponentTrait
         $model = $this->model::find($id);
         $model->status = !$model->status;
         $model->save();
-        $this->emit('refreshData',[]);
+        $this->dispatch('refreshData',[]);
     }
 
     public function destroy($id)
     {
         $this->modelId = $id;
         $this->model::find($id)->delete();
-        $this->emit('refreshData',[]);
+        $this->dispatch('refreshData',[]);
     }
 
 

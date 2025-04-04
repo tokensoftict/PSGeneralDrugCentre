@@ -1,23 +1,18 @@
-@props(['component'])
+@props(['component', 'tableName', 'primaryKey', 'isTailwind', 'isBootstrap','isBootstrap4', 'isBootstrap5'])
+<div wire:key="{{ $tableName }}-wrapper" >
+    <div {{ $attributes->merge($this->getComponentWrapperAttributes()) }}
+        @if ($this->hasRefresh()) wire:poll{{ $this->getRefreshOptions() }} @endif
+        @if ($this->isFilterLayoutSlideDown()) wire:ignore.self @endif>
 
-@php
-    $refresh = $this->getRefreshStatus();
-    $theme = $component->getTheme();
-@endphp
+        <div>
+        @if ($this->debugIsEnabled())
+            @include('livewire-tables::includes.debug')
+        @endif
+        @if ($this->offlineIndicatorIsEnabled())
+            @include('livewire-tables::includes.offline')
+        @endif
 
- <div
-    {{ $attributes->merge($this->getComponentWrapperAttributes()) }}
-
-    @if ($component->hasRefresh())
-        wire:poll{{ $component->getRefreshOptions() }}
-    @endif
-
-    @if ($component->isFilterLayoutSlideDown())
-        wire:ignore.self x-data="{ filtersOpen: $wire.filterSlideDownDefaultVisible }"
-    @endif
->
-     @include('livewire-tables::includes.debug')
-     @include('livewire-tables::includes.offline')
-
-     {{ $slot }}
+            {{ $slot }}
+        </div>
+    </div>
 </div>

@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-lg-4">
                     <label>Select Department</label>
-                    <select class="form-control" name="department" x-init="select2Alpine('department')" id="department" x-model="department" wire:model.defer="data.department">
+                    <select class="form-control" name="department" x-init="select2Alpine('department')" id="department" x-model="department" wire:model="data.department">
                         <option value="">Select Department</option>
                         @foreach($this->depertments as $depertment)
                             <option selected value="{{ $depertment->quantity_column }}">{{ $depertment->label }}</option>
@@ -78,7 +78,7 @@
                 </div>
                 <div class="col-lg-4">
                     <label>Purchase Date</label>
-                    <input type="text" readonly wire:model.defer="data.date_created" class="form-control">
+                    <input type="text" readonly wire:model="data.date_created" class="form-control">
                 </div>
             </div>
         </div>

@@ -30,7 +30,7 @@
     </div>
 
     <div wire:ignore.self class="modal fade" id="simpleComponentModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <form method="post" wire:submit.prevent="{{ $this->modalTitle === "New" ? 'saveSupplier()' : 'update('.$this->modelId.')' }}">
+        <form method="post" wire:submit="{{ $this->modalTitle === "New" ? 'saveSupplier()' : 'update('.$this->modelId.')' }}">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -44,21 +44,21 @@
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label>Name</label>
-                                        <input class="form-control" type="text" wire:model.defer="name"  name="name" value="{{ $this->name }}" placeholder="Name">
+                                        <input class="form-control" type="text" wire:model="name"  name="name" value="{{ $this->name }}" placeholder="Name">
                                         @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label>Phone Number</label>
-                                        <input class="form-control" type="text" wire:model.defer="phonenumber"  name="phonenumber" value="{{ $this->phonenumber }}" placeholder="Phone Number">
+                                        <input class="form-control" type="text" wire:model="phonenumber"  name="phonenumber" value="{{ $this->phonenumber }}" placeholder="Phone Number">
                                         @error('phonenumber') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label>Email Address</label>
-                                        <input class="form-control" type="text" wire:model.defer="email"  name="email" value="{{ $this->email }}" placeholder="Email Address">
+                                        <input class="form-control" type="text" wire:model="email"  name="email" value="{{ $this->email }}" placeholder="Email Address">
                                         @error('email') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
@@ -66,7 +66,7 @@
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label>Address</label>
-                                        <input class="form-control" type="text" wire:model.defer="address"  name="address" value="{{ $this->address }}" placeholder="Address">
+                                        <input class="form-control" type="text" wire:model="address"  name="address" value="{{ $this->address }}" placeholder="Address">
                                         @error('address') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>

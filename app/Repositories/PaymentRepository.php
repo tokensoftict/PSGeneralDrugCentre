@@ -4,8 +4,8 @@ namespace App\Repositories;
 
 use App\Enums\InvoicePaymentApprovalTypeEnum;
 use App\Enums\InvoicePaymentApprovalTypeStatusEnum;
-use App\Http\Livewire\InvoiceAndSales\Cheque\ChequePaymentApprovalDialog;
-use App\Http\Livewire\InvoiceAndSales\Credit\CreditPaymentApprovalDialog;
+use App\Livewire\InvoiceAndSales\Cheque\ChequePaymentApprovalDialog;
+use App\Livewire\InvoiceAndSales\Credit\CreditPaymentApprovalDialog;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Models\Creditpaymentlog;
 use App\Models\Customerdeposit;

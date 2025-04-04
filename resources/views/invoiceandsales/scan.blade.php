@@ -55,7 +55,7 @@
 
 <script src="{{ asset('js/sweetalert2.js') }}"></script>
 
-<livewire:modals/>
+
 <script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
 <script>
 
@@ -84,7 +84,6 @@
     });
 
 </script>
-<x-livewire-alert::scripts />
 
 </body>
 

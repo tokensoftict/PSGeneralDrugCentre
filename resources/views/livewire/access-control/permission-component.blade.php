@@ -27,7 +27,7 @@
                                                 <div class="col-md-6">
                                                     <div class="checkbox">
                                                         <label class="i-checks">
-                                                            <input  wire:model.defer="privileges.{{ $task->id }}"  value="1" type="checkbox">
+                                                            <input wire:model="privileges.{{ $task->id }}"  value="1" type="checkbox">
                                                             {{ $task->name }}
                                                         </label>
                                                     </div>

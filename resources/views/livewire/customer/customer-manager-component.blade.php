@@ -26,7 +26,7 @@
     <livewire:customer.datatable.customer-data-table :filters="$this->filters"/>
 
     <div wire:ignore.self class="modal fade" id="simpleComponentModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <form method="post" wire:submit.prevent="saveCustomers()">
+        <form method="post" wire:submit="saveCustomers()">
             <div class="modal-dialog modal-dialog-centered" role="document">
 
                 <div class="modal-content">
@@ -42,14 +42,14 @@
                                     <div class="col-6">
                                         <div class="mb-3">
                                             <label>Firstname</label>
-                                            <input class="form-control" type="text" wire:model.defer="firstname"  name="firstname" value="{{ $this->firstname }}" placeholder="Firstname">
+                                            <input class="form-control" type="text" wire:model="firstname"  name="firstname" value="{{ $this->firstname }}" placeholder="Firstname">
                                             @error('firstname') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="mb-3">
                                             <label>Lastname</label>
-                                            <input class="form-control" type="text" wire:model.defer="lastname"  name="lastname" value="{{ $this->lastname }}" placeholder="Lastname">
+                                            <input class="form-control" type="text" wire:model="lastname"  name="lastname" value="{{ $this->lastname }}" placeholder="Lastname">
                                             @error('lastname') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
@@ -59,18 +59,18 @@
 
                                     <div class="mb-3">
                                         <label>Email Address</label>
-                                        <input class="form-control" type="email" wire:model.defer="email"  name="email" value="{{ $this->email }}" placeholder="Email Address">
+                                        <input class="form-control" type="email" wire:model="email"  name="email" value="{{ $this->email }}" placeholder="Email Address">
                                     </div>
 
                                     <div class="mb-3">
                                         <label>Phone Number</label>
-                                        <input class="form-control" type="text" wire:model.defer="phone_number"  name="phone_number" value="{{ $this->phone_number }}" placeholder="Phone Number">
+                                        <input class="form-control" type="text" wire:model="phone_number"  name="phone_number" value="{{ $this->phone_number }}" placeholder="Phone Number">
                                         @error('phone_number') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div class="mb-3">
                                         <label>City</label>
-                                       <select class="form-control" wire:model.defer="city_id">
+                                       <select class="form-control" wire:model="city_id">
                                            <option value="">Select City</option>
                                            @foreach($this->cities as $city)
                                                <option value="{{ $city->id }}">{{ $city->name }}</option>
@@ -80,7 +80,7 @@
 
                                     <div class="mb-3">
                                         <label>Address</label>
-                                        <textarea class="form-control" wire:model.defer="address"  name="address" placeholder="Address"></textarea>
+                                        <textarea class="form-control" wire:model="address"  name="address" placeholder="Address"></textarea>
                                         @error('address') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
 

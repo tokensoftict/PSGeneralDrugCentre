@@ -81,6 +81,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Persisting
+    |--------------------------------------------------------------------------
+    |
+    | PowerGrid supports persisting of the filters, columns and sorting.
+    | 'session': persist in the session.
+    | 'cache': persist with cache.
+    | 'cookies': persist with cookies (default).
+    |
+    */
+
+    'persist_driver' => 'cookies',
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache
     |--------------------------------------------------------------------------
     |
@@ -116,12 +130,27 @@ return [
     'exportable' => [
         'default'      => 'openspout_v4',
         'openspout_v4' => [
-            'xlsx' => \PowerComponents\LivewirePowerGrid\Services\OpenSpout\v4\ExportToXLS::class,
-            'csv'  => \PowerComponents\LivewirePowerGrid\Services\OpenSpout\v4\ExportToCsv::class,
+            'xlsx' => \PowerComponents\LivewirePowerGrid\Components\Exports\OpenSpout\v4\ExportToXLS::class,
+            'csv'  => \PowerComponents\LivewirePowerGrid\Components\Exports\OpenSpout\v4\ExportToCsv::class,
         ],
         'openspout_v3' => [
-            'xlsx' => \PowerComponents\LivewirePowerGrid\Services\OpenSpout\v3\ExportToXLS::class,
-            'csv'  => \PowerComponents\LivewirePowerGrid\Services\OpenSpout\v3\ExportToCsv::class,
+            'xlsx' => \PowerComponents\LivewirePowerGrid\Components\Exports\OpenSpout\v3\ExportToXLS::class,
+            'csv'  => \PowerComponents\LivewirePowerGrid\Components\Exports\OpenSpout\v3\ExportToCsv::class,
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auto-Discover Models
+    |--------------------------------------------------------------------------
+    |
+    | PowerGrid will search for Models in the directories listed below.
+    | These Models be listed as options when you run the
+    | "artisan powergrid:create" command.
+    |
+    */
+
+    'auto_discover_models_paths' => [
+        app_path('Models'),
     ],
 ];

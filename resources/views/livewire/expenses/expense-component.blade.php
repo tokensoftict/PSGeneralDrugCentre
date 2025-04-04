@@ -1,22 +1,22 @@
 <div>
-    <form method="post" wire:submit.prevent="saveExpense">
+    <form method="post" wire:submit="saveExpense">
         <div class="col-md-7 offset-2">
 
             <div class="mb-3">
                 <label>Expense Date</label>
-                <input type="text" wire:model.defer="expense_data.expense_date" placeholder="Expense Date"  class="form-control datepicker-basic" >
+                <input type="text" wire:model="expense_data.expense_date" placeholder="Expense Date"  class="form-control datepicker-basic" >
                 @error('expense_data.expense_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
 
             <div class="mb-3">
                 <label>Amount</label>
-                <input type="text" wire:model.defer="expense_data.amount"    class="form-control" name="amount" placeholder="Amount"/>
+                <input type="text" wire:model="expense_data.amount"    class="form-control" name="amount" placeholder="Amount"/>
                 @error('expense_data.amount') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
 
             <div class="mb-3">
                 <label>Department</label>
-                <select wire:model.defer="expense_data.department_id"  class="form-control"  name="department">
+                <select wire:model="expense_data.department_id"  class="form-control"  name="department">
                     <option value="">-Select Department-</option>
                     @foreach($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->label }}</option>
@@ -27,7 +27,7 @@
 
             <div class="mb-3">
                 <label>Expenses Type</label>
-                <select wire:model.defer="expense_data.expenses_type_id"  class="form-control select2"  name="expenses_type_id">
+                <select wire:model="expense_data.expenses_type_id"  class="form-control select2"  name="expenses_type_id">
                     <option value="">-Select Type-</option>
                     @foreach($expenses_types as $type)
                         <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -38,7 +38,7 @@
 
             <div class="mb-3">
                 <label>Description / Purpose </label>
-                <textarea wire:model.defer="expense_data.purpose"  class="form-control"  name="purpose"></textarea>
+                <textarea wire:model="expense_data.purpose"  class="form-control"  name="purpose"></textarea>
             </div>
 
 

@@ -31,7 +31,7 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $item->customer->firstname }} {{ $item->customer->lastname }}</td>
-                <td>{{ \App\Http\Livewire\PaymentManager\Datatable\PaymentListDatatable::$invoiceType[$item->invoice_type] }}</td>
+                <td>{{ \App\Livewire\PaymentManager\Datatable\PaymentListDatatable::$invoiceType[$item->invoice_type] }}</td>
                 <td>{{ $item->payment->invoice_number }}</td>
                 <td>{{ money($item->amount) }}</td>
                 <td>{{ $payment->name }}</td>

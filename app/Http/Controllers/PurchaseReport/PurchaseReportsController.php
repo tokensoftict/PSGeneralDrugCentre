@@ -116,7 +116,7 @@ class PurchaseReportsController extends Controller
     public function by_status(Request $request)
     {
         $data = [
-            'title' => 'Purchase Report By Date',
+            'title' => 'Purchase Report By Status',
             'subtitle' => 'View Report By Date Range and System Status',
             'filters' => [
                 'from' =>monthlyDateRange()[0],
@@ -141,7 +141,7 @@ class PurchaseReportsController extends Controller
     public function by_department(Request $request)
     {
         $data = [
-            'title' => 'Purchase Report By Date',
+            'title' => 'Purchase Report By Department',
             'subtitle' => 'View Report By Date Range and Department',
             'filters' => [
                 'from' =>monthlyDateRange()[0],

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 trait ModelFilterTraits
 {
@@ -17,6 +18,12 @@ trait ModelFilterTraits
             if(str_contains($key ,'between'))
             {
                 $key = str_replace('between.','', $key);
+                $tableName = $this->getQueryTable($key, true);
+                if($tableName === ""){
+                    $convertToSingular = explode(".",$key);
+                    $convertToSingular[0] = Str::singular($convertToSingular[0]);
+                    $key = implode(".",$convertToSingular);
+                }
 
                 $query->whereBetween($this->getQueryTable($key, true).$key,$value );
             }else if(str_contains($key, "array.")){

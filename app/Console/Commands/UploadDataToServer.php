@@ -110,7 +110,7 @@ class UploadDataToServer extends Command
             sleep(4);
         }
 
-
+*/
         //now we begin with group data
 
         $this->info('Gathering Stock Group Data');
@@ -125,12 +125,13 @@ class UploadDataToServer extends Command
         $this->info('Parsing Stock Group Data Complete');
         $this->info('Posting Stock Group Data to '.onlineBase("productgroups"));
         $response = _POST('productgroups',$postdata);
+
         if($response['status']){
             $this->info('Stock Group data has been posted successfully');
             sleep(4);
         }
 
-*/
+
 
         //now finally lets handle stock pushing
         $this->info('Gathering Bulk Stock Data');

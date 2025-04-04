@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 //use App\Jobs\AddLogToCustomerLedger;
 //use App\Jobs\AddLogToProductBinCard;
-use App\Http\Livewire\InvoiceAndSales\InvoiceFormComponent;
+use App\Livewire\InvoiceAndSales\InvoiceFormComponent;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushStockUpdateToServer;

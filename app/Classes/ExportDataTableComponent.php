@@ -7,14 +7,14 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 
 abstract class ExportDataTableComponent extends DataTableComponent
 {
-    public array $perPageAccepted = [100, 200, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5000, 6000, 6500, 10000,15000,20000,25000, -1];
+    public array $perPageAccepted = [10, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5000, 6000, 6500, 10000,15000,20000,25000, -1];
 
     public function getExportBuilder() : Builder
     {
         $this->setupColumnSelect();
         $this->setupPagination();
-        $this->setupSecondaryHeader();
-        $this->setupFooter();
+        //$this->setupSecondaryHeader();
+        //$this->setupFooter();
         $this->setupReordering();
         $this->baseQuery();
        return $this->getBuilder();

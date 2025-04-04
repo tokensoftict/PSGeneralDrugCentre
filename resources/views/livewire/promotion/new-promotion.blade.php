@@ -1,11 +1,11 @@
 <div>
 
-    <form method="post" enctype="multipart/form-data" wire:submit.prevent="store">
+    <form method="post" enctype="multipart/form-data" wire:submit="store">
         <div class="row">
             <div class="col-7 offset-3">
                 <div class="mb-3">
                     <label>Promotion Name</label>
-                    <input class="form-control" wire:model.defer="name" required placeholder="Promotion Name"  name="name" value=""/>
+                    <input class="form-control" wire:model="name" required placeholder="Promotion Name"  name="name" value=""/>
                     @if ($errors->has('name'))
                         <label for="name-error" class="error"
                                style="display: inline-block;">{{ $errors->first('name') }}</label>
@@ -13,7 +13,7 @@
                 </div>
                 <div class="mb-3">
                     <label>Promo Runs From</label>
-                    <input class="form-control datepicker-basic" wire:model.defer="from" required name="from" />
+                    <input class="form-control datepicker-basic" wire:model="from" required name="from" />
                     @if ($errors->has('from'))
                         <label for="name-error" class="error"
                                style="display: inline-block;">{{ $errors->first('from') }}</label>
@@ -21,7 +21,7 @@
                 </div>
                 <div class="mb-3">
                     <label>Promo Runs To</label>
-                    <input class="form-control datepicker-basic" wire:model.defer="to" required name="to" />
+                    <input class="form-control datepicker-basic" wire:model="to" required name="to" />
                     @if ($errors->has('to'))
                         <label for="name-error" class="error"
                                style="display: inline-block;">{{ $errors->first('to') }}</label>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="mb-3">
                     <label>Upload Promo Stock(s)</label>
-                    <input type="file" class="form-control datepicker" wire:model.defer="template" required name="template"/>
+                    <input type="file" class="form-control datepicker" wire:model="template" required name="template"/>
                     <a href="{{ asset('templates/promotion-stock-template.xlsx') }}">Download Template</a>
                     @if ($errors->has('to'))
                         <label for="name-error" class="error"

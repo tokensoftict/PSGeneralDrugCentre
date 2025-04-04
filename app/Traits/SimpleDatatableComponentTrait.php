@@ -3,12 +3,10 @@ namespace App\Traits;
 use App\Classes\Column;
 use App\Classes\Settings;
 use App\Exports\GeneralDataExport;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Maatwebsite\Excel\Facades\Excel;
 
 trait SimpleDatatableComponentTrait
 {
-    use LivewireAlert;
 
     public array $_columns;
 
@@ -47,9 +45,9 @@ trait SimpleDatatableComponentTrait
 
     public function columns(): array
     {
-        $this->index = $this->page > 1 ? ($this->page - 1) * $this->perPage : 0;
+
         return [
-            Column::make('No.','id')->format(fn () => ++$this->index),
+            //Column::make('No.','id')->format(fn () => $this->paginationCurrentCount),
             ...self::mountColumn()
         ];
     }
@@ -57,18 +55,18 @@ trait SimpleDatatableComponentTrait
 
     public function edit($id)
     {
-        $this->emit('editData',$id);
+        $this->dispatch('editData',$id);
     }
 
 
     public function toggle($id)
     {
-        $this->emit('toggleData',$id);
+        $this->dispatch('toggleData',$id);
     }
 
     public function destroy($id)
     {
-        $this->emit('destoryData',$id);
+        $this->dispatch('destoryData',$id);
     }
 
 

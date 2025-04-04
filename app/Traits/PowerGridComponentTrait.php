@@ -9,21 +9,19 @@ use PowerComponents\LivewirePowerGrid\{
     Header,
     };
 
-use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use PowerComponents\LivewirePowerGrid\Traits\{ WithExport};
 
 trait PowerGridComponentTrait
 {
-    use ActionButton;
     use WithExport;
 
 
     public function setUp(): array
     {
         $this->deferLoading = true;
-
-        $this->showCheckBox();
         $this->primaryKey = $this->key;
+        $this->showCheckBox($this->key);
+
 
         return [
             Exportable::make('export')

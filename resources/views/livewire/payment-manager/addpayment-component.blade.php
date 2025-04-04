@@ -45,7 +45,7 @@
             @endphp
             <div class="mb-3" wire:ignore>
                 <span class="d-block text-center" style="font-size: 18px"><strong>Select Payment Method</strong></span>
-                <select class="select mt-1 form-control form-control-lg" id="payment_method{{  $this->select2key }}"  wire:model="payment_method">
+                <select class="select mt-1 form-control form-control-lg" id="payment_method{{  $this->select2key }}"  wire:model.live="payment_method">
                     <option value="">Select Payment Method</option>
                     @foreach($this->payments  as $payment)
                         <option value="{{ $payment->id }}">{{ $payment->name }}</option>
@@ -57,7 +57,7 @@
 
                 <div class="mb-3">
                     <span class="d-block text-center" style="font-size: 18px">Cash Tendered</span>
-                    <input type="number" placeholder="Cash Tendered" class="form-control-lg form-control" wire:model.debounce="cash_tendered" step="0.0000000001">
+                    <input type="number" placeholder="Cash Tendered" class="form-control-lg form-control" wire:model.live.debounce="cash_tendered" step="0.0000000001">
                 </div>
                 <label>Customer Change</label>
                 <div class="bg-primary p-2 rounded-3 text-center d-block">
@@ -69,7 +69,7 @@
             @if($this->payment_method === "3" || $this->payment_method === "2")
                 <div class="mb-3">
                     <span class="d-block text-center"   style="font-size: 18px">Select Bank Account</span>
-                    <select class="select form-control form-control-lg" wire:model="bank_account_id">
+                    <select class="select form-control form-control-lg" wire:model.live="bank_account_id">
                         <option value="">Select Bank Account</option>
                         @foreach($this->bankAccounts as $account)
                             <option value="{{ $account->id }}">{{ $account->account_name }} ( {{ $account->account_number }})</option>
@@ -100,11 +100,11 @@
             @if($this->payment_method === "8")
                 <div class="mb-3">
                     <span class="d-block text-center"   style="font-size: 18px">Cheque Date</span>
-                    <input type="date" class="form-control-lg form-control" wire:model="cheque_date" id="cheque_date" placeholder="Date Written on Cheque">
+                    <input type="date" class="form-control-lg form-control" wire:model.live="cheque_date" id="cheque_date" placeholder="Date Written on Cheque">
                 </div>
                 <div class="mb-3">
                     <span class="d-block text-center"   style="font-size: 18px">Select Bank</span>
-                    <select class="select form-control form-control-lg" wire:model="bank" id="bank" >
+                    <select class="select form-control form-control-lg" wire:model.live="bank" id="bank" >
                         <option value="">Select Bank</option>
                         @foreach($this->banks as $bank)
                             <option value="{{ $bank->id }}">{{ $bank->name }}</option>
@@ -114,7 +114,7 @@
 
                 <div class="mb-3">
                     <span class="d-block text-center"   style="font-size: 18px">Cheque Comment</span>
-                    <textarea name="comment"  id="comment" wire:model.debounce="comment"  cols="30" rows="5" class="form-control form-control-lg"></textarea>
+                    <textarea name="comment"  id="comment" wire:model.live.debounce="comment"  cols="30" rows="5" class="form-control form-control-lg"></textarea>
                 </div>
             @endif
 
@@ -126,10 +126,10 @@
                         @if($payment->id !=6)
                             <tr>
                                 <th>{{ $payment->name }}</th>
-                                <th><input class="form-control form-control-lg" wire:model.debounce="split_payments.{{ $payment->id }}.amount"></th>
+                                <th><input class="form-control form-control-lg" wire:model.live.debounce="split_payments.{{ $payment->id }}.amount"></th>
                                 <th>
                                     @if(in_array($payment->id,[2,3]))
-                                        <select class="select form-control form-control-lg" wire:model="split_payments.{{ $payment->id }}.bank_account_id">
+                                        <select class="select form-control form-control-lg" wire:model.live="split_payments.{{ $payment->id }}.bank_account_id">
                                             <option value="">Select Bank Account</option>
                                             @foreach($this->bankAccounts as $account)
                                                 <option value="{{ $account->id }}">{{ $account->account_name }} ( {{ $account->account_number }})</option>
@@ -138,14 +138,14 @@
                                     @endif
 
                                     @if(in_array($payment->id,[8]))
-                                        <select class="select form-control form-control-lg" wire:model="split_payments.{{ $payment->id }}.bank">
+                                        <select class="select form-control form-control-lg" wire:model.live="split_payments.{{ $payment->id }}.bank">
                                             <option value="">Select Bank</option>
                                             @foreach($this->banks as $bank)
                                                 <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                             @endforeach
                                         </select>
                                         <br/>
-                                        <input type="date" class="form-control form-control-lg" placeholder="Cheque Date" wire:model="split_payments.{{ $payment->id }}.cheque_date">
+                                        <input type="date" class="form-control form-control-lg" placeholder="Cheque Date" wire:model.live="split_payments.{{ $payment->id }}.cheque_date">
                                         <br/>
 
                                     @endif

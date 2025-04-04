@@ -356,7 +356,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="discount_type">Discount Type</label>
-                        <select  required wire:model.defer="discount_type" class="form-control" name="discount_type">
+                        <select  required wire:model="discount_type" class="form-control" name="discount_type">
                             <option value="None" >None</option>
                             <option value="Percentage">Percentage</option>
                             <option {{  $this->invoice->discount_type == "Fixed" ? 'selected' : '' }} value="Fixed">Fixed</option>
@@ -364,7 +364,7 @@
                     </div>
                     <div class="form-group">
                         <label for="discount_type">Discount Value</label>
-                        <input  type="number" wire:model.defer="discount_value" required step="0.0000000001" name="discount_value" class="form-control input-sm"/>
+                        <input  type="number" wire:model="discount_value" required step="0.0000000001" name="discount_value" class="form-control input-sm"/>
                     </div>
                     <button type="button" wire:target="applyInvoiceDiscount" wire:loading.attr="disabled" wire:click="applyInvoiceDiscount" class="btn btn-success btn-sm">
                         Apply Discount

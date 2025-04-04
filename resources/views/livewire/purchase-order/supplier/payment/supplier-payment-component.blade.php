@@ -1,15 +1,15 @@
 <div>
-    <form method="post" wire:submit.prevent="savePayment">
+    <form method="post" wire:submit="savePayment">
         <div class="col-md-7 offset-2">
             <div class="mb-3">
                 <label>Payment Date</label>
-                <input type="text" wire:model.defer="payment_data.payment_date" placeholder="Payment Date"  class="form-control datepicker-basic" >
+                <input type="text" wire:model="payment_data.payment_date" placeholder="Payment Date"  class="form-control datepicker-basic" >
                 @error('payment_data.payment_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
 
             <div class="mb-3" wire:ignore>
                 <label>Supplier</label>
-                <select class="form-control select2Product"  wire:model.defer="payment_data.supplier_id">
+                <select class="form-control select2Product"  wire:model="payment_data.supplier_id">
                     <option value="">Select Supplier</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
@@ -20,13 +20,13 @@
 
             <div class="mb-3">
                 <label>Amount</label>
-                <input type="text" placeholder="Amount Paid"  wire:model.defer="payment_data.amount" class="form-control">
+                <input type="text" placeholder="Amount Paid"  wire:model="payment_data.amount" class="form-control">
                 @error('payment_data.amount') <span class="text-danger d-block">{{ $message }}</span> @enderror
             </div>
 
             <div class="mb-3">
                 <label>Payment Method</label>
-                <select class="form-control" id="paymentMthod" wire:model.defer="payment_data.paymentmethod_id">
+                <select class="form-control" id="paymentMthod" wire:model="payment_data.paymentmethod_id">
                     <option value="">Select Payment Method</option>
                     @foreach($paymentMethods as $paymentMethod)
                         <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
@@ -41,13 +41,13 @@
                         <div class="mb-3" id="cheque_date"  wire:ignore style="display: none;">
                             @endif
                             <label>Cheque Date</label>
-                            <input type="text" wire:model.defer="payment_data.payment_info.cheque_date" placeholder="Cheque Date" id="chequeDate"  class="form-control datepicker-basic" >
+                            <input type="text" wire:model="payment_data.payment_info.cheque_date" placeholder="Cheque Date" id="chequeDate"  class="form-control datepicker-basic" >
                             @error('payment_data.payment_info.cheque_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="mb-3">
                             <label>Remark</label>
-                            <textarea class="form-control" placeholder="Remark" name="remark" wire:model.defer="payment_data.remark"></textarea>
+                            <textarea class="form-control" placeholder="Remark" name="remark" wire:model="payment_data.remark"></textarea>
                         </div>
 
                         <div class="col-lg-12">

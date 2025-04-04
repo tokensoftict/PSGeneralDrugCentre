@@ -235,7 +235,7 @@
                             <div class="col-6" >
                                 <div class="form-group">
                                     <label for="credit_payment">Enter Amount</label>
-                                    <input type="text" wire:model.defer="amount" x-model="amount"  class="form-control input-lg d-block" name="amount" placeholder="Enter Amount">
+                                    <input type="text" wire:model="amount" x-model="amount"  class="form-control input-lg d-block" name="amount" placeholder="Enter Amount">
                                 </div>
                             </div>
 

@@ -18,7 +18,7 @@
                                     <tr>
                                         <th><h5 class="pt-2" align="center">Select Bank</h5></th>
                                         <th>
-                                            <select class="form-control-lg form-control" name="bank" wire:model.defer="bank">
+                                            <select class="form-control-lg form-control" name="bank" wire:model="bank">
                                                 <option value="">Select Bank</option>
                                                 @foreach(banks() as $bank)
                                                     <option value="{{ $bank->id }}">{{ $bank->name }}</option>
@@ -30,14 +30,14 @@
                                     <tr>
                                         <th><h5 class="pt-2" align="center">Select Cheque Date</h5></th>
                                         <th>
-                                            <input wire:model.defer="cheque_date" placeholder="Cheque Date" class="form-control form-control-lg datepicker-basic" x-init="initDatePicker()" wire:model.defer="cheque_date" class="form-control" name="invoice_date" id="datepicker-basic">
+                                            <input wire:model="cheque_date" placeholder="Cheque Date" class="form-control form-control-lg datepicker-basic" x-init="initDatePicker()" wire:model="cheque_date" class="form-control" name="invoice_date" id="datepicker-basic">
                                             @error('cheque_date') <span class="text-danger d-block">{{ $message }}</span> @enderror
                                         </th>
                                     </tr>
                                     <tr>
                                         <th><h5 class="pt-2" align="center">Comment</h5></th>
                                         <th>
-                                            <textarea name="comment" wire:model.defer="comment" placeholder="Comment" cols="30" rows="5"
+                                            <textarea name="comment" wire:model="comment" placeholder="Comment" cols="30" rows="5"
                                                       class="form-control form-control-lg"></textarea>
                                         </th>
                                     </tr>

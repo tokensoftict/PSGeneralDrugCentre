@@ -1,15 +1,13 @@
-@aware(['component'])
+@aware(['isTailwind','isBootstrap'])
 
-@php
-    $theme = $component->getTheme();
-@endphp
-
-@if ($theme === 'tailwind')
-    <div class="flex-col">
-        {{ $slot }}
-    </div>
-@elseif ($theme === 'bootstrap-4' || $theme === 'bootstrap-5')
-    <div class="d-flex flex-column">
-        {{ $slot }}
-    </div>
-@endif
+<div {{
+    $attributes->merge($this->getToolsAttributes)
+        ->class([
+            'flex-col' => $isTailwind && ($this->getToolsAttributes['default-styling'] ?? true),
+            'd-flex flex-column' => $isBootstrap && ($this->getToolsAttributes['default-styling'] ?? true)
+        ])
+        ->except(['default','default-styling','default-colors'])
+    }}
+>
+    {{ $slot }}
+</div>

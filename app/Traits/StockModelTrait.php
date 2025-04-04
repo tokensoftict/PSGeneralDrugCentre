@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 trait StockModelTrait
 {
-
-
     public function activeBatches()
     {
         $departments = departments(true)->filter(function($item){

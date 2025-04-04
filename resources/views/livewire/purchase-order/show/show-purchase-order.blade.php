@@ -1,44 +1,44 @@
 @section('pageHeaderTitle',$this->title)
 @section('pageHeaderDescription', $this->subtitle)
 
-<div class="row mb-3">
-    <div class="col-sm-7"></div>
-    <div class="col-sm-5">
-        <div class="float-end">
 
-            @if(auth()->user()->can('update', $this->purchase))
-                <a class="btn btn-success btn-sm" href="{{ route('purchase.edit', $this->purchase->id) }}"><i class="fa fa-pencil"></i> Edit Purchase</a>
-            @endif
-            @if(auth()->user()->can('complete',$this->purchase))
-                <button type="button"  class="btn btn-primary btn-sm" onclick="confirm('Are you sure you want to complete this purchase ?, this can not be reversed') || event.stopImmediatePropagation()"  wire:loading.attr="disabled"  wire:click="complete" wire:target="complete,delete" >
-                    <span wire:loading wire:target="complete,delete" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    <i wire:loading.remove wire:target="complete,delete" class="fa fa-check"></i>
-                    Complete Purchase
-                </button>
-            @endif
-            @if(auth()->user()->can('delete', $this->purchase))
-                <button class="btn btn-danger btn-sm" onclick="confirm('Are you sure you want to delete this purchase ?, this can not be reversed') || event.stopImmediatePropagation()" wire:loading.attr="disabled"  wire:click="delete" wire:target="delete" >
-
-                    <i  wire:loading.remove wire:target="complete,delete" class="fa fa-trash"></i>
-
-                    <span wire:loading wire:target="complete,delete" class="spinner-border spinner-border-sm me-2" role="status"></span>
-
-                    Delete Purchase
-                </button>
-            @endif
-
-            <a href="#" onclick="return open_print_window(this);" class="btn btn-info btn-sm"><i class="fa fa-print"></i> Print</a>
-
-        </div>
-    </div>
-</div>
 
 <div>
 
     @if(View::hasSection('pageHeaderTitle'))
         @include('shared.pageheader')
     @endif
+        <div class="row mb-3">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+                <div class="float-end">
 
+                    @if(auth()->user()->can('update', $this->purchase))
+                        <a class="btn btn-success btn-sm" href="{{ route('purchase.edit', $this->purchase->id) }}"><i class="fa fa-pencil"></i> Edit Purchase</a>
+                    @endif
+                    @if(auth()->user()->can('complete',$this->purchase))
+                        <button type="button"  class="btn btn-primary btn-sm" onclick="confirm('Are you sure you want to complete this purchase ?, this can not be reversed') || event.stopImmediatePropagation()"  wire:loading.attr="disabled"  wire:click="complete" wire:target="complete,delete" >
+                            <span wire:loading wire:target="complete,delete" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            <i wire:loading.remove wire:target="complete,delete" class="fa fa-check"></i>
+                            Complete Purchase
+                        </button>
+                    @endif
+                    @if(auth()->user()->can('delete', $this->purchase))
+                        <button class="btn btn-danger btn-sm" onclick="confirm('Are you sure you want to delete this purchase ?, this can not be reversed') || event.stopImmediatePropagation()" wire:loading.attr="disabled"  wire:click="delete" wire:target="delete" >
+
+                            <i  wire:loading.remove wire:target="complete,delete" class="fa fa-trash"></i>
+
+                            <span wire:loading wire:target="complete,delete" class="spinner-border spinner-border-sm me-2" role="status"></span>
+
+                            Delete Purchase
+                        </button>
+                    @endif
+
+                    <a href="#" onclick="return open_print_window(this);" class="btn btn-info btn-sm"><i class="fa fa-print"></i> Print</a>
+
+                </div>
+            </div>
+        </div>
     <div class="card-sales-split">
         <h2>Reference ID : #{{ $this->purchase->id }}</h2>
     </div>
@@ -121,6 +121,5 @@
             </table>
         </div>
     </div>
-
 
 </div>

@@ -60,11 +60,11 @@
             @if(isset($filters['customer_id']))
                 <div class="col-lg-3">
                     <div class="mb-3">
-                        <label class="form-label">Customer</label>
+                        <label class="form-label">Customer </label>
                         <select class="form-control select2Product"  name="filter[customer_id]" id="choices-single-default" placeholder="Select Customer">
-                            @if(isset($filters['customer']))
-                                <option selected value="{{ $filters['customer']->id }}">{{ $filters['customer']->firstname }} {{ $filters['customer']->lastname }}</option>
-                            @endif
+                            @foreach($customers as $customer)
+                                <option {{ $customer->id == $filters['customer_id'] ? "selected" : "" }}  value="{{ $customer->id }}">{{ $customer->firstname }} {{ $customer->lastname }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -78,6 +78,8 @@
                             @foreach($customers as $customer)
                                 @if(in_array($customer->id, $filters['array.customer_id']))
                                     <option selected value="{{ $customer->id }}">{{ $customer->firstname }} {{ $customer->lastname }}</option>
+                                @else
+                                    <option  value="{{$customer->id }}">{{ $customer->firstname }} {{ $customer->lastname }}</option>
                                 @endif
                             @endforeach
                         </select>

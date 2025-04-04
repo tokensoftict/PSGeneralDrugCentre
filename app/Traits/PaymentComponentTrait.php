@@ -12,8 +12,6 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 trait PaymentComponentTrait
 {
 
-    use LivewireAlert;
-
     public Invoice  $invoice;
 
     public bool $btnEnabled = false;

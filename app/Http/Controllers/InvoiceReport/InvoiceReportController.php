@@ -110,7 +110,7 @@ class InvoiceReportController extends Controller
 
 
         }
-        return setPageContent('reports.invoice.invoiceitem', $data);
+        return view('reports.invoice.invoiceitem', $data);
     }
 
 

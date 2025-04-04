@@ -10,7 +10,7 @@
 
             <div class="mb-3">
                 <label>Picked By</label>
-                <select class="form-control form-control-lg"   wire:model.defer="data.picked_by">
+                <select class="form-control form-control-lg"   wire:model="data.picked_by">
                     <option value="">Select User</option>
                     @foreach($this->users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -21,7 +21,7 @@
 
             <div class="mb-3">
                 <label>Checked By</label>
-                <select class="form-control form-control-lg"   wire:model.defer="data.checked_by">
+                <select class="form-control form-control-lg"   wire:model="data.checked_by">
                     <option value="">Select User</option>
                     @foreach($this->users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -32,7 +32,7 @@
 
             <div class="mb-3">
                 <label>Packed By</label>
-                <select class="form-control form-control-lg"   wire:model.defer="data.packed_by">
+                <select class="form-control form-control-lg"   wire:model="data.packed_by">
                     <option value="">Select User</option>
                     @foreach($this->users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -43,7 +43,7 @@
 
             <div class="mb-3">
                 <label>Dispatched By</label>
-                <select class="form-control form-control-lg"  wire:model.defer="data.dispatched_by">
+                <select class="form-control form-control-lg"  wire:model="data.dispatched_by">
                     <option value="">Select User</option>
                     @foreach($this->users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -54,7 +54,7 @@
 
             <div class="mb-3">
                 <label>Carton Number</label>
-                <input type="text" wire:model.defer="data.carton_no"  class="form-control">
+                <input type="text" wire:model="data.carton_no"  class="form-control">
                 @error('data.carton_no') <span class="text-danger">{{ $message }}</span>  @enderror
             </div>
 

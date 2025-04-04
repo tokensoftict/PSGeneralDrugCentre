@@ -91,14 +91,14 @@
                                     <td class="text-center">{{ $item->quantity }}</td>
                                     <td class="text-center" x-html="numberFormat({{ $item->selling_price }})">{{ number_format($item->selling_price,2) }}</td>
                                     <td>
-                                        <select x-on:change="setDiscountType({{ $item->id }})" wire:model.defer="discounts.{{ $item->id }}.discount_type"  class="form-control" x-model="discounts[{{ $item->id }}]['discount_type']" >
+                                        <select x-on:change="setDiscountType({{ $item->id }})" wire:model="discounts.{{ $item->id }}.discount_type"  class="form-control" x-model="discounts[{{ $item->id }}]['discount_type']" >
                                             <option value="None">None</option>
                                             <option value="Percentage">Percentage</option>
                                             <option value="Fixed">Fixed</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input x-on:keyup="calculateDiscount({{ $item->id }})" x-model="discounts[{{ $item->id }}]['discount_value']" wire:model.defer="discounts.{{ $item->id }}.discount_value" class="form-control input-sm child_value" value="{{ $item->discount_value }}" />
+                                        <input x-on:keyup="calculateDiscount({{ $item->id }})" x-model="discounts[{{ $item->id }}]['discount_value']" wire:model="discounts.{{ $item->id }}.discount_value" class="form-control input-sm child_value" value="{{ $item->discount_value }}" />
                                     </td>
                                     <td class="text-center" x-html="numberFormat(discounts[{{ $item->id }}]['discount_amount'])">
                                         {{ money($item->discount_amount) }}

@@ -13,7 +13,7 @@
                             <br/>
                             <div class="form-group">
                                 <label for="credit_payment">Enter Invoice Number</label>
-                                <input type="text" wire:model.defer="invoice_number" x-model="invoice_number" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Invoice Number">
+                                <input type="text" wire:model="invoice_number" x-model="invoice_number" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Invoice Number">
                             </div>
                             <button  x-on:click="generateInvoicePayment" wire:target="createInvoicePayment" wire:loading.attr="disabled" class="btn btn-primary btn-lg d-block mt-3" style="width: 100%">Continue
 
@@ -75,7 +75,7 @@
                                 <div class="col-6" >
                                     <div class="form-group">
                                         <label for="credit_payment">Enter Amount</label>
-                                        <input type="text" wire:model.defer="amount" x-model="amount" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Amount">
+                                        <input type="text" wire:model="amount" x-model="amount" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Amount">
                                     </div>
                                 </div>
 
@@ -143,7 +143,7 @@
                                     <div class="col-6" >
                                         <div class="form-group">
                                             <label for="deposit_payment">Enter Deposit Amount</label>
-                                            <input type="text" wire:model.defer="deposit_amount" x-model="deposit_amount" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Amount">
+                                            <input type="text" wire:model="deposit_amount" x-model="deposit_amount" class="form-control input-lg d-block" name="invoice_number" placeholder="Enter Amount">
                                         </div>
                                     </div>
 

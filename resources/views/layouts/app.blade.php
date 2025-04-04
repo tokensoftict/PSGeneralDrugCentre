@@ -12,7 +12,6 @@
     <link href="{{ asset('css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
-    @livewireScripts
     <style>
         .table td{
             font-size: 12px !important;
@@ -244,8 +243,6 @@
 
 <!-- JAVASCRIPT -->
 <script defer src="{{ asset('js/focus.min.js') }}"></script>
-<script defer src="{{ asset('js/alpine.min.js') }}"></script>
-
 
 <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -256,16 +253,16 @@
 <!-- pace js -->
 
 @yield('js')
-
+@livewireScripts
 <script src="{{ asset('libs/pace-js/pace.min.js') }}"></script>
 
 <script src="{{ asset('js/app.js') }}"></script>
 
 <script src="{{ asset('js/sweetalert2.js') }}"></script>
 
-<livewire:modals/>
-<script>
 
+<script>
+/*
     let modalsElement = document.getElementById('livewire-bootstrap-modal');
 
     modalsElement.addEventListener('hidden.bs.modal', () => {
@@ -289,9 +286,9 @@
 
         myModal.hide()
     });
-
+*/
 </script>
-<x-livewire-alert::scripts />
+
 
 </body>
 

@@ -188,10 +188,10 @@
                                 <input class="form-control datepicker-basic" x-init="initDatePicker()" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date" id="datepicker-basic">
                             </div>
                         @else
-                        <div class="mb-3">
-                            <label>Invoice Date</label>
-                            <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
-                        </div>
+                            <div class="mb-3">
+                                <label>Invoice Date</label>
+                                <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
+                            </div>
                         @endif
                         @if(isset($this->invoice->id))
                             <div class="mb-3">
@@ -495,28 +495,41 @@
 
             generateInvoice(status_id)
             {
-                @if( $this->department != "4")
+                @php
+                    if($this->department != "4"){
+                @endphp
                 if(this.customer_id.firstname === "") {
                     alert("You have not select a customer for this invoice,  please select a customer by searching!...")
                     return ;
                 }
-                @endif
+                @php
+                    }
+                @endphp
+
                 if(this.invoiceitems.length === 0)
                 {
                     alert("Invoice items list is empty, please add at least one product to generate invoice")
                     return ;
                 }
-                @if( $this->department != "4")
+
+                @php
+                    if( $this->department != "4") {
+                @endphp
                 @this.set('invoiceData.customer_id',this.customer_id.id, true);
-                @else
-                    if(this.customer_id.firstname !== "")
+
+                @php
+                    }else{
+                @endphp
+                if(this.customer_id.firstname !== "")
                 {
                     @this.set('invoiceData.customer_id',this.customer_id.id, true);
                 }else{
                     @this.set('invoiceData.customer_id',"1", true);
                 }
+                @php
+                    }
+                @endphp
 
-                @endif
                 @this.set('invoiceData.status_id', status_id, true);
                 @this.set('invoiceData.invoiceitems', JSON.stringify(this.invoiceitems), true);
 
@@ -539,13 +552,13 @@
             },
 
             initDatePicker(){
-                flatpickr(".datepicker-basic", {  });
-                var e = document.querySelectorAll("[data-trigger]");
-                for (i = 0; i < e.length; ++i) {
-                    var a = e[i];
-                    new Choices(a, { placeholderValue: "This is a placeholder set in the config", searchPlaceholderValue: "This is a search placeholder" });
-                }
-            },
+            flatpickr(".datepicker-basic", {  });
+            var e = document.querySelectorAll("[data-trigger]");
+            for (i = 0; i < e.length; ++i) {
+                var a = e[i];
+                new Choices(a, { placeholderValue: "This is a placeholder set in the config", searchPlaceholderValue: "This is a search placeholder" });
+            }
+        },
             async requestProductWithBarcode(barcode)
             {
 
@@ -591,7 +604,6 @@
 
     </script>
 </div>
-
 
 
 

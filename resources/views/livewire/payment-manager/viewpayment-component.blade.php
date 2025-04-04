@@ -47,7 +47,7 @@
             <div class="col-6">
                 <div class="mb-3">
                     <span><strong>Payment Type</strong></span><br/>
-                    <span class="form-control"><strong>{{ \App\Http\Livewire\PaymentManager\Datatable\PaymentListDatatable::$invoiceType[$this->payment->invoice_type] }}</strong></span>
+                    <span class="form-control"><strong>{{ \App\Livewire\PaymentManager\Datatable\PaymentListDatatable::$invoiceType[$this->payment->invoice_type] }}</strong></span>
                 </div>
 
                 <div class="mb-3">
