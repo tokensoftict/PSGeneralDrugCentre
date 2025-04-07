@@ -47,6 +47,7 @@ final class StockBalanceBySupplier extends PowerGridComponent
             DB::raw( 'SUM(bulksales) as bs'),
             DB::raw( 'SUM(quantity) as ms'),
             DB::raw( 'SUM(retail) as rt'),
+            DB::raw( 'SUM(retail_store) as rts'),
             DB::raw( 'COUNT(retail) as tt_batch')
         )->whereHas('stock', function ($q) {
             $q->where('status','1');
@@ -55,6 +56,7 @@ final class StockBalanceBySupplier extends PowerGridComponent
                 $q->orWhere('wholesales',">",0)
                     ->orWhere('bulksales',">",0)
                     ->orWhere('retail',">",0)
+                    ->orWhere('retail_store',">",0)
                     ->orWhere('quantity',">",0);
             })
             ->groupBy('stock_id')
@@ -110,6 +112,7 @@ final class StockBalanceBySupplier extends PowerGridComponent
             ->addColumn('bs')
             ->addColumn('ms')
             ->addColumn('rt')
+            ->addColumn('rts')
             ->addColumn('total', function(Stockbatch $stockbatch) {
                 $total = 0;
                 if(department_by_quantity_column('wholesales', false)->status) {
@@ -161,6 +164,10 @@ final class StockBalanceBySupplier extends PowerGridComponent
         if(department_by_quantity_column('retail', false)->status) {
             $columns[] =Column::make('Retail', 'rt');
         }
+        if(department_by_quantity_column('retail_store', false)->status) {
+            $columns[] = Column::make('Retail Store', 'rts');
+        }
+
         if(department_by_quantity_column('quantity', false)->status) {
             $columns[] = Column::make('Main Store', 'ms');
         }

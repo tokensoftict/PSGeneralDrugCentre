@@ -43,7 +43,9 @@ class Batchstock extends Model
 		'quantity_user_id' => 'int',
 		'bulk_user_id' => 'int',
 		'wholsale_user_id' => 'int',
-		'retail_user_id' => 'int'
+		'retail_user_id' => 'int',
+        'retail_store_user_id' => 'int',
+        'retail_store' => 'int',
 	];
 
 	protected $fillable = [
@@ -55,7 +57,9 @@ class Batchstock extends Model
 		'quantity_user_id',
 		'bulk_user_id',
 		'wholsale_user_id',
-		'retail_user_id'
+		'retail_user_id',
+        'retail_store_user_id',
+        'retail_store'
 	];
 
 	public function wholsale_user()
@@ -77,6 +81,11 @@ class Batchstock extends Model
     public function retail_user()
     {
         return $this->belongsTo(User::class, 'retail_user_id');
+    }
+
+    public function retail_store_user()
+    {
+        return $this->belongsTo(User::class, 'retail_store_user_id');
     }
 
 	public function stock()

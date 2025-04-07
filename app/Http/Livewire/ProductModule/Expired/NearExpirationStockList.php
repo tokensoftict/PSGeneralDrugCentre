@@ -54,6 +54,7 @@ final class NearExpirationStockList extends PowerGridComponent
             DB::raw( 'SUM(wholesales) as ws'),
             DB::raw( 'SUM(quantity) as ms'),
             DB::raw( 'SUM(retail) as rt'),
+            DB::raw( 'SUM(retail_store) as rts'),
             DB::raw( 'COUNT(stock_id) as tt_batch'),
         )->whereHas('stock', function ($q) {
             $q->where('status','1');
@@ -62,6 +63,7 @@ final class NearExpirationStockList extends PowerGridComponent
                 $q->orWhere('wholesales',">",0)
                     ->orWhere('bulksales',">",0)
                     ->orWhere('retail',">",0)
+                    ->orWhere('retail_store',">",0)
                     ->orWhere('quantity',">",0);
             })
             ->orderBy('id','DESC')
@@ -141,8 +143,9 @@ final class NearExpirationStockList extends PowerGridComponent
             ->addColumn('bs')
             ->addColumn('ms')
             ->addColumn('rt')
+            ->addColumn('rts')
             ->addColumn('total', function(Stockbatch $stockbatch){
-                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs(divide($stockbatch->rt, $stockbatch->stock->box)));
+                return $stockbatch->ws + $stockbatch->bs + $stockbatch->ms + round(abs(divide($stockbatch->rt, $stockbatch->stock->box)))+ round(abs(divide($stockbatch->rts, $stockbatch->stock->box)));
             });
     }
 
@@ -180,6 +183,10 @@ final class NearExpirationStockList extends PowerGridComponent
 
         if(department_by_quantity_column('retail', false)->status) {
             $columns[] = Column::make('Retail', 'rt');
+        }
+
+        if(department_by_quantity_column('retail_store', false)->status) {
+            $columns[] = Column::make('Retail Store', 'rts');
         }
 
         if(department_by_quantity_column('quantity', false)->status) {

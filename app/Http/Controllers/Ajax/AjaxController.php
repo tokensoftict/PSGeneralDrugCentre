@@ -155,12 +155,12 @@ class AjaxController extends Controller
     public function supplier_sales_analysis_table(Request $request)
     {
         $department = match ($request->get('department')) {
-            "Retail" => ["quantity", "wholesales", "bulksales", "retail"],
+            "Retail" => ["quantity", "wholesales", "bulksales", "retail", "retail_store"],
             default => ["quantity", "wholesales", "bulksales"]
         };
 
         $cost_price = match ($request->get('department')) {
-            "Retail" => ["quantity", "wholesales", "bulksales", "retail"],
+            "Retail" => ["quantity", "wholesales", "bulksales", "retail", "retail_store"],
             default => ["quantity", "wholesales", "bulksales"]
         };
 

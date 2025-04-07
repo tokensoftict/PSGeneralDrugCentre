@@ -48,13 +48,15 @@ final class BatchedStockListReport extends PowerGridComponent
         $filter_stock = [
             'wholesales',
             'retail',
-            'bulksales'
+            'bulksales',
+            'retail_store'
         ];
 
         $price_column = [
             'wholesales'=>'whole_price',
             'retail'=>'retail_price',
-            'bulksales'=> 'bulk_price'
+            'bulksales'=> 'bulk_price',
+            'retail_store' => 'retail_store'
         ];
 
         $quantity_column = [
@@ -62,6 +64,7 @@ final class BatchedStockListReport extends PowerGridComponent
             'retail'=>'retail',
             'bulksales'=> 'bulksales',
             'quantity'=> 'quantity',
+            'retail_store' => 'retail_store'
         ];
 
         $this->quantity_col = $quantity_column[$this->filters['department']];

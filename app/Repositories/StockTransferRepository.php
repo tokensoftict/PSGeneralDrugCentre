@@ -26,7 +26,7 @@ class StockTransferRepository
                 'selling_price' => $item->selling_price,
                 'cost_price' => $item->cost_price,
                 'stockbatch_id' => $item->stockbatch_id,
-                'label_qty' => $item->stocktransfer->to === "retail" ? ($item->quantity."(".$item->quantity * $item->stock->box.")") : $item->quantity,
+                'label_qty' => ($item->stocktransfer->to === "retail" || $item->stocktransfer->to === "retail_store") ? ($item->quantity."(".$item->quantity * $item->stock->box.")") : $item->quantity,
                 'user_id' => $item->user_id,
                 'total' => $item->quantity * $item->selling_price
             ];

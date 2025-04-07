@@ -267,7 +267,7 @@ function cost_price_column($department_id = false){
 
     return  match (department_by_id($department_id)->quantity_column){
         'quantity', 'wholesales', 'bulksales', NULL => 'cost_price',
-        'retail' => 'retail_cost_price'
+        'retail', 'retail_store' => 'retail_cost_price',
     };
 }
 

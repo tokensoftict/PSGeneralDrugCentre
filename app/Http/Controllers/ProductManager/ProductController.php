@@ -137,7 +137,7 @@ class ProductController extends Controller
         $data = [];
 
         $data['departments'] = departments(true)->filter(function($item){
-            return in_array($item->id, [1,2,3,4]);
+            return in_array($item->id, [1,2,3,4,6]);
         });
         $data['selectedDepartment'] = "";
         $data['stock_id'] = "";

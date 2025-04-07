@@ -59,7 +59,7 @@ class StockTransferComponent extends Component
                     'selling_price' => $stock->whole_price,
                     'cost_price' => $stock->cost_price,
                     'stockbatch_id' => '',
-                    'label_qty' => $this->to === "retail" ? ($transfer_stocks[$stock->id]."(".$transfer_stocks[$stock->id] * $stock->box.")") : $transfer_stocks[$stock->id],
+                    'label_qty' => ($this->to === "retail" || $this->to === "retail_store") ? ($transfer_stocks[$stock->id]."(".$transfer_stocks[$stock->id] * $stock->box.")") : $transfer_stocks[$stock->id],
                     'user_id' => auth()->id(),
                     'total' => $transfer_stocks[$stock->id] * $stock->whole_price
                 ];

@@ -46,6 +46,7 @@ class Stockbatch extends Model
 		'bulksales' => 'int',
 		'retail' => 'int',
 		'quantity' => 'int',
+        'retail_store' => 'int',
 		'cost_price' => 'float',
 		'retail_cost_price' => 'float',
 		'stock_id' => 'int',
@@ -64,7 +65,8 @@ class Stockbatch extends Model
 		'retail_cost_price',
 		'stock_id',
 		'supplier_id',
-        'batch_no'
+        'batch_no',
+        'retail_store'
 	];
 
 	public function stock()

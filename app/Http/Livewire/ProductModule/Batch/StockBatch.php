@@ -80,8 +80,8 @@ class StockBatch extends Component
             $b_retail = $this->stock->retail;
             $b_quantity = $this->stock->quantity;
             $b_bulksales = $this->stock->bulksales;
+            $b_retail_store_qty = $this->stock->retail_store;
 
-            //batch::upsert($this->batches,['id'], array_keys($this->batches[0]));
 
             foreach ($this->batches as $key => $batch) {
                 $b = batch::find($batch['id']);
@@ -94,6 +94,7 @@ class StockBatch extends Component
                 'bulksales' => 'bulk_user_id',
                 'wholesales' => 'wholsale_user_id',
                 'retail' => 'retail_user_id',
+                'retail_store' => 'retail_user_id',
             ];
 
             $this->stock->updateQuantity();
@@ -110,6 +111,7 @@ class StockBatch extends Component
                     'wholesales' => 0,
                     'bulksales' => 0,
                     'retail' => 0,
+                    'retail_store' => 0,
                 ];
                 $c[$this->selectedDepartment] = 1;
 
@@ -127,11 +129,12 @@ class StockBatch extends Component
                 'comment' => "Stock Batch Update was made
                                 <br/>-----BEFORE UPDATE------<br/>
                                 Wholesale : $b_whole, Bulk : $b_bulksales
-                                , Retail : $b_retail
+                                , Retail : 
+                                ,Retail Store : $b_retail_store_qty 
                                 , Main Store : $b_quantity
                                 <br/>
                                 <br/>-----AFTER UPDATE------<br/>
-                                  Wholesale : " . $this->stock->wholesales . ", Bulk : " . $this->stock->bulksales . ", Retail : " . $this->stock->retail . ", Main Store : " . $this->stock->quantity . "
+                                  Wholesale : " . $this->stock->wholesales . ", Bulk : " . $this->stock->bulksales . ", Retail : " . $this->stock->retail. ", Retail Store: " . $this->stock->retail_store . ", Main Store : " . $this->stock->quantity . "
                                 ",
                 'balance' => $this->stock->totalBalance(),
                 'department_balance' => $this->stock->getCurrentlevel($this->selectedDepartment)

@@ -70,12 +70,12 @@ class ProductRepository
     {
         $selling_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store'  => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail', 'retail_store'  => 'retail_cost_price',
         };
 
 
@@ -110,12 +110,12 @@ class ProductRepository
 
         $selling_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store' => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail','retail_store' => 'retail_cost_price',
         };
 //->where(request()->column ,'>',0)
 
@@ -151,12 +151,12 @@ class ProductRepository
 
         $selling_price = match (request()->column){
             'wholesales', 'bulk-sales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store'  => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulk-sales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail', 'retail_store'  => 'retail_cost_price',
         };
 
         return DB::table('stocks')
