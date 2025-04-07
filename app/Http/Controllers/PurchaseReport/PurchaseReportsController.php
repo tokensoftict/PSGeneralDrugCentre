@@ -51,7 +51,23 @@ class PurchaseReportsController extends Controller
                 ]
             ]
         ];
-        if($request->get('filter'))
+        if(isset($request->from) && isset($request->to) && isset($request->supplier_id) && isset($request->department)) {
+            $data['filters'] = [
+                'from' => $request->from,
+                'to' => $request->to,
+                'supplier_id' => $request->supplier_id,
+                'filters' => [
+                    'between.date_created' =>  [$request->from, $request->to],
+                    'supplier_id' =>  $request->supplier_id,
+                    'status_id' => status("Complete"),
+                ]
+            ];
+
+            $department = Department::whereIn('id', explode('-', $request->department))->get();
+            $data['filters']['filters']['department'] = $department->pluck('quantity_column')->toArray();
+
+        }
+        else if($request->get('filter'))
         {
             $data['filters'] = $request->get('filter');
             $data['filters']['filters']['between.date_created'] = Arr::only(array_values( $request->get('filter')), [0,1]);
@@ -253,12 +269,16 @@ class PurchaseReportsController extends Controller
                 'name' => "Retail",
             ],
             [
+                'id' =>6,
+                'name' => "Retail Store",
+            ],
+            [
                 'id' =>1,
                 'name' => "Main Store",
             ],
             [
-                'id' =>"1-4",
-                'name' => "Retail And Main Store"
+                'id' =>"1-4-6",
+                'name' => "Retail, Retail Store And Main Store"
             ]
         ];
         $data = [
@@ -270,8 +290,6 @@ class PurchaseReportsController extends Controller
                 'items' => $items,
                 'from' =>monthlyDateRange()[0],
                 'to'=>monthlyDateRange()[1],
-                'items' => $items ,
-                'label_name' => 'Departments',
                 'filters' => [
                     'between.invoice_date' => monthlyDateRange(),
                     'custom_dropdown_id' => 2,
@@ -295,7 +313,7 @@ class PurchaseReportsController extends Controller
 
         $reports =  Purchase::with(['supplier'])->select(
             'purchases.supplier_id',
-            DB::raw('count(purchases.supplier_id) as purchase_count'),
+            DB::raw('COUNT(DISTINCT purchases.id) as purchase_count'),
             DB::raw('SUM(purchaseitems.cost_price * purchaseitems.qty) as purchase_total_amount')
         )->join('purchaseitems', "purchaseitems.purchase_id","=","purchases.id")
             ->whereIn('purchases.department', Department::whereIn("id", $department)->pluck('quantity_column')->toArray())

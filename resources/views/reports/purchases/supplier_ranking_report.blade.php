@@ -71,7 +71,7 @@
                         <td>{{ $report->purchase_count }}</td>
                         <td>{{ money($report->purchase_total_amount) }}</td>
                         <td>
-                            <a href="{{ route('reports.purchase.by_supplier') . "?from=".$filters['filters']['between.invoice_date'][0]."&to=".$filters['filters']['between.invoice_date'][1]."&supplier_id=".$report->supplier->id."&department=".$filters['filters']['custom_dropdown_id'] }}" class="btn btn-sm btn-primary">View Invoice</a>
+                            <a href="{{ route('reports.purchase.by_supplier') . "?from=".$filters['filters']['between.invoice_date'][0]."&to=".$filters['filters']['between.invoice_date'][1]."&supplier_id=".$report->supplier->id."&department=".$filters['filters']['custom_dropdown_id'] }}" class="btn btn-sm btn-primary">View Purchase</a>
                         </td>
                     </tr>
                 @endforeach
