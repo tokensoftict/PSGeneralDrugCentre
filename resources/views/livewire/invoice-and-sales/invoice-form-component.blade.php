@@ -24,6 +24,10 @@
                                                 Box : <span x-text="product.box"></span>
                                                 &nbsp; &nbsp;
                                                 Carton : <span x-text="product.carton"></span>
+                                                @if($this->d == "retail")
+                                                    &nbsp; &nbsp;
+                                                    Retail Store : <span x-text="product.retail_store"></span>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

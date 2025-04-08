@@ -119,7 +119,7 @@ class ProductRepository
         };
 //->where(request()->column ,'>',0)
 
-        return DB::table('stocks')->select('stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
+        return DB::table('stocks')->select('stocks.retail_store as retail_store','stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
             'stocks.name',
             'stocks.box',
             'stocks.location',
