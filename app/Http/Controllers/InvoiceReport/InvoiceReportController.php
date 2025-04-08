@@ -94,9 +94,11 @@ class InvoiceReportController extends Controller
                 'from' =>todaysDate(),
                 'to'=>todaysDate(),
                 'stock_id' => 1,
+                'department' => 'quantity',
                 'filters' => [
                     'between.invoices.invoice_date' =>[todaysDate(),todaysDate()],
                     'stock_id' => 1,
+                   'department' => 'quantity',
                 ]
             ]
         ];
@@ -107,10 +109,10 @@ class InvoiceReportController extends Controller
             $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
             $data['filters']['filters']['between.invoices.invoice_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
-
+            $data['filters']['filters']['department'] = $data['filters']['department'];
 
         }
-        return setPageContent('reports.invoice.invoiceitem', $data);
+        return view('reports.invoice.invoiceitem', $data);
     }
 
 

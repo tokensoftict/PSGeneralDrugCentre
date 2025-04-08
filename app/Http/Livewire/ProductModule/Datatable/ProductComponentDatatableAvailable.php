@@ -80,7 +80,7 @@ class ProductComponentDatatableAvailable extends ExportDataTableComponent
         }
 
         if(department_by_quantity_column('retail_store', false)->status) {
-            $column[] = Column::make("Retail Store", "retail_store")
+            $column[] = Column::make("SuperMarket Store", "retail_store")
                 ->format(fn($value, $row, Column $column) => $value)
                 ->sortable();
         }

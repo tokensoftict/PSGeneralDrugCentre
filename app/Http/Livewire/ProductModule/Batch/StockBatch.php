@@ -130,11 +130,11 @@ class StockBatch extends Component
                                 <br/>-----BEFORE UPDATE------<br/>
                                 Wholesale : $b_whole, Bulk : $b_bulksales
                                 , Retail : 
-                                ,Retail Store : $b_retail_store_qty 
+                                ,SuperMarket Store : $b_retail_store_qty 
                                 , Main Store : $b_quantity
                                 <br/>
                                 <br/>-----AFTER UPDATE------<br/>
-                                  Wholesale : " . $this->stock->wholesales . ", Bulk : " . $this->stock->bulksales . ", Retail : " . $this->stock->retail. ", Retail Store: " . $this->stock->retail_store . ", Main Store : " . $this->stock->quantity . "
+                                  Wholesale : " . $this->stock->wholesales . ", Bulk : " . $this->stock->bulksales . ", Retail : " . $this->stock->retail. ", SuperMarket Store: " . $this->stock->retail_store . ", Main Store : " . $this->stock->quantity . "
                                 ",
                 'balance' => $this->stock->totalBalance(),
                 'department_balance' => $this->stock->getCurrentlevel($this->selectedDepartment)

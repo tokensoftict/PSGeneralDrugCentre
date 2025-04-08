@@ -24,7 +24,15 @@ class InvoiceitemDatatable extends ExportDataTableComponent
 
     public function builder(): Builder
     {
-        return Invoiceitem::query()->select('*')->where('invoices.status_id','!=',status('Deleted'))->filterdata($this->filters);
+        if(isset($this->filters['department'])){
+            $department = $this->filters['department'];
+            unset($this->filters['department']);
+        }
+        $query = Invoiceitem::query()->select('*')->where('invoices.status_id','!=',status('Deleted'));
+        if(isset($department)) {
+            $query->where('invoices.department',$department);
+        }
+        return $query->filterdata($this->filters);
     }
 
     public static function  mountColumn() : array

@@ -183,7 +183,7 @@ final class ExpiredStockList extends PowerGridComponent
         }
 
         if(department_by_quantity_column('retail_store', false)->status) {
-            $columns[] = Column::make('Retail Store', 'rts');
+            $columns[] = Column::make('SuperMarket Store', 'rts');
         }
 
         if(department_by_quantity_column('quantity', false)->status) {

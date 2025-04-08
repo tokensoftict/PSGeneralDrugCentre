@@ -44,8 +44,6 @@ final class PickerPerforomanceReport extends PowerGridComponent
         ->get();
 
 
-        dd($invoice);
-
 
     }
 

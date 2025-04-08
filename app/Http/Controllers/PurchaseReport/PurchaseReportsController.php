@@ -270,7 +270,7 @@ class PurchaseReportsController extends Controller
             ],
             [
                 'id' =>6,
-                'name' => "Retail Store",
+                'name' => "SuperMarket Store",
             ],
             [
                 'id' =>1,
@@ -278,7 +278,7 @@ class PurchaseReportsController extends Controller
             ],
             [
                 'id' =>"1-4-6",
-                'name' => "Retail, Retail Store And Main Store"
+                'name' => "Retail, SuperMarket Store And Main Store"
             ]
         ];
         $data = [
