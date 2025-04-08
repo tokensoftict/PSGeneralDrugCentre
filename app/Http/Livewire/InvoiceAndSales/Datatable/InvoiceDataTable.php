@@ -25,7 +25,6 @@ class InvoiceDataTable extends ExportDataTableComponent
 
     public function builder(): Builder
     {
-        dd($this->filters);
         return Invoice::query()->select('*')->where('invoices.status_id','<>',status('Deleted'))->filterdata($this->filters);
 
     }
