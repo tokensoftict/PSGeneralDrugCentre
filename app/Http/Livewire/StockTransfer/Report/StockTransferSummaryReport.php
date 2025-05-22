@@ -41,9 +41,12 @@ final class StockTransferSummaryReport extends PowerGridComponent
             DB::raw( 'SUM(quantity) as total_qty')
         )->whereHas('stocktransfer', function ($query){
             $query->where('to',$this->filters['department'])
-                ->whereBetween('transfer_date', $this->filters['between.transfer_date'])
-                ->where('status_id',$this->filters['status_id'])
-                ->orderBy("id","DESC");
+                ->whereBetween('transfer_date', $this->filters['between.transfer_date']);
+                if($this->filters['department'] === "retail") {
+                    $query->where('from', '<>', 'retail_store'); // dont include transfer made from retail store to retail
+                }
+            $query->where('status_id',$this->filters['status_id']);
+                $query->orderBy("id","DESC");
         })->groupBy('stock_id');
     }
 
