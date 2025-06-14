@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('open:stock')->dailyAt('01:00');
-
+        
         $schedule->command('orders:refresh')->everyMinute()->withoutOverlapping();
 
         //$schedule->command('queue:work --sansdaemon --tries=3 --timeout=0')->everyMinute()->withoutOverlapping()->appendOutputTo('storage/app/queuework.txt');
