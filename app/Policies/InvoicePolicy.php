@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Classes\Settings;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\WaitingCustomer;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class InvoicePolicy
@@ -408,4 +409,48 @@ class InvoicePolicy
         return true;
     }
 
+
+    public function canAddToWaitingList(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.addToWaitingList")) return false;
+
+        if(isset($invoice->waitingCustomer->entered_at)) return false; // if already in waiting list
+
+        if($invoice->status_id != status("Paid"))  return false;
+
+        return true;
+    }
+
+    public function canRemoveToWaitingList(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.removeFromWaitingList")) return false;
+
+        if(isset($invoice->waitingCustomer->entered_at)) return true; // if already in waiting list
+
+        return false;
+    }
+
+
+    public function setWaitingListInvoiceToPacking(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.packWaitingListInvoice")) return false;
+
+        if(!isset($invoice->waitingCustomer->entered_at)) return false;
+
+        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['waiting']) return true;
+
+        return false;
+    }
+
+
+    public function setWaitingListInvoiceToPacked(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.packedWaitingListInvoice")) return false;
+
+        if(!isset($invoice->waitingCustomer->entered_at)) return false;
+
+        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['packing']) return true;
+
+        return false;
+    }
 }

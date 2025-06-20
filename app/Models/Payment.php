@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Jobs\AddCustomerToWaitingList;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -87,5 +88,13 @@ class Payment extends Model
     public function invoice(){
 
         return $this->morphTo();
+    }
+
+
+    public function newonlinePush()
+    {
+        if(config('app.start_customer_queue_module')) {
+            AddCustomerToWaitingList::dispatch($this->invoice_id);
+        }
     }
 }

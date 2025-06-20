@@ -50,7 +50,7 @@ trait SimpleDatatableComponentTrait
         $this->index = $this->page > 1 ? ($this->page - 1) * $this->perPage : 0;
         return [
             Column::make('No.','id')->format(fn () => ++$this->index),
-            ...self::mountColumn()
+            ...self::mountColumn($this)
         ];
     }
 

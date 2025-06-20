@@ -74,6 +74,7 @@ class Invoice extends Model
 
 	protected $table = 'invoices';
 
+
 	protected $casts = [
 		'customer_id' => 'int',
 		'payment_id' => 'int',
@@ -234,5 +235,10 @@ class Invoice extends Model
     public function invoiceprinthistories()
     {
         return $this->hasMany(Invoiceprinthistory::class);
+    }
+
+    public function waitingCustomer()
+    {
+        return $this->hasOne(WaitingCustomer::class, );
     }
 }

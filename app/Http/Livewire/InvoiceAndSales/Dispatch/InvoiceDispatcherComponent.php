@@ -4,6 +4,7 @@ namespace App\Http\Livewire\InvoiceAndSales\Dispatch;
 
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\WaitingCustomer;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -59,6 +60,10 @@ class InvoiceDispatcherComponent extends Component
 
         $this->invoice->update($this->data);
 
+        if(isset($this->invoice->waitingCustomer->status)) {
+            $this->invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['dispatched'];
+            $this->invoice->waitingCustomer->save();
+        }
 
         $this->dispatchBrowserEvent('refreshBrowser', ['link'=>route('invoiceandsales.view',$this->invoice->id)]);
 

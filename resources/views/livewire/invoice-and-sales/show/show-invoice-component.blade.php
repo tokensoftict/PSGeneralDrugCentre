@@ -110,11 +110,18 @@
                                     <a href="{{ route('invoiceandsales.print_way_bill',$this->invoice->id) }}" class="dropdown-item print">Print Waybill</a>
                                 </li>
                             @endcan
-                            @can('delete', $this->invoice)
+                            @can('canAddToWaitingList', $this->invoice)
                                 <li>
-                                    <a href="{{ route('invoiceandsales.destroy',$this->invoice->id) }}" href="javascript:void(0);" class="dropdown-item confirm-text">Delete Invoice</a>
+                                    <a href="{{ route('invoiceandsales.addToWaitingList',$this->invoice->id) }}" href="javascript:void(0);" onclick="return confirm('Are you sure want to add this invoice to waiting list, this can not be reversed');" class="dropdown-item confirm-text">Add To Waiting List</a>
                                 </li>
                             @endcan
+
+                            @can('canRemoveToWaitingList', $this->invoice)
+                                <li>
+                                    <a href="{{ route('invoiceandsales.removeFromWaitingList',$this->invoice->id) }}" href="javascript:void(0);" onclick="return confirm('Are you sure want to remove this invoice to waiting list, this can not be reversed');" class="dropdown-item confirm-text">Remove Waiting List</a>
+                                </li>
+                            @endcan
+
                         </ul>
                     </div>
                 @endif

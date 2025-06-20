@@ -51,8 +51,6 @@ trait StockModelTrait
 
     public static function removeSaleableBatches(Invoice $invoice ,$batches, $columns = []){
 
-        //Stockbatch::upsert($batches, ['id'], $columns);
-
         $bincards = [];
 
         foreach ($batches as $batch)

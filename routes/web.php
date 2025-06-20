@@ -8,6 +8,8 @@ Route::get('/auth', ['as' => 'login', 'uses' => 'Auth\LoginController@index']);
 Route::post('login', ['as' => 'login_process', 'uses' => 'Auth\LoginController@loginprocess']);
 Route::match(['get', 'post'], 'logout', ['as' => 'logout', 'uses' => 'Auth\LoginController@logout']);
 Route::get('/scan', ['as' => 'scan', 'uses' => 'ProductScannerController']);
+Route::get('/waiting-list', ['as' => 'waiting-list', 'uses' => 'WaitingListController']);
+
 
 Route::middleware(['auth'])->group(function () {
     Route::match(['post', 'get'], '/profile', 'Auth\LoginController@profile')->name('profile');
@@ -286,6 +288,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('create', ['as' => 'create', 'uses' => 'InvoiceController@create', 'custom_label'=>'New Invoice', 'visible'=>true]);
                 Route::match(['get','post'],'', ['as' => 'draft', 'uses' => 'InvoiceController@draft', 'visible' => true, 'custom_label'=>'Draft Invoice']);
                 Route::match(['get','post'],'packing', ['as' => 'packing', 'uses' => 'InvoiceController@packing', 'visible' => true, 'custom_label'=>'Packing Invoice']);
+                Route::match(['get','post'],'waiting', ['as' => 'waiting', 'uses' => 'InvoiceController@waiting', 'visible' => true, 'custom_label'=>'Waiting Invoice']);
                 Route::match(['get','post'],'alredy_packed', ['as' => 'alredy_packed', 'uses' => 'InvoiceController@alredy_packed', 'visible' => true, 'custom_label'=>'Already Packed Invoice']);
                 Route::match(['get','post'],'discount', ['as' => 'discount', 'uses' => 'InvoiceController@discount', 'visible' => true, 'custom_label'=>'Discount Invoice']);
                 Route::match(['get','post'],'paid', ['as' => 'paid', 'uses' => 'InvoiceController@paid', 'visible' => true, 'custom_label'=>'Paid Invoice']);
@@ -317,6 +320,10 @@ Route::middleware(['auth'])->group(function () {
                 Route::get( 'rePrintInvoice', ['as' => 'rePrintInvoice', 'uses' => 'InvoiceController@rePrintInvoice', 'custom_label'=>'Re-print Invoice Retail Receipt']);
                 Route::get('{invoice}/processOnlineInvoice', ['as' => 'processOnlineInvoice', 'uses' => 'InvoiceController@processOnlineInvoice', 'custom_label'=>'Process/Pack Online Invoice']);
                 Route::get('{invoice}/packOnlineInvoice', ['as' => 'packOnlineInvoice', 'uses' => 'InvoiceController@packOnlineInvoice', 'custom_label'=>'Mark Online Invoice has Packed']);
+                Route::get('{invoice}/addToWaitingList', ['as' => 'addToWaitingList', 'uses' => 'InvoiceController@addToWaitingList', 'custom_label'=>'Add Invoice To Waiting List']);
+                Route::get('{invoice}/removeFromWaitingList', ['as' => 'removeFromWaitingList', 'uses' => 'InvoiceController@removeFromWaitingList', 'custom_label'=>'Remove Invoice To Waiting List']);
+                Route::get('{invoice}/packWaitingListInvoice', ['as' => 'packWaitingListInvoice', 'uses' => 'InvoiceController@packWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Packing']);
+                Route::get('{invoice}/packedWaitingListInvoice', ['as' => 'packedWaitingListInvoice', 'uses' => 'InvoiceController@packedWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Packed']);
             });
         });
         Route::prefix('promotion')->namespace('PromotionManager')->group(function () {

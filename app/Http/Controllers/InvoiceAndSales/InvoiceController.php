@@ -4,8 +4,10 @@ namespace App\Http\Controllers\InvoiceAndSales;
 
 use App\Classes\Settings;
 use App\Http\Controllers\Controller;
+use App\Jobs\AddCustomerToWaitingList;
 use App\Jobs\PushStockUpdateToServer;
 use App\Models\Invoice;
+use App\Models\WaitingCustomer;
 use App\Repositories\InvoiceRepository;
 use App\Traits\InvoiceTrait;
 use Illuminate\Http\Request;
@@ -82,7 +84,7 @@ class InvoiceController extends Controller
         }
 
         $data['title'] = 'Packing Invoice(s)';
-        $data['subtitle'] = 'List of Invoice Currently Being Packed - '.$data['filters']['filters']['invoice_date'];
+        $data['subtitle'] = 'List of Invoice Currently Being Pack - '.$data['filters']['filters']['invoice_date'];
 
         if(auth()->user()->department_id !== 5) {
             $dpt = department_by_id(auth()->user()->department_id)->quantity_column;
@@ -91,7 +93,7 @@ class InvoiceController extends Controller
 
         $data['filters']['filters']['status_id'] = status('Packing');
 
-        return setPageContent('invoiceandsales.index', $data);
+        return view('invoiceandsales.index', $data);
     }
 
 
@@ -216,6 +218,29 @@ class InvoiceController extends Controller
         return setPageContent('invoiceandsales.index', $data);
     }
 
+
+    public function waiting(Request $request)
+    {
+        $data = [
+            'filters' => [
+                'date_added' =>dailyDate(),
+                'filters' => [
+                    'date_added' => todaysDate()
+                ]
+            ]
+        ];
+
+        if($request->get('filter'))
+        {
+            $data['filters'] = $request->get('filter');
+            $data['filters']['filters']['date_added'] = $request->get('filter')['date_added'];
+        }
+
+        $data['title'] = 'Waiting Customer List invoice(s)';
+        $data['subtitle'] = 'List of Customer Waiting Queue invoices - '.$data['filters']['filters']['date_added'];
+
+        return setPageContent('invoiceandsales.waiting', $data);
+    }
 
     public function paid(Request $request)
     {
@@ -500,6 +525,62 @@ class InvoiceController extends Controller
             logActivity($invoice->id, $invoice->invoice_number, "online invoice was updated to Packed-Waiting-For-Payment");
         });
         return redirect()->back()->with('success', 'Invoice status as been changed to Packed successfully, and customer has been notify');
+    }
+
+
+    /**
+     * @param Invoice $invoice
+     * @return \Illuminate\Http\RedirectResponse|mixed
+     * @throws \Throwable
+     */
+    public function addToWaitingList(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            AddCustomerToWaitingList::dispatch($invoice);
+            logActivity($invoice->id, $invoice->invoice_number, "Invoice was added to waiting list");
+            return redirect()->back()->with('success', 'Invoice was added to waiting list successfully!');
+        });
+    }
+
+    /**
+     * @param Invoice $invoice
+     * @return \Illuminate\Http\RedirectResponse|mixed
+     * @throws \Throwable
+     */
+    public function removeFromWaitingList(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            WaitingCustomer::where('invoice_id', $invoice->id)->delete();
+            logActivity($invoice->id, $invoice->invoice_number, "Invoice was removed to waiting list");
+            return redirect()->back()->with('success', 'Invoice was added to waiting list successfully!');
+        });
+    }
+
+
+    public function packWaitingListInvoice(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['waiting']){
+                $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['packing'];
+                $waitingListInvoice->update();
+                 return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
+            }
+            return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
+        });
+    }
+
+    public function packedWaitingListInvoice(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['packing']){
+                $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['packed'];
+                $waitingListInvoice->update();
+                return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packed successfully!');
+            }
+            return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
+        });
     }
 
 }

@@ -22,6 +22,7 @@ return [
 
     'sync_with_online' => env('SYNC_WITH_ONLINE', false),
     'PURCHASE_DEPARTMENT' => env('PURCHASE_DEPARTMENT', false),
+    'start_customer_queue_module' => env('START_CUSTOMER_QUEUE', false),
 
     /*
     |--------------------------------------------------------------------------

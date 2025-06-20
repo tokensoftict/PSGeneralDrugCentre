@@ -736,6 +736,29 @@ function showStatus($status)
 }
 
 
+function showAddToWaitingStatus(bool $status)
+{
+    if($status === true) {
+        return  label('Yes','success');
+    }
+    return  label('No','danger');
+}
+
+
+function showWaitingStatus($status)
+{
+    if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['waiting']) {
+        return  label('Waiting','warning');
+    } else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['packing']) {
+        return  label('Packing','primary');
+    } else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['packed']) {
+        return  label('Packed','success');
+    } else {
+        return  label('Unknown','default');
+    }
+}
+
+
 function statuses()
 {
     return Cache::remember('status',144000,function(){

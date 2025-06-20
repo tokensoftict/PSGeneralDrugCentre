@@ -14,6 +14,7 @@ use App\Models\Invoiceitem;
 use App\Models\Invoiceitembatch;
 use App\Models\Onlineordertotal;
 use App\Models\Stock;
+use App\Models\WaitingCustomer;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -593,6 +594,11 @@ class InvoiceRepository
             $invoice->scan_time = Carbon::now();
             $invoice->scan_date = todaysDate();
             $invoice->update();
+
+            if(isset($invoice->waitingCustomer->status)) {
+                $invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['dispatched'];
+                $invoice->waitingCustomer->save();
+            }
 
             logActivity($invoice->id, $invoice->invoice_number, "Invoice number was been Scan / Checkout");
 
