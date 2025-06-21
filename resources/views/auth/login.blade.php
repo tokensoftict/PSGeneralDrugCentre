@@ -87,6 +87,7 @@
 
                                     <div class="mb-3">
                                         <button class="btn btn-danger w-100 waves-effect waves-light" type="submit">Log In</button>
+                                        <a href="{{ route('waiting-list') }}">Customer Waiting List</a>
                                     </div>
                                 </form>
 
