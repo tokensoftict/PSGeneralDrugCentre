@@ -561,8 +561,21 @@ class InvoiceController extends Controller
     {
         return DB::transaction(function() use ($invoice){
             $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
-            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['waiting']){
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['picking']){
                 $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['packing'];
+                $waitingListInvoice->update();
+                 return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
+            }
+            return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
+        });
+    }
+
+    public function pickWaitingListInvoice(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['waiting']){
+                $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['picking'];
                 $waitingListInvoice->update();
                  return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
             }

@@ -155,11 +155,15 @@ class InvoiceDataTable extends ExportDataTableComponent
                             }
 
                             if (auth()->user()->can('setWaitingListInvoiceToPacking', $row->invoice)) {
-                                $html .= '<li><a href="' . route('invoiceandsales.packWaitingListInvoice', $row->invoice_id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packing, this can not be reversed\');" class="dropdown-item">Starting Packing</a></li>';
+                                $html .= '<li><a href="' . route('invoiceandsales.packWaitingListInvoice', $row->invoice_id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packing, this can not be reversed\');" class="dropdown-item">Start Packing</a></li>';
                             }
 
                             if (auth()->user()->can('setWaitingListInvoiceToPacked', $row->invoice)) {
                                 $html .= '<li><a href="' . route('invoiceandsales.packedWaitingListInvoice', $row->invoice_id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packed, this can not be reversed\');" class="dropdown-item">Complete Packing</a></li>';
+                            }
+
+                            if (auth()->user()->can('setWaitingListInvoiceToPicking', $row->invoice)) {
+                                $html .= '<li><a href="' . route('invoiceandsales.pickWaitingListInvoice', $row->invoice_id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to picking, this can not be reversed\');" class="dropdown-item">Start Picking</a></li>';
                             }
 
                             $html .= '</ul></div>';
@@ -281,11 +285,15 @@ class InvoiceDataTable extends ExportDataTableComponent
                             }
 
                             if (auth()->user()->can('setWaitingListInvoiceToPacking', $row)) {
-                                $html .= '<li><a href="' . route('invoiceandsales.packWaitingListInvoice', $row->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packing, this can not be reversed\');" class="dropdown-item">Starting Packing</a></li>';
+                                $html .= '<li><a href="' . route('invoiceandsales.packWaitingListInvoice', $row->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packing, this can not be reversed\');" class="dropdown-item">Start Packing</a></li>';
                             }
 
                             if (auth()->user()->can('setWaitingListInvoiceToPacked', $row)) {
                                 $html .= '<li><a href="' . route('invoiceandsales.packedWaitingListInvoice', $row->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packed, this can not be reversed\');" class="dropdown-item">Complete Packing</a></li>';
+                            }
+
+                            if (auth()->user()->can('setWaitingListInvoiceToPicking', $row)) {
+                                $html .= '<li><a href="' . route('invoiceandsales.pickWaitingListInvoice', $row->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to picking, this can not be reversed\');" class="dropdown-item">Start Picking</a></li>';
                             }
 
                             $html .= '</ul></div>';

@@ -51,7 +51,7 @@ class AddCustomerToWaitingList
             'customer_id' => $this->invoice->customer_id,
             'date_added' => now()->format('Y-m-d'),
             'invoice_number' => $this->invoice->invoice_number,
-            'status' => WaitingCustomer::$waitingInvoiceStatus['packing'],
+            'status' => WaitingCustomer::$waitingInvoiceStatus['picking'],
             'entered_at' => now(),
         ]);
     }

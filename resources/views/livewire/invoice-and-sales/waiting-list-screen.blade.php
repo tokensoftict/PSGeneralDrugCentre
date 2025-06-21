@@ -25,7 +25,7 @@
                             <td>{{ $item->invoice->customer->fullname ?? 'N/A' }}</td>
                             <td>#{{ $item->invoice->invoice_number }}</td>
                             <td><span class="badge bg-warning text-dark">{{ ucfirst($item->status) }}</span></td>
-                            <td>{{ $item->entered_at->format('H:i a') }}</td>
+                            <td>{{ $item->entered_at->format('h:i:s A') }}</td>
                             <td>
                                 <span
                                         class="live-duration"

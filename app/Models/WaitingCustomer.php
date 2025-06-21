@@ -37,6 +37,7 @@ class WaitingCustomer extends Model
 
     public static array $waitingInvoiceStatus = [
         'waiting' => 'Waiting',
+        'picking' => 'Picking',
         'packing' => 'Packing',
         'packed' => 'Packed',
         'complete' => 'Complete',

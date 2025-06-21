@@ -430,6 +430,17 @@ class InvoicePolicy
         return false;
     }
 
+    public function setWaitingListInvoiceToPicking(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.pickWaitingListInvoice")) return false;
+
+        if(!isset($invoice->waitingCustomer->entered_at)) return false;
+
+        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['waiting']) return true;
+
+        return false;
+    }
+
 
     public function setWaitingListInvoiceToPacking(User $user, Invoice $invoice)
     {
@@ -437,7 +448,7 @@ class InvoicePolicy
 
         if(!isset($invoice->waitingCustomer->entered_at)) return false;
 
-        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['waiting']) return true;
+        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['picking']) return true;
 
         return false;
     }
