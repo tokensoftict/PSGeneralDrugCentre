@@ -1,7 +1,7 @@
 <div wire:poll.15s>
     <div class="container-fluid py-5">
         <div class="text-center mb-5">
-            <h1 class="screen-title text-warning">🧾 Customer Waiting Queue</h1>
+            <h1 class="screen-title text-warning"><img src="{{ asset('images/logo.jpg') }}" width="90"/> Customer Waiting Queue</h1>
             <p class="sub-text">Customers in progress – updated live</p>
         </div>
         <span id="server-time" data-server-time="{{ $serverTime }}"></span>
