@@ -753,6 +753,8 @@ function showWaitingStatus($status)
         return  label('Packing','primary');
     } else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['packed']) {
         return  label('Packed','success');
+    }else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['picking']) {
+        return  label('Picking','primary');
     } else {
         return  label('Unknown','default');
     }
