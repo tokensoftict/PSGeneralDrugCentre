@@ -16,7 +16,6 @@ class WaitingListScreen extends Component
             'waitingList' => WaitingCustomer::with('invoice.customer')
                 ->where('date_added', now()->format('Y-m-d'))
                 ->where('status', '<>', WaitingCustomer::$waitingInvoiceStatus['complete'])
-                ->where('status', '<>', WaitingCustomer::$waitingInvoiceStatus['dispatched'])
                 ->orderBy('entered_at')
                 ->get(),
         ]);
