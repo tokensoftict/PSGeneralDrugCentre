@@ -65,6 +65,38 @@
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.1); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
+
+
+        .table-wrapper {
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-size: 1rem;
+        }
+
+        .table-white {
+            --bs-table-color: #fff;
+            --bs-table-bg: #fff;
+            --bs-table-border-color:#fff;
+            --bs-table-striped-bg: #fff;
+            --bs-table-striped-color: #fff;
+            --bs-table-active-bg: #fff;
+            --bs-table-active-color: #fff;
+            --bs-table-hover-bg: #fff;
+            --bs-table-hover-color: #fff;
+            color: var(--bs-table-color);
+            border-color: var(--bs-table-border-color);
         }
     </style>
 </head>
