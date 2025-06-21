@@ -596,7 +596,7 @@ class InvoiceRepository
             $invoice->update();
 
             if(isset($invoice->waitingCustomer->status)) {
-                $invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['dispatched'];
+                $invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['complete'];
                 $invoice->waitingCustomer->save();
             }
 
