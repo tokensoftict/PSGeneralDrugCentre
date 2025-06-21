@@ -18,6 +18,7 @@ class WaitingListScreen extends Component
                 ->where('status', '<>', WaitingCustomer::$waitingInvoiceStatus['complete'])
                 ->orderBy('entered_at')
                 ->get(),
+            'serverTime' => now()->timestamp, // current server time in seconds
         ]);
     }
 }

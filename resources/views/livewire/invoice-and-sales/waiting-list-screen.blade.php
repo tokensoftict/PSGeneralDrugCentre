@@ -4,7 +4,7 @@
             <h1 class="screen-title text-warning">🧾 Customer Waiting Queue</h1>
             <p class="sub-text">Customers in progress – updated live</p>
         </div>
-
+        <span id="server-time" data-server-time="{{ $serverTime }}"></span>
         <div class="card shadow-lg rounded-4 overflow-hidden">
             <div class="card-body bg-dark bg-opacity-75 p-0 table-wrapper" id="scrollContainer" style="max-height: 70vh; overflow-y: auto;">
                 <table class="table table-dark table-hover table-bordered mb-0 text-center">

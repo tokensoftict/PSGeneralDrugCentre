@@ -122,30 +122,38 @@
 </script>
 <script>
     const durations = {};
+    let serverClientOffset = 0;
+
+    function syncWithServerTime() {
+        const serverElement = document.getElementById('server-time');
+        if (!serverElement) return;
+
+        const serverTime = parseInt(serverElement.getAttribute('data-server-time')) * 1000; // to ms
+        const clientTime = Date.now();
+        serverClientOffset = clientTime - serverTime;
+    }
 
     function updateDurations() {
+        const now = Date.now() - serverClientOffset; // corrected "true" server time
+
         for (const [id, timestamp] of Object.entries(durations)) {
             const el = document.getElementById(`duration-${id}`);
             if (!el) continue;
 
-            const now = Date.now();
             const diff = now - (timestamp * 1000);
-
             const totalSeconds = Math.floor(diff / 1000);
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
             const seconds = totalSeconds % 60;
 
-            // Highlight if waited more than 10 minutes
             if (minutes >= 10) {
                 el.classList.add('text-danger');
             } else {
                 el.classList.remove('text-danger');
             }
 
-            // Add pulse animation
             el.classList.remove('pulse');
-            void el.offsetWidth; // force reflow
+            void el.offsetWidth; // trigger reflow
             el.classList.add('pulse');
 
             el.textContent = `${hours}h ${minutes}m ${seconds}s`;
@@ -163,6 +171,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        syncWithServerTime();
         cacheDurations();
         updateDurations();
         setInterval(updateDurations, 1000);
@@ -170,6 +179,7 @@
 
     Livewire.hook('message.processed', () => {
         cacheDurations();
+        syncWithServerTime(); // refresh offset on every update
     });
 
     let scrollDirection = 'down';
