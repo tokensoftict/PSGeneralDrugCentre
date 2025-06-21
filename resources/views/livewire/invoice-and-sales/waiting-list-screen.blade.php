@@ -7,7 +7,7 @@
         <span id="server-time" data-server-time="{{ $serverTime }}"></span>
         <div class="card shadow-lg rounded-4 overflow-hidden">
             <div class="card-body bg-dark bg-opacity-75 p-0 table-wrapper" id="scrollContainer" style="max-height: 70vh; overflow-y: auto;">
-                <table class="table table-white table-hover table-bordered mb-0 text-center">
+                <table class="table bg-white text-dark table-hover table-bordered mb-0 text-center">
                     <thead class="table-warning text-dark fs-5">
                     <tr>
                         <th>#</th>

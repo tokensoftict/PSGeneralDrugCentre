@@ -72,6 +72,20 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
 
+        .table-white {
+            --bs-table-color: #fff !important;
+            --bs-table-bg: #fff !important;
+            --bs-table-border-color:#fff !important;
+            --bs-table-striped-bg: #fff !important;
+            --bs-table-striped-color: #fff !important;
+            --bs-table-active-bg: #fff !important;
+            --bs-table-active-color: #fff !important;
+            --bs-table-hover-bg: #fff !important;
+            --bs-table-hover-color: #fff !important;
+            color: var(--bs-table-color);
+            border-color: var(--bs-table-border-color);
+        }
+
         .table thead th {
             background-color: #f8f9fa;
             font-weight: bold;
@@ -83,20 +97,6 @@
 
         .badge {
             font-size: 1rem;
-        }
-
-        .table-white {
-            --bs-table-color: #fff;
-            --bs-table-bg: #fff;
-            --bs-table-border-color:#fff;
-            --bs-table-striped-bg: #fff;
-            --bs-table-striped-color: #fff;
-            --bs-table-active-bg: #fff;
-            --bs-table-active-color: #fff;
-            --bs-table-hover-bg: #fff;
-            --bs-table-hover-color: #fff;
-            color: var(--bs-table-color);
-            border-color: var(--bs-table-border-color);
         }
     </style>
 </head>
