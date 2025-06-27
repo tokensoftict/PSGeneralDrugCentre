@@ -598,6 +598,7 @@ class InvoiceRepository
             if(isset($invoice->waitingCustomer->status)) {
                 $invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['complete'];
                 $invoice->waitingCustomer->save();
+                addCustomerWaitingListStatusHistory($invoice->waitingCustomer, 'complete');
             }
 
             logActivity($invoice->id, $invoice->invoice_number, "Invoice number was been Scan / Checkout");

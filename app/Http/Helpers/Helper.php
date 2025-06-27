@@ -3,6 +3,8 @@
 
 use App\Models\Stock;
 use App\Models\Usergroup;
+use App\Models\WaitingCustomer;
+use App\Models\WaitingCustomersHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -748,13 +750,13 @@ function showAddToWaitingStatus(bool $status)
 function showWaitingStatus($status)
 {
     if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['waiting']) {
-        return  label('Waiting','warning');
+        return  label( \App\Models\WaitingCustomer::$waitingInvoiceStatus['waiting'],'warning');
     } else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['packing']) {
-        return  label('Packing','primary');
+        return  label(\App\Models\WaitingCustomer::$waitingInvoiceStatus['packing'],'primary');
     } else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['packed']) {
-        return  label('Packed','success');
+        return  label(\App\Models\WaitingCustomer::$waitingInvoiceStatus['packed'],'success');
     }else if($status === \App\Models\WaitingCustomer::$waitingInvoiceStatus['picking']) {
-        return  label('Picking','primary');
+        return  label(\App\Models\WaitingCustomer::$waitingInvoiceStatus['picking'],'primary');
     } else {
         return  label('Unknown','default');
     }
@@ -1312,4 +1314,45 @@ function generateUniqueNumber() {
     } while (\App\Models\Invoice::where('invoice_number', $number)->exists());
 
     return $number;
+}
+
+
+function addCustomerWaitingListStatusHistory(WaitingCustomer $waitingCustomer, string $status)
+{
+   $waitingCustomerHistory = WaitingCustomersHistory::where('waiting_customer_id', $waitingCustomer->id)->first();
+   if($waitingCustomerHistory){
+       if(is_null($waitingCustomer->{$status})) {
+           $waitingCustomerHistory->{$status} = now()->timestamp;
+           $waitingCustomerHistory->save();
+       }
+   } else {
+       WaitingCustomersHistory::create([
+           'waiting_customer_id' => $waitingCustomer->id,
+           $status => now()->timestamp
+       ]);
+   }
+}
+
+function waitingListCustomerUpdateButton(WaitingCustomer $waitingCustomer)
+{
+    $button = "";
+    if (auth()->user()->can('setWaitingListInvoiceToPacking', $waitingCustomer->invoice)) {
+        $button = '<a href="' . route('invoiceandsales.packWaitingListInvoice', $waitingCustomer->invoice->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packing, this can not be reversed\');" class="btn btn-sm btn-primary">Start Packing</a>';
+    }
+
+    if (auth()->user()->can('setWaitingListInvoiceToPacked', $waitingCustomer->invoice)) {
+        $button = '<a href="' . route('invoiceandsales.packedWaitingListInvoice', $waitingCustomer->invoice->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to packed, this can not be reversed\');" class="btn btn-sm btn-primary">Complete Packing</a>';
+    }
+
+    if (auth()->user()->can('setWaitingListInvoiceToPicking', $waitingCustomer->invoice)) {
+        $button = '<a href="' . route('invoiceandsales.pickWaitingListInvoice', $waitingCustomer->invoice->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to picking, this can not be reversed\');" class="btn btn-sm btn-success">Start Picking</a>';
+    }
+
+    if (auth()->user()->can('setWaitingListInvoiceToCompletePicking',$waitingCustomer->invoice)) {
+        $button = '<a href="' . route('invoiceandsales.completePickingWaitingListInvoice', $waitingCustomer->invoice->id) . '" href="javascript:" onclick="return confirm(\'Are you sure you want set the invoice queue status to complete picking, this can not be reversed\');" class="btn btn-sm btn-primary">Complete Picking</a>';
+    }
+
+    if($button == "") return "No Action";
+
+    return $button;
 }

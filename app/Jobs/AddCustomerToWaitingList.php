@@ -46,7 +46,7 @@ class AddCustomerToWaitingList
 
         if(WaitingCustomer::where('invoice_id', $this->invoice->id)->exists()) return; // invoice has been added already
 
-        WaitingCustomer::create([
+        $waitingCustomer = WaitingCustomer::create([
             'invoice_id' => $this->invoice->id,
             'customer_id' => $this->invoice->customer_id,
             'date_added' => now()->format('Y-m-d'),
@@ -54,5 +54,7 @@ class AddCustomerToWaitingList
             'status' => WaitingCustomer::$waitingInvoiceStatus['picking'],
             'entered_at' => now(),
         ]);
+        addCustomerWaitingListStatusHistory($waitingCustomer, 'waiting');
+        addCustomerWaitingListStatusHistory($waitingCustomer, 'picking');
     }
 }

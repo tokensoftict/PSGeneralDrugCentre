@@ -63,6 +63,8 @@ class InvoiceDispatcherComponent extends Component
         if(isset($this->invoice->waitingCustomer->status)) {
             $this->invoice->waitingCustomer->status = WaitingCustomer::$waitingInvoiceStatus['dispatched'];
             $this->invoice->waitingCustomer->save();
+
+            addCustomerWaitingListStatusHistory($this->invoice->waitingCustomer, 'dispatched');
         }
 
         $this->dispatchBrowserEvent('refreshBrowser', ['link'=>route('invoiceandsales.view',$this->invoice->id)]);

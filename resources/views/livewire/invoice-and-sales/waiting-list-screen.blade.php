@@ -13,6 +13,7 @@
                         <th>#</th>
                         <th>Customer</th>
                         <th>Invoice</th>
+                        <th>Pickup Department</th>
                         <th>Status</th>
                         <th>Time</th>
                         <th>Waiting Time</th>
@@ -24,6 +25,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->invoice->customer->fullname ?? 'N/A' }}</td>
                             <td>#{{ $item->invoice->invoice_number }}</td>
+                            <td>{{ \App\Classes\Settings::$department[$item->invoice->department] }}</td>
                             <td><span class="badge bg-warning text-dark">{{ ucfirst($item->status) }}</span></td>
                             <td>{{ $item->entered_at->format('h:i:s A') }}</td>
                             <td>

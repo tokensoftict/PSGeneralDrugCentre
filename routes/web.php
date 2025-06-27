@@ -324,7 +324,9 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('{invoice}/removeFromWaitingList', ['as' => 'removeFromWaitingList', 'uses' => 'InvoiceController@removeFromWaitingList', 'custom_label'=>'Remove Invoice To Waiting List']);
                 Route::get('{invoice}/packWaitingListInvoice', ['as' => 'packWaitingListInvoice', 'uses' => 'InvoiceController@packWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Packing']);
                 Route::get('{invoice}/pickWaitingListInvoice', ['as' => 'pickWaitingListInvoice', 'uses' => 'InvoiceController@pickWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Picking']);
+                Route::get('{invoice}/completePickingWaitingListInvoice', ['as' => 'completePickingWaitingListInvoice', 'uses' => 'InvoiceController@completePickingWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Packed']);
                 Route::get('{invoice}/packedWaitingListInvoice', ['as' => 'packedWaitingListInvoice', 'uses' => 'InvoiceController@packedWaitingListInvoice', 'custom_label'=>'Set Waiting Customer invoice to Packed']);
+
             });
         });
         Route::prefix('promotion')->namespace('PromotionManager')->group(function () {

@@ -141,6 +141,11 @@
                                 </li>
                             @endcan
 
+                            @can('setWaitingListInvoiceToCompletePicking', $this->invoice)
+                                <li>
+                                    <a href="{{ route('invoiceandsales.completePickingWaitingListInvoice',$this->invoice->id) }}" href="javascript:void(0);" onclick="return confirm('Are you sure you want set the invoice queue status to complete picking, this can not be reversed');" class="dropdown-item confirm-text">Complete Picking</a>
+                                </li>
+                            @endcan
 
                         </ul>
                     </div>

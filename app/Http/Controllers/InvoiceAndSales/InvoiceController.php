@@ -402,33 +402,33 @@ class InvoiceController extends Controller
     {
 
     }
-/*
-    public function applyForCheque(Invoice $invoice)
-    {
-        $data = [];
+    /*
+        public function applyForCheque(Invoice $invoice)
+        {
+            $data = [];
 
-        $data['title'] = 'Cheque Payment Approval';
-        $data['subtitle'] = 'Apply For Cheque Payment Approval';
-        $data['invoice'] = $invoice;
+            $data['title'] = 'Cheque Payment Approval';
+            $data['subtitle'] = 'Apply For Cheque Payment Approval';
+            $data['invoice'] = $invoice;
 
-        logActivity($invoice->id, $invoice->invoice_number,'requested for cheque approval page was viewed');
+            logActivity($invoice->id, $invoice->invoice_number,'requested for cheque approval page was viewed');
 
-        return view('invoiceandsales.applychequeapproval', $data);
-    }
+            return view('invoiceandsales.applychequeapproval', $data);
+        }
 
 
-    public function applyForCredit(Invoice $invoice){
-        $data = [];
+        public function applyForCredit(Invoice $invoice){
+            $data = [];
 
-        $data['title'] = 'Credit Payment Approval';
-        $data['subtitle'] = 'Apply For Credit Payment Approval';
-        $data['invoice'] = $invoice;
+            $data['title'] = 'Credit Payment Approval';
+            $data['subtitle'] = 'Apply For Credit Payment Approval';
+            $data['invoice'] = $invoice;
 
-        logActivity($invoice->id, $invoice->invoice_number,'requested for credit approval page was viewed');
+            logActivity($invoice->id, $invoice->invoice_number,'requested for credit approval page was viewed');
 
-        return view('invoiceandsales.applycreditapproval', $data);
-    }
-*/
+            return view('invoiceandsales.applycreditapproval', $data);
+        }
+    */
     public function applyProductDiscount(Invoice $invoice)
     {
         $data = [];
@@ -505,13 +505,13 @@ class InvoiceController extends Controller
 
     public function processOnlineInvoice(Invoice $invoice)
     {
-       DB::transaction(function() use ($invoice){
-           $invoice->status_id = status('Packing');
-           $invoice->update();
-           logActivity($invoice->id, $invoice->invoice_number, "online invoice was updated to Packing");
-       });
+        DB::transaction(function() use ($invoice){
+            $invoice->status_id = status('Packing');
+            $invoice->update();
+            logActivity($invoice->id, $invoice->invoice_number, "online invoice was updated to Packing");
+        });
 
-       return redirect()->back()->with('success', 'Invoice status as been changed to Packing successfully');
+        return redirect()->back()->with('success', 'Invoice status as been changed to Packing successfully');
     }
 
 
@@ -561,14 +561,29 @@ class InvoiceController extends Controller
     {
         return DB::transaction(function() use ($invoice){
             $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
-            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['picking']){
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['complete_picking']){
                 $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['packing'];
                 $waitingListInvoice->update();
-                 return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
+                addCustomerWaitingListStatusHistory($waitingListInvoice, 'packing');
+                return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
             }
             return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
         });
     }
+
+    public function completePickingWaitingListInvoice(Invoice $invoice)
+    {
+        return DB::transaction(function() use ($invoice){
+            $waitingListInvoice = WaitingCustomer::where('invoice_id', $invoice->id)->first();
+            if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['picking']){
+                $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['complete_picking'];
+                $waitingListInvoice->update();
+                addCustomerWaitingListStatusHistory($waitingListInvoice, 'complete_picking');
+                return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Complete Picking successfully!');
+            }
+        });
+    }
+
 
     public function pickWaitingListInvoice(Invoice $invoice)
     {
@@ -577,7 +592,8 @@ class InvoiceController extends Controller
             if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['waiting']){
                 $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['picking'];
                 $waitingListInvoice->update();
-                 return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
+                addCustomerWaitingListStatusHistory($waitingListInvoice, 'picking');
+                return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packing successfully!');
             }
             return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
         });
@@ -590,10 +606,15 @@ class InvoiceController extends Controller
             if($waitingListInvoice->status == WaitingCustomer::$waitingInvoiceStatus['packing']){
                 $waitingListInvoice->status = WaitingCustomer::$waitingInvoiceStatus['packed'];
                 $waitingListInvoice->update();
+                addCustomerWaitingListStatusHistory($waitingListInvoice, 'packed');
                 return redirect()->back()->with('success', 'Waiting Invoice queue has been updated to Packed successfully!');
             }
             return redirect()->back()->with('error', 'There was an error updating customer waiting list invoice');
         });
     }
+
+
+
+
 
 }

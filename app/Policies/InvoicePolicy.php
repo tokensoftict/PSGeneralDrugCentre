@@ -442,13 +442,24 @@ class InvoicePolicy
     }
 
 
-    public function setWaitingListInvoiceToPacking(User $user, Invoice $invoice)
+    public function setWaitingListInvoiceToCompletePicking(User $user, Invoice $invoice)
     {
         if(!userCanView("invoiceandsales.packWaitingListInvoice")) return false;
 
         if(!isset($invoice->waitingCustomer->entered_at)) return false;
 
         if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['picking']) return true;
+
+        return false;
+    }
+
+    public function setWaitingListInvoiceToPacking(User $user, Invoice $invoice)
+    {
+        if(!userCanView("invoiceandsales.packWaitingListInvoice")) return false;
+
+        if(!isset($invoice->waitingCustomer->entered_at)) return false;
+
+        if($invoice->waitingCustomer->status === WaitingCustomer::$waitingInvoiceStatus['complete_picking']) return true;
 
         return false;
     }

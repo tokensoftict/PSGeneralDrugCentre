@@ -55,7 +55,7 @@ class InvoiceCheckoutScanBarCode extends Component
                     'text' => 'Invoice ('.$this->invoice_number.') not found, Please make sure you are scanning the correct invoice number'
                 ]
             );
-        }else if($invoice->status_id !== status('Complete')){
+        }else if(!in_array($invoice->status_id, [status('Complete'), status('Dispatched')])){
             $this->alert(
                 "error",
                 "Invoice Checkout",
@@ -66,7 +66,7 @@ class InvoiceCheckoutScanBarCode extends Component
                     'showConfirmButton' => true,
                     'confirmButtonText' => 'Okay',
                     'onConfirmed' => 'confirmed',
-                    'text' => 'You can not scan invoice that has not been completed!.'
+                    'text' => 'Please make sure the invoice status is either Complete or Dispatched, before you can checkout the invoice'
                 ]
             );
         }
