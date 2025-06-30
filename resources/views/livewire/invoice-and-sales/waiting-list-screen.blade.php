@@ -1,7 +1,7 @@
 <div wire:poll.15s>
     <div class="container-fluid py-5">
         <div class="text-center mb-5">
-            <h1 class="screen-title text-warning"><img src="{{ asset('images/logo.jpg') }}" width="90"/> Customer Waiting Queue</h1>
+            <h1 class="screen-title text-warning"><img src="{{ asset('images/logo.jpg') }}" width="90"/> Customer Order Status</h1>
             <p class="sub-text">Customers in progress – updated live</p>
         </div>
         <span id="server-time" data-server-time="{{ $serverTime }}"></span>
@@ -13,8 +13,8 @@
                         <th>#</th>
                         <th>Customer</th>
                         <th>Invoice</th>
-                        <th>Pickup Department</th>
-                        <th>No. of Items</th>
+                        <th>Dispatch Area</th>
+                        <th>Items</th>
                         <th>Status</th>
                         <th>Time</th>
                         <th>Waiting Time</th>
@@ -26,7 +26,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->invoice->customer->fullname ?? 'N/A' }}</td>
                             <td>#{{ $item->invoice->invoice_number }}</td>
-                            <td>{{ \App\Classes\Settings::$department[$item->invoice->department] }}</td>
+                            <td>{{ \App\Http\Livewire\InvoiceAndSales\WaitingListScreen::$dispatchArea[\App\Classes\Settings::$department[$item->invoice->department]] }}</td>
                             <td>{{ $item->invoice->invoiceitems->count() }}</td>
                             <td><span class="badge bg-warning text-dark">{{ ucfirst($item->status) }}</span></td>
                             <td>{{ $item->entered_at->format('h:i:s A') }}</td>

@@ -10,6 +10,11 @@ class WaitingListScreen extends Component
 {
     use LivewireAlert;
 
+    public static array $dispatchArea = [
+        'Whole Sales Department' => 'Upstairs',
+        'Main Store' => 'Downstairs',
+    ];
+
     public function render()
     {
         return view('livewire.invoice-and-sales.waiting-list-screen', [
