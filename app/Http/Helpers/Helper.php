@@ -1356,3 +1356,10 @@ function waitingListCustomerUpdateButton(WaitingCustomer $waitingCustomer)
 
     return $button;
 }
+
+
+function assets($string) : string
+{
+    $string = str_replace('products/images', 'images/product', $string);
+    return "https://admin.generaldrugcentre.com/".$string;
+}

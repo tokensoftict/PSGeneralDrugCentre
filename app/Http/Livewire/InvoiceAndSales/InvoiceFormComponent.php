@@ -109,10 +109,6 @@ class InvoiceFormComponent extends Component
         $this->dispatchBrowserEvent("openModal", []);
     }
 
-
-
-
-
     public function saveCustomers()
     {
         $this->validate([
@@ -144,7 +140,6 @@ class InvoiceFormComponent extends Component
         }
     }
 
-
     public function save()
     {
         $this->validate([
@@ -167,7 +162,6 @@ class InvoiceFormComponent extends Component
 
         return true;
     }
-
 
     public function update(Customer $customer)
     {
@@ -209,7 +203,6 @@ class InvoiceFormComponent extends Component
 
         return true;
     }
-
 
     public function generateInvoice()
     {
@@ -276,4 +269,8 @@ class InvoiceFormComponent extends Component
     }
 
 
+    public function getProductByCode()
+    {
+
+    }
 }

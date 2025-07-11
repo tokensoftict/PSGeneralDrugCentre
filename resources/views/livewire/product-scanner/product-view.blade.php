@@ -4,14 +4,14 @@
             <div class="left">
                 <div class="main_image">
                     <center>
-                        <img src="{{ asset($this->product->image_path) }}" onclick="enterFullScreen(document.documentElement)" style="width: 75%; margin: 0px auto" class="slide">
+                        <img src="{{ assets($this->product->image_path) }}" onclick="enterFullScreen(document.documentElement)" style="width: 60%; margin: 0px auto" class="slide">
                     </center>
                 </div>
                 @if(isset($this->product->classification))
                     <div class="option flex">
                         @foreach($this->product?->classification->stocks()->where('retail_price', '>', 0)->whereNotNull('image_path')->limit(6)->get() as $stock)
                             <a href="#" wire:click="getProductByID({{ $stock->id }})">
-                                <img src="{{ asset($stock->image_path) }}" onclick="{{ asset($stock->image_path) }}">
+                                <img src="{{ assets($stock->image_path) }}" onclick="{{ assets($stock->image_path) }}">
                             </a>
                         @endforeach
                     </div>
@@ -33,6 +33,15 @@
         </div>
     </section>
 
+    <div id="screensaver"
+            style="display:block; position:fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index:9999;"
+            wire:ignore
+    >
+        <video id="screensaverVideo" autoplay muted loop style="width:100%; height:100%; object-fit:cover;">
+            <source src="{{ asset('screensaver/video.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
     <script>
         function invoice()
         {
@@ -88,5 +97,40 @@
                 element.msRequestFullscreen();      // IE/Edge
             }
         };
+    </script>
+    <script>
+        let inactivityTime = function () {
+            let timeout;
+            const screensaver = document.getElementById("screensaver");
+            const video = document.getElementById("screensaverVideo");
+
+            function showScreensaver() {
+                screensaver.style.display = "block";
+                video.play();
+            }
+
+            function hideScreensaver() {
+                if (screensaver.style.display === "block") {
+                    screensaver.style.display = "none";
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            }
+
+            function resetTimer() {
+                clearTimeout(timeout);
+                hideScreensaver();
+                timeout = setTimeout(showScreensaver, 5000); // 60 seconds
+            }
+
+            window.onload = resetTimer;
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+            document.ontouchstart = resetTimer;
+            document.onclick = resetTimer;
+            document.onscroll = resetTimer;
+        };
+
+        inactivityTime();
     </script>
 </div>

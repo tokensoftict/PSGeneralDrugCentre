@@ -192,10 +192,10 @@
                                 <input class="form-control datepicker-basic" x-init="initDatePicker()" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date" id="datepicker-basic">
                             </div>
                         @else
-                        <div class="mb-3">
-                            <label>Invoice Date</label>
-                            <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
-                        </div>
+                            <div class="mb-3">
+                                <label>Invoice Date</label>
+                                <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
+                            </div>
                         @endif
                         @if(isset($this->invoice->id))
                             <div class="mb-3">
@@ -499,6 +499,11 @@
 
             generateInvoice(status_id)
             {
+                const hasZero = this.invoiceitems.some(item => item.quantity <= 0);
+                if(hasZero) {
+                    alert("One or more items in your cart have a quantity of zero or less. Please review your input and try again")
+                    return ;
+                }
                 @if( $this->department != "4")
                 if(this.customer_id.firstname === "") {
                     alert("You have not select a customer for this invoice,  please select a customer by searching!...")
@@ -513,7 +518,7 @@
                 @if( $this->department != "4")
                 @this.set('invoiceData.customer_id',this.customer_id.id, true);
                 @else
-                    if(this.customer_id.firstname !== "")
+                if(this.customer_id.firstname !== "")
                 {
                     @this.set('invoiceData.customer_id',this.customer_id.id, true);
                 }else{
@@ -542,17 +547,31 @@
 
             },
 
-            initDatePicker(){
-                flatpickr(".datepicker-basic", {  });
-                var e = document.querySelectorAll("[data-trigger]");
-                for (i = 0; i < e.length; ++i) {
-                    var a = e[i];
-                    new Choices(a, { placeholderValue: "This is a placeholder set in the config", searchPlaceholderValue: "This is a search placeholder" });
-                }
-            },
+            initDatePicker() {
+            flatpickr(".datepicker-basic", {  });
+            var e = document.querySelectorAll("[data-trigger]");
+            for (i = 0; i < e.length; ++i) {
+                var a = e[i];
+                new Choices(a, { placeholderValue: "This is a placeholder set in the config", searchPlaceholderValue: "This is a search placeholder" });
+            }
+        },
             async requestProductWithBarcode(barcode)
             {
-
+                const product = await (await fetch('{{ route('findStockByBarcode') }}?barcode=' + barcode+"&column="+this.department
+                )).
+                json();
+                this.searchString = "";
+                if(product.hasOwnProperty('id') &&  ((this.invoiceitems.filter(e => e.stock_id === this.selectedProduct.id)).length === 0)) {
+                    this.selectedProduct = product
+                    this.addItem();
+                }  else if(product.hasOwnProperty('id') && ((this.invoiceitems.filter(e => e.stock_id === this.selectedProduct.id)).length > 0)) {
+                    const index = this.invoiceitems.findIndex(item => item.stock_id === product.id);
+                    if(index > -1) {
+                        this.incrementQuantity(index);
+                    }
+                } else {
+                    console.log("product not found");
+                }
             },
             getInputFromBarcode()
             {

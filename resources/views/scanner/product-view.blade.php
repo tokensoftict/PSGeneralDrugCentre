@@ -14,7 +14,6 @@
 
 <livewire:product-scanner.product-view/>
 
-
 <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
 <script defer src="{{ asset('js/alpine.min.js') }}"></script>
 <script src="{{ asset('js/barcode.js') }}"></script>
