@@ -558,10 +558,9 @@
             async requestProductWithBarcode(barcode)
             {
                 const product = await (await fetch('{{ route('findStockByBarcode') }}?barcode=' + barcode+"&column="+this.department
-                )).
-                json();
+                )).json();
                 this.searchString = "";
-                if(product.hasOwnProperty('id') &&  ((this.invoiceitems.filter(e => e.stock_id === this.selectedProduct.id)).length === 0)) {
+                if(product.hasOwnProperty('id') &&  ((this.invoiceitems.filter(e => e.stock_id === product.id)).length === 0)) {
                     this.selectedProduct = product
                     this.addItem();
                 }  else if(product.hasOwnProperty('id') && ((this.invoiceitems.filter(e => e.stock_id === this.selectedProduct.id)).length > 0)) {
