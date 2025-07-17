@@ -55,7 +55,7 @@ class PaymentReportsController extends Controller
             $data['filters']['filters']['between.payment_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['customer_id'] = $data['filters']['customer_id'];
         }
-        return view('reports.payment.index', $data);
+        return setPageContent('reports.payment.index', $data);
     }
 
 

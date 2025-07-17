@@ -5,10 +5,12 @@ namespace App\Livewire\Customer;
 use App\Classes\Settings;
 use App\Models\City;
 use App\Models\Customer;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 class CustomerManagerComponent extends Component
 {
+    use LivewireAlert;
 
     protected $listeners = [
         'editCustomer' => 'edit',

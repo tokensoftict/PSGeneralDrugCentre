@@ -5,6 +5,7 @@ namespace App\Livewire\StockTransfer\Datatable;
 use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Repositories\StockTransferRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use App\Classes\Column;
 use App\Models\Stocktransfer;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class StockTransferDatatable extends ExportDataTableComponent
 {
-
+    use LivewireAlert;
     use SimpleDatatableComponentTrait;
 
 

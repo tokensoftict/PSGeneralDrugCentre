@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -50,12 +52,12 @@ class Manufacturer extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_MANUFACTURER, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::UPDATE_MANUFACTURER, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,'action'=>'update','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$this->getBulkPushData()]));
     }
 
 }

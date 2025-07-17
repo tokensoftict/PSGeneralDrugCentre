@@ -4,12 +4,13 @@ namespace App\Livewire\PaymentManager;
 
 use App\Models\Creditpaymentlog;
 use App\Models\Invoice;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 
 class CreatepaymentComponent extends Component
 {
-
+    use LivewireAlert;
     public Invoice $invoice;
     public Creditpaymentlog $creditpaymentlog;
 

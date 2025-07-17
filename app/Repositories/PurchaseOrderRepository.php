@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Jobs\AddLogToProductBinCard;
-use App\Jobs\PushStockUpdateToServerFromPo;
+use App\Jobs\PushStockUpdateToServer;
 use App\Models\Purchase;
 use App\Models\Purchaseitem;
 use App\Models\Stock;
@@ -192,7 +192,7 @@ class PurchaseOrderRepository
 
         $stocks = array_column($batchInsert, 'stock_id');
 
-        dispatch(new PushStockUpdateToServerFromPo($stocks));
+        dispatch(new PushStockUpdateToServer($stocks));
 
         $purchase->status_id = status('Complete');
         $purchase->date_completed = todaysDate();

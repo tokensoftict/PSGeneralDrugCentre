@@ -4,12 +4,13 @@ namespace App\Livewire\StockTransfer\Show;
 
 use App\Models\Stocktransfer;
 use App\Repositories\StockTransferRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ShowStockTransfer extends Component
 {
-
+    use LivewireAlert;
     public string $title;
 
     public string $subtitle;

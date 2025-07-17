@@ -8,6 +8,7 @@ use App\Models\Creditpaymentlog;
 use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\PaymentRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use App\Classes\Column;
@@ -15,6 +16,7 @@ use App\Models\Payment;
 
 class PaymentListDatatable extends ExportDataTableComponent
 {
+    use LivewireAlert;
     use SimpleDatatableComponentTrait;
 
     public array $filters = [];

@@ -4,6 +4,7 @@ namespace App\Livewire\ProductModule\Report;
 
 use App\Classes\Settings;
 use App\Models\Stockbatch;
+use App\Traits\LivewireAlert;
 use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\{Button,
@@ -25,7 +26,7 @@ use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 final class StockMoveListReport extends PowerGridComponent
 {
     use PowerGridComponentTrait;
-
+    use LivewireAlert;
 
     public $key = 'stock_id';
 

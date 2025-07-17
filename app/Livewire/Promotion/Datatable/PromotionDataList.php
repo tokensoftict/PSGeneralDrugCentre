@@ -3,6 +3,7 @@
 namespace App\Livewire\Promotion\Datatable;
 
 use App\Models\Promotion;
+use App\Traits\LivewireAlert;
 use App\Traits\PowerGridComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -17,6 +18,7 @@ use PowerComponents\LivewirePowerGrid\{Button,
 final class PromotionDataList extends PowerGridComponent
 {
     use PowerGridComponentTrait;
+    use LivewireAlert;
 
     public $key = "id";
     public $promoId ;

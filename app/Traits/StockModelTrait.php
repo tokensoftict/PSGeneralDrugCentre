@@ -1,11 +1,14 @@
 <?php
 namespace App\Traits;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\AddLogToProductBinCard;
 use App\Jobs\PushDataServer;
 use App\Models\Invoice;
 use App\Models\Stockbatch;
 use App\Models\Stocktransfer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -382,8 +385,6 @@ trait StockModelTrait
             'max'=>"0",
             'carton'=>$this->carton,
             'sachet'=>1,
-            //'status'=>$this->status,
-            'retail_status'=>$this->status,
         ];
 
         $stockPrices = [];
@@ -432,7 +433,7 @@ trait StockModelTrait
             return ($item->wholesales > 0 || $item->bulksales > 0 || $item->quantity > 0);
         })->first();
 
-        if($batch) return $batch->expiry_date;
+        if($batch) return (new Carbon($batch->expiry_date));
 
         return false;
     }
@@ -477,7 +478,7 @@ trait StockModelTrait
     public function newonlinePush()
     {
         if($this->bulk_price > 0 || $this->retail_price > 0) {
-            dispatch(new PushDataServer(['action' => 'new', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
+            dispatch(new PushDataServer(['KAFKA_ACTION' => KafkaAction::CREATE_STOCK, 'KAFKA_TOPICS'=> KafkaTopics::STOCKS, 'action' => 'new', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
         }
 
     }
@@ -485,7 +486,7 @@ trait StockModelTrait
     public function updateonlinePush()
     {
         if(($this->bulk_price > 0 || $this->retail_price > 0)  && !$this->isDirty('batched')) {
-            dispatch(new PushDataServer(['action' => 'update', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
+            dispatch(new PushDataServer(['KAFKA_ACTION' => KafkaAction::UPDATE_STOCK, 'KAFKA_TOPICS'=> KafkaTopics::STOCKS, 'action' => 'update', 'table' => 'stock', 'data' => $this->getBulkPushData(), 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
         }
     }
 

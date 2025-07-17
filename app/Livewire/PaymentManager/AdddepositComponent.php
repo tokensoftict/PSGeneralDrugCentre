@@ -3,13 +3,14 @@
 namespace App\Livewire\PaymentManager;
 
 use App\Models\Customer;
+use App\Traits\LivewireAlert;
 use App\Traits\PaymentComponentTrait;
 use Livewire\Component;
 
 class AdddepositComponent extends Component
 {
     use PaymentComponentTrait;
-
+    use LivewireAlert;
 
     public $amount = 0;
 

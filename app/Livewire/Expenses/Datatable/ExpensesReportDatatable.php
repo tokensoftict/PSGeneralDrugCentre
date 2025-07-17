@@ -5,6 +5,7 @@ namespace App\Livewire\Expenses\Datatable;
 use App\Classes\ExportDataTableComponent;
 use App\Models\Purchase;
 use App\Repositories\ExpenseRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -12,7 +13,7 @@ use App\Models\Expense;
 
 class ExpensesReportDatatable extends ExportDataTableComponent
 {
-    use SimpleDatatableComponentTrait;
+    use SimpleDatatableComponentTrait, LivewireAlert;
 
     protected $model = Expense::class;
 

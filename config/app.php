@@ -25,6 +25,10 @@ return [
 
     'online_store_url' => env('ONLINE_STORE_URL', 'https://admin.generaldrugcentre.com/'),
 
+    'KAFKA_STATUS' => env('KAFKA_STATUS', false),
+
+    'KAFKA_HEADER_KEY' => env('KAFKA_HEADER_KEY', "PSGDC"),
+
     'push_to_server_timeout' => 4000,
 
     /*

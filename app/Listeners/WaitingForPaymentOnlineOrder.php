@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UpdateOnlineOrderStatusEvent;
+use App\Services\Online\ProcessOrderService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -29,10 +30,8 @@ class WaitingForPaymentOnlineOrder
         if(config('app.sync_with_online')== 0)  return;
 
         if($event->invoice->online_order_status == "1") {
-            _GET('processorder/' . $event->invoice->invoice->onliner_order_id . "/6");
-
+            ProcessOrderService::sendBackWaitingForPaymentMessage($event->invoice->invoice->onliner_order_id);
             $event->invoice->online_order_debit = 1;
-
             $event->invoice->update();
         }
     }

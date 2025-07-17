@@ -24,6 +24,10 @@
                                                 Box : <span x-text="product.box"></span>
                                                 &nbsp; &nbsp;
                                                 Carton : <span x-text="product.carton"></span>
+                                                @if($this->d == "retail")
+                                                    &nbsp; &nbsp;
+                                                    SuperMarket Store : <span x-text="product.retail_store"></span>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -188,10 +192,10 @@
                                 <input class="form-control datepicker-basic" x-init="initDatePicker()" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date" id="datepicker-basic">
                             </div>
                         @else
-                            <div class="mb-3">
-                                <label>Invoice Date</label>
-                                <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
-                            </div>
+                        <div class="mb-3">
+                            <label>Invoice Date</label>
+                            <input readonly="" style="background-color: #FFF;color: #000;" wire:model="invoiceData.invoice_date" class="form-control" name="invoice_date">
+                        </div>
                         @endif
                         @if(isset($this->invoice->id))
                             <div class="mb-3">

@@ -100,7 +100,7 @@
                 </div>
             @endif
 
-            @if(isset($filters['department']))
+            @if(isset($filters['department']) || isset($filters['in_department']))
                 <div class="col-lg-4">
                     <div class="mb-3">
                         <label class="form-label">Department</label>

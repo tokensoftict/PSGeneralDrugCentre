@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\UpdateOnlineOrderStatusEvent;
 use App\Models\Invoice;
+use App\Services\Online\ProcessOrderService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -31,10 +32,9 @@ class PaymentConfirmOnlineOrder
 
         if($event->invoice->online_order_status == "1") {
             if($event->invoice->status_id == status('Paid')) {
-                if ($event->invoice->online_credit_invoice !== "") {
-                    _GET('processorder/' . $event->invoice->online_credit_invoice . "/3");
-
-                    $in = Invoice::find($event->invoice->online_credit_invoice);
+                if ($event->invoice->onliner_order_id !== "") {
+                    ProcessOrderService::sendBackPaymentConfirmedMessage($event->invoice->onliner_order_id);
+                    $in = Invoice::find($event->invoice->id);
                     $in->online_order_debit = 0;
                     $in->update();
                 }

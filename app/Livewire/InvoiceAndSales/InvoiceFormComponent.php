@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleComponentTrait;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -14,6 +15,7 @@ use Livewire\Component;
 class InvoiceFormComponent extends Component
 {
     use  SimpleComponentTrait;
+    use LivewireAlert;
 
     public Invoice $invoice;
 

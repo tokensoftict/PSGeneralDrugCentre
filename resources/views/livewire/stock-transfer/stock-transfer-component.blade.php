@@ -48,7 +48,7 @@
                     <tr>
                         <th class="text-start">Name</th>
                         <th class="text-center">Location</th>
-                        <th class="text-center">Quantity{{ ($this->to =='retail' ? "(Retail Quantity)" : "") }}</th>
+                        <th class="text-center">Quantity{{ ((($this->to == 'retail' || $this->from== 'retail_store') and $this->from != 'retail_store') ? "(Retail Quantity)" : "") }}</th>
                         <th class="text-end">Price</th>
                         <th class="text-end">Total</th>
                         <th>Action</th>
@@ -154,7 +154,7 @@
                     selling_price : this.selectedProduct.selling_price,
                     location: this.selectedProduct.location,
                     quantity : this.transferring_quantity,
-                    label_qty: {!!   $this->to == 'retail' ?  'this.transferring_quantity+"("+(this.transferring_quantity * this.selectedProduct.box)+")"' : 'this.transferring_quantity' !!}{{ "," }}
+                    label_qty: {!!   ($this->to == 'retail' and $this->from != 'retail_store') ?  'this.transferring_quantity+"("+(this.transferring_quantity * this.selectedProduct.box)+")"' : 'this.transferring_quantity' !!}{{ "," }}
                     cost_price : this.selectedProduct.cost_price,
                     stockbatch_id : "",
                     total : this.transferring_quantity * this.selectedProduct.cost_price,

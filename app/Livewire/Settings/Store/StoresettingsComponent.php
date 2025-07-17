@@ -3,12 +3,14 @@
 namespace App\Livewire\Settings\Store;
 
 use App\Classes\Settings;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 
 class StoresettingsComponent extends Component
 {
+    use LivewireAlert;
     use WithFileUploads;
 
     public array $store;

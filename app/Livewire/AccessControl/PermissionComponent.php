@@ -4,12 +4,15 @@ namespace App\Livewire\AccessControl;
 
 use App\Models\Module;
 use App\Models\Usergroup;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class PermissionComponent extends Component
 {
+
+    use LivewireAlert;
 
     public Usergroup $usergroup;
 

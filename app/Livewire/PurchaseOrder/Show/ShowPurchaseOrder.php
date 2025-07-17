@@ -5,12 +5,13 @@ namespace App\Livewire\PurchaseOrder\Show;
 
 use App\Models\Purchase;
 use App\Repositories\PurchaseOrderRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleComponentTrait;
 use Livewire\Component;
 
 class ShowPurchaseOrder extends Component
 {
-
+    use LivewireAlert;
     use SimpleComponentTrait;
 
     public Purchase $purchase;

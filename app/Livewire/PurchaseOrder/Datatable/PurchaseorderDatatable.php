@@ -5,6 +5,7 @@ namespace App\Livewire\PurchaseOrder\Datatable;
 use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Repositories\PurchaseOrderRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use App\Classes\Column;
@@ -13,6 +14,7 @@ use App\Models\Purchase;
 class PurchaseorderDatatable extends ExportDataTableComponent
 {
     use SimpleDatatableComponentTrait;
+    use LivewireAlert;
 
     protected $model = Purchase::class;
 

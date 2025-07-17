@@ -5,12 +5,13 @@ namespace App\Livewire\ProductModule\Batch;
 use App\Jobs\AddLogToProductBinCard;
 use App\Models\Batchstock;
 use App\Models\Stock;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 use App\Models\Stockbatch as batch;
 
 class StockBatch extends Component
 {
-
+    use LivewireAlert;
     public Stock $stock;
 
     public array $batches = [];

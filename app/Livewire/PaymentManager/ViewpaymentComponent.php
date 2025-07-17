@@ -5,13 +5,14 @@ namespace App\Livewire\PaymentManager;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Repositories\PaymentRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ViewpaymentComponent extends Component
 {
 
-
+    use LivewireAlert;
     public Payment $payment;
 
     private PaymentRepository $paymentRepository;

@@ -10,12 +10,13 @@ use App\Models\Payment;
 use App\Models\Paymentmethod;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\PaymentRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\PaymentComponentTrait;
 use Livewire\Component;
 
 class AddpaymentComponent extends Component
 {
-
+    use LivewireAlert;
     use PaymentComponentTrait;
 
     public int $customer_id = 0;

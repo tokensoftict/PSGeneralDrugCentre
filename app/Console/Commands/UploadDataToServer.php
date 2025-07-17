@@ -3,12 +3,13 @@
 namespace App\Console\Commands;
 
 
-use App\Models\Brand;
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
+use App\Jobs\PushDataServer;
 use App\Models\Category;
 use App\Models\Classification;
 use App\Models\Customer;
 use App\Models\Manufacturer;
-use App\Models\Purchase;
 use App\Models\Stock;
 use App\Models\Stockgroup;
 
@@ -54,8 +55,9 @@ class UploadDataToServer extends Command
         //to avoid relation error
 
         //now we begin with manufacture
-/*
-        $this->info('Gathering Manufacturer Data');
+
+        //$this->info('Gathering Manufacturer Data');
+
         $manufacturers = Manufacturer::all();
         $all_data = [];
         foreach($manufacturers as $manufacturer){
@@ -63,14 +65,11 @@ class UploadDataToServer extends Command
         }
         $this->info('Gathering Manufacturer Data Complete');
         $this->info('Parsing Manufacturer Data');
-        $postdata = ['table'=>'manufacturers','data'=> $all_data];
         $this->info('Parsing Manufacturer Data Complete');
         $this->info('Posting Manufacturer Data to '.onlineBase('manufacturers'));
-        $response = _POST('manufacturers',$postdata);
-        if($response['status']){
-            $this->info('Manufacturer data has been posted successfully');
-            sleep(4);
-        }
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_MANUFACTURER, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,
+            'action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$all_data]));
+
 
 
         //now we begin with category data
@@ -82,14 +81,11 @@ class UploadDataToServer extends Command
         }
         $this->info('Gathering Category Data Complete');
         $this->info('Parsing Category Data');
-        $postdata = ['table'=>'product_category','data'=> $all_data];
         $this->info('Parsing Category Data Complete');
         $this->info('Posting Category Data to '.onlineBase('productcategories'));
-        $response = _POST('productcategories',$postdata);
-        if($response['status']){
-            $this->info('Category data has been posted successfully');
-            sleep(4);
-        }
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_CATEGORY, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,
+            'action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$all_data]));
+
 
         //now we begin with classification data
 
@@ -101,16 +97,34 @@ class UploadDataToServer extends Command
         }
         $this->info('Gathering Classification Data Complete');
         $this->info('Parsing Classification Data');
-        $postdata = ['table'=>'classifications','data'=> $all_data];
         $this->info('Parsing Classification Data Complete');
         $this->info('Posting Classification Data to '.onlineBase("classifications"));
-        $response = _POST('classifications',$postdata);
-        if($response['status']){
-            $this->info('Classification data has been posted successfully');
-            sleep(4);
-        }
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_CLASSIFICATION, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,
+            'action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$all_data]));
 
-*/
+
+
+        $this->info('Gathering Customer Data');
+        $customer =   Customer::query();
+        $customerCount = round(($customer->count() / 2000));
+        Customer::query()->chunk(2000, function($customers) use (&$customerCount){
+            $all_data = [];
+            foreach($customers as $customer){
+                $all_data[] = $customer->getBulkPushData();
+            }
+            $this->info('Gathering Customer Data Complete');
+            $this->info('Parsing Customer Data');
+            $this->info('Parsing Customer Data Complete');
+            $this->info('Posting Customer Data to '.onlineBase('customers'));
+            dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_CUSTOMER, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,
+                'action'=>'new','table'=>'existing_customer', 'endpoint' => 'manufacturers' ,'data'=>$all_data]));
+            $this->info('Chunk '. $customerCount. ' send successfully');
+            $customerCount --;
+        });
+
+
+
+
         //now we begin with group data
 
         $this->info('Gathering Stock Group Data');
@@ -121,15 +135,10 @@ class UploadDataToServer extends Command
         }
         $this->info('Gathering Stock Group Data Complete');
         $this->info('Parsing Stock Group Data');
-        $postdata = ['table'=>'stock_groups','data'=> $all_data];
         $this->info('Parsing Stock Group Data Complete');
         $this->info('Posting Stock Group Data to '.onlineBase("productgroups"));
-        $response = _POST('productgroups',$postdata);
-
-        if($response['status']){
-            $this->info('Stock Group data has been posted successfully');
-            sleep(4);
-        }
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_STOCK_GROUP, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL,
+            'action'=>'new','table'=>'manufacturers', 'endpoint' => 'manufacturers' ,'data'=>$all_data]));
 
 
 
@@ -138,35 +147,26 @@ class UploadDataToServer extends Command
         $stocks = Stock::where(function($query){
             $query->orWhere('bulk_price','>',0)->orWhere('retail_price','>',0);
         })->where('status',1);
-        $chunk_numbers = round(($stocks->count() / 500));
-        $stocks->chunk(500,function($stocks) use (&$chunk_numbers){
+        $chunk_numbers = round(($stocks->count() / 2000));
+        $stocks->chunk(2000,function($stocks) use (&$chunk_numbers){
             $all_data = [];
             foreach($stocks as $stock){
                 $all_data[] = $stock->getBulkPushData();
             }
             $this->info('Gathering Stock Data Complete');
             $this->info('Parsing Stock Data');
-            $postdata = ['table'=>'stock','data'=> $all_data];
             $this->info('Parsing Stock Data Complete');
             $this->info('Posting Stock Data to '.onlineBase("stocks"));
-            $response = _POST('stocks',$postdata);
-            $chunk_numbers = $chunk_numbers-1;
-            if($response['status']) {
-                $this->info('Stock data has been posted successfully for chunk ' . $chunk_numbers);
-            }
-            sleep(3);
+            dispatch(new PushDataServer(['KAFKA_ACTION' => KafkaAction::CREATE_STOCK, 'KAFKA_TOPICS'=> KafkaTopics::STOCKS, 'action' => 'new',
+                'table' => 'stock', 'data' => $all_data, 'endpoint' => 'stocks', 'url'=>onlineBase()."dataupdate/add_or_update_stock"]));
+            $this->info('Chunk '. $chunk_numbers. ' send successfully');
+            $chunk_numbers --;
         });
-
 
         $this->info('Data has been uploaded to server successfully');
 
         return Command::SUCCESS;
+
     }
-
-
-
-
-
-
 
 }

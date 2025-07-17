@@ -4,6 +4,7 @@ namespace App\Livewire\PurchaseOrder;
 
 use App\Models\Purchase;
 use App\Repositories\PurchaseOrderRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -11,6 +12,7 @@ use Livewire\Component;
 class PurchaseOrderComponent extends Component
 {
     public Purchase $purchase;
+    use LivewireAlert;
 
     public array $data;
 

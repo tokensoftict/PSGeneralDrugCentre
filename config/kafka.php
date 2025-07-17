@@ -26,7 +26,7 @@ return [
      | establishing that each partition is only consumed by a single consumer from the group.
      | This config defines the consumer group id you want to use for your project.
      */
-    'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'group'),
+    'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'PSGDC-LOCAL-SERVER'),
 
     'consumer_timeout_ms' => env("KAFKA_CONSUMER_DEFAULT_TIMEOUT", 2000),
 

@@ -13,6 +13,7 @@ class Settings extends Valuestore
         'wholesales' => 'Whole Sales Department',
         'bulksales' => 'Bulk Sales Department',
         'retail' => 'Retail Department',
+        'retail_store' => 'SuperMarket Store',
         '' => '',
         NULL => ''
     ];

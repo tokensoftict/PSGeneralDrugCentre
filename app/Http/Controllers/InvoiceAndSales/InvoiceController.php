@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\PushStockUpdateToServer;
 use App\Models\Invoice;
 use App\Repositories\InvoiceRepository;
+use App\Services\Online\ProcessOrderService;
 use App\Traits\InvoiceTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -432,7 +433,7 @@ class InvoiceController extends Controller
 
             LogActivity($invoice->id, $invoice->invoice_number,"Online invoice, update sent to server ".$invoice->status);
 
-            _GET('processorder/'.$invoice->onliner_order_id."/5");
+            ProcessOrderService::sendBackCancelOrderMessage($invoice->onliner_order_id);
 
         }
 
@@ -493,7 +494,7 @@ class InvoiceController extends Controller
     public function packOnlineInvoice(Invoice $invoice)
     {
         DB::transaction(function() use ($invoice){
-            _GET('processorder/' . $invoice->onliner_order_id . "/6");
+            ProcessOrderService::sendBackWaitingForPaymentMessage($invoice->onliner_order_id);
             $invoice->status_id = status('Packed-Waiting-For-Payment');
             $invoice->online_order_debit = 1;
             $invoice->update();

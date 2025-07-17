@@ -70,12 +70,12 @@ class ProductRepository
     {
         $selling_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store'  => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail', 'retail_store'  => 'retail_cost_price',
         };
 
 
@@ -110,16 +110,16 @@ class ProductRepository
 
         $selling_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store' => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulksales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail','retail_store' => 'retail_cost_price',
         };
 //->where(request()->column ,'>',0)
 
-        return DB::table('stocks')->select('stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
+        return DB::table('stocks')->select('stocks.retail_store as retail_store','stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
             'stocks.name',
             'stocks.box',
             'stocks.location',
@@ -151,12 +151,12 @@ class ProductRepository
 
         $selling_price = match (request()->column){
             'wholesales', 'bulk-sales', 'quantity', '', NULL => 'whole_price',
-            'retail' => 'retail_price',
+            'retail', 'retail_store'  => 'retail_price',
         };
 
         $cost_price = match (request()->column){
             'wholesales', 'bulk-sales', 'quantity', '', NULL => 'cost_price',
-            'retail' => 'retail_cost_price',
+            'retail', 'retail_store'  => 'retail_cost_price',
         };
 
         return DB::table('stocks')

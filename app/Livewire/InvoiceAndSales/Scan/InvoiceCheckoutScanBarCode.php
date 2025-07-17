@@ -3,10 +3,12 @@
 namespace App\Livewire\InvoiceAndSales\Scan;
 
 use App\Repositories\InvoiceRepository;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 class InvoiceCheckoutScanBarCode extends Component
 {
+    use LivewireAlert;
 
     public string $invoice_number;
 

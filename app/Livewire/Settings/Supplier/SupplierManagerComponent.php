@@ -4,11 +4,12 @@ namespace App\Livewire\Settings\Supplier;
 
 use App\Classes\Settings;
 use App\Models\Supplier;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 class SupplierManagerComponent extends Component
 {
-
+    use LivewireAlert;
     protected $listeners = [
         'editSupplier' => 'edit',
     ];

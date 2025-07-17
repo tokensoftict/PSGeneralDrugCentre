@@ -4,11 +4,13 @@ namespace App\Livewire\InvoiceAndSales\Dispatch;
 
 use App\Models\Invoice;
 use App\Models\User;
+use App\Services\Online\ProcessOrderService;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 class InvoiceDispatcherComponent extends Component
 {
-
+    use LivewireAlert;
     public Invoice $invoice;
 
     public $users;
@@ -62,13 +64,10 @@ class InvoiceDispatcherComponent extends Component
 
         logActivity($this->invoice->id, $this->invoice->invoice_number,'Invoice dispatched');
 
-        if($this->invoice->online_order_status == "1"){
-
-            _GET('processorder/'.$this->invoice->onliner_order_id."/4?cartoon=".$this->invoice->carton_no);
-
+        if($this->invoice->online_order_status == "1") {
+            ProcessOrderService::sendBackOrderDispatchedMessage($this->invoice->onliner_order_id, $this->invoice->carton_no);
             logActivity($this->invoice->id, $this->invoice->invoice_number,'Online invoice -- dispatched update was sent to the serve');
         }
-
 
         $this->alert(
             "success",

@@ -5,12 +5,13 @@ namespace App\Livewire\StockTransfer;
 use App\Models\Stock;
 use App\Models\Stocktransfer;
 use App\Repositories\StockTransferRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class StockTransferComponent extends Component
 {
-
+    use LivewireAlert;
     public Stocktransfer $stocktransfer;
 
     public $data;

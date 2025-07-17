@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -125,7 +127,7 @@ class Purchase extends Model
             }
 
             $store = $this->department == "quantity" ? 5 : 6;
-            dispatch(new PushDataServer(['store' => $store, 'action' => 'update', 'endpoint'=>'new_arrivals', 'table' => 'new_arrivals', 'data' => $data]));
+            dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::NEW_ARRIVAL, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'store' => $store, 'action' => 'update', 'endpoint'=>'new_arrivals', 'table' => 'new_arrivals', 'data' => $data]));
 
         }
     }

@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -53,12 +55,12 @@ class Stockgroup extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'stock_groups', 'endpoint' => 'productgroups' ,'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_STOCK_GROUP, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'new','table'=>'stock_groups', 'endpoint' => 'productgroups' ,'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'stock_groups', 'endpoint' => 'productgroups', 'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::UPDATE_STOCK_GROUP, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'update','table'=>'stock_groups', 'endpoint' => 'productgroups', 'data'=>$this->getBulkPushData()]));
     }
 
 

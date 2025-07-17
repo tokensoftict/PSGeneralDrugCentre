@@ -3,6 +3,7 @@
 namespace App\Livewire\PurchaseOrder\Supplier\Payment\Datatable;
 
 use App\Classes\ExportDataTableComponent;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -10,6 +11,7 @@ use App\Models\SupplierCreditPaymentHistory;
 
 class SupplierPaymentDatatable extends ExportDataTableComponent
 {
+    use LivewireAlert;
     use SimpleDatatableComponentTrait;
 
     protected $model = SupplierCreditPaymentHistory::class;

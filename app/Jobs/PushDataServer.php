@@ -2,14 +2,17 @@
 
 namespace App\Jobs;
 
+use App\Enums\KafkaEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Exception;
+use Junges\Kafka\Facades\Kafka;
+use Junges\Kafka\Message\Message;
 
-class PushDataServer //implements ShouldQueue
+class PushDataServer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -33,9 +36,24 @@ class PushDataServer //implements ShouldQueue
     {
         if(config('app.sync_with_online') == 0)  return;
 
-        if(!isset($this->data['endpoint'])) return; // no endpoint to called
+        //check if kafka is enabled and also currently available for connection
+        if(config('app.KAFKA_STATUS') !== true) {
+            _POST('update_data',$this->data);
 
-		_POST($this->data['endpoint'] ,$this->data);
+        } else {
+            $message = new Message(
+                headers: ['event' => KafkaEvent::LOCAL_PUSH],
+                body: [$this->data, "action" => $this->data['KAFKA_ACTION']],
+                key: config('app.KAFKA_HEADER_KEY')
+            );
+
+            try {
+               Kafka::publish()->onTopic($this->data['KAFKA_TOPICS'])->withMessage($message)->send();
+            } catch (Exception $exception) {
+                _POST('update_data',$this->data);
+                report($exception);
+            }
+        }
 
     }
 }

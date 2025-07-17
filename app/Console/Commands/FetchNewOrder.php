@@ -2,17 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Livewire\InvoiceAndSales\InvoiceFormComponent;
-use App\Jobs\AddLogToCustomerLedger;
-use App\Jobs\AddLogToProductBinCard;
-use App\Jobs\PushStockUpdateToServerFromDeletedFetchInvoice;
 use App\Models\Creditpaymentlog;
 use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\Invoice;
-use App\Models\Onlineordertotal;
 use App\Models\Stock;
 use App\Repositories\InvoiceRepository;
+use App\Services\Online\ProcessOrderService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +55,18 @@ class FetchNewOrder extends Command
         $this->info('Checking for new Order from '.onlineBase());
 
         $order =  $contents;
+        if(is_array($contents)){
 
+            if(count($order) == 0){
+                $this->info('No Pending order to process');
+                return Command::SUCCESS;
+            }
+
+        }
+
+        ProcessOrderService::handle($order);
+
+        /*
         if(is_array($contents)){
 
             if(count($order) == 0){
@@ -69,6 +76,8 @@ class FetchNewOrder extends Command
             DB::transaction(function(){
 
             });
+
+
             $invoice = Invoice::with(['invoiceitembatches','invoiceitembatches.stock','invoiceitems', 'customer', 'payment', 'customer', 'user'])->where('invoice_number',$order['invoice_no'])->first();
 
             if($invoice){
@@ -103,12 +112,7 @@ class FetchNewOrder extends Command
 
                    Stock::returnStocks($invoice, $returnBatches, array_unique($columns)); //return the stock batches
 
-                   dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(array_column( $invoice->invoiceitems->toArray(), 'stock_id')));
-
-
-                   dispatch(new PushStockUpdateToServerFromDeletedFetchInvoice(
-                       array_column($invoice->invoiceitems->toArray(), 'stock_id')
-                   ));
+                   dispatch(new PushStockUpdateToServer(array_column( $invoice->invoiceitems->toArray(), 'stock_id')));
 
                    $invoice->delete();
 
@@ -239,7 +243,7 @@ class FetchNewOrder extends Command
 
         //now check if the payment method is a payment gateway
         $this->info('Order ID '.$order['id'].' has been processed successfully!.');
-
+*/
         return Command::SUCCESS;
     }
 }

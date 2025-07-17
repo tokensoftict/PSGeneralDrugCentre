@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\KafkaTopics;
+use App\Services\Online\ProcessOrderService;
 use Carbon\Exceptions\Exception;
 use Illuminate\Console\Command;
 use Junges\Kafka\Exceptions\ConsumerException;
@@ -29,12 +31,16 @@ class KafkaConsumer extends Command
      */
     public function handle()
     {
-        $consumer = Kafka::consumer(['orders'])
+        $consumer = Kafka::consumer([KafkaTopics::GENERAL, KafkaTopics::ORDERS, KafkaTopics::STOCKS])
+            ->withConsumerGroupId(config('kafka.consumer_group_id'))
             ->withHandler(function ($message) {
-                // Process the incoming message
-                $body = $message->getBody();
-                dump($body);
-                // Handle the message payload as needed
+                $topic = $message->getTopicName();
+                switch ($topic) {
+                    case KafkaTopics::ORDERS:
+                        ProcessOrderService::handle($message->getBody());
+                        break;
+                    default:
+                }
             })
             ->build();
 

@@ -13,6 +13,7 @@ use App\Models\CustomerLedger;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Paymentmethoditem;
+use App\Services\Online\ProcessOrderService;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -583,9 +584,8 @@ class PaymentRepository
 
             if($obj->online_credit_invoice !== "")
             {
-                _GET('processorder/' . $obj->online_credit_invoice . "/3");
-
                 $in = Invoice::find($obj->online_credit_invoice);
+                ProcessOrderService::sendBackPaymentConfirmedMessage($in->onliner_order_id);
                 $in->online_order_debit = 0;
                 $in->update();
             }
@@ -603,7 +603,7 @@ class PaymentRepository
 
             $this->completePayment($obj,$payment->id);
 
-            $obj->dispatchBrowserEvent('openPaymentPage', ['link'=>route('payment.show',$payment->id)]);
+            $obj->dispatch('openPaymentPage', ['link'=>route('payment.show',$payment->id)]);
         });
     }
 
@@ -612,10 +612,7 @@ class PaymentRepository
     {
         if(isset($obj->invoice) && $obj->invoice->online_order_status == "1" )
         {
-            _GET('processorder/' . $obj->invoice->onliner_order_id . "/3");
-
-
-
+            ProcessOrderService::sendBackPaymentConfirmedMessage($obj->invoice->onliner_order_id);
             $in = Invoice::find($obj->invoice->id);
             $in->online_order_debit = 0;
             $in->update();
@@ -623,10 +620,10 @@ class PaymentRepository
 
         if(session()->get('current_route') == "payment.create"){
 
-            $obj->dispatchBrowserEvent('openPaymentPage', ['link'=>route('payment.show',$payment_id)]);
+            $obj->dispatch('openPaymentPage', ['link'=>route('payment.show',$payment_id)]);
         }else{
-            $obj->dispatchBrowserEvent('invoiceDiscountModal', []);
-            $obj->dispatchBrowserEvent('refreshBrowser', []);
+            $obj->dispatch('invoiceDiscountModal', []);
+            $obj->dispatch('refreshBrowser', []);
         }
     }
 

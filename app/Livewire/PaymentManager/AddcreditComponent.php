@@ -5,13 +5,14 @@ namespace App\Livewire\PaymentManager;
 use App\Models\Creditpaymentlog;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Traits\LivewireAlert;
 use App\Traits\PaymentComponentTrait;
 use Livewire\Component;
 
 class AddcreditComponent extends Component
 {
     use PaymentComponentTrait;
-
+    use LivewireAlert;
     public $amount = 0;
 
     public $online_credit_invoice = "";

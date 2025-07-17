@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -50,12 +52,12 @@ class Category extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'product_category', 'endpoint' => 'productcategories' ,'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_CATEGORY, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'new','table'=>'product_category', 'endpoint' => 'productcategories' ,'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'product_category', 'endpoint' => 'productcategories', 'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::UPDATE_CATEGORY, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'update','table'=>'product_category', 'endpoint' => 'productcategories', 'data'=>$this->getBulkPushData()]));
     }
 
 }

@@ -52,13 +52,15 @@ class ReportFilterComponent extends Component
             $data['users'] = User::where('status',1)->select('id','name')->get();
         }
 
-        if(isset($this->filters['customer_id']) || isset($this->filters['array.customer_id'])){
+        if(isset($this->filters['customer_id']) || isset($this->filters['array.customer_id'])) {
             $data['customers'] = Customer::where('status',1)->select('id','firstname','lastname')->get();
         }
 
         if(isset($this->filters['department_id']) || isset($this->filters['department'])){
             $data['departments'] = Department::where('status',1)->select('id','name','quantity_column')->get();
         }
+
+
 
         if(isset($this->filters['custom_dropdown_id']) && isset($this->filters['items'])){
             $data['items'] = $this->filters['items'];

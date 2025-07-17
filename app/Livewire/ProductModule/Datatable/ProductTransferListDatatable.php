@@ -6,6 +6,7 @@ use App\Classes\ExportDataTableComponent;
 use App\Classes\Settings;
 use App\Jobs\AddLogToProductBinCard;
 use App\Models\Stockbatch;
+use App\Traits\LivewireAlert;
 use App\Traits\SimpleDatatableComponentTrait;
 use Carbon\Carbon;
 use App\Classes\Column;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ProductTransferListDatatable extends ExportDataTableComponent
 {
-
+    use LivewireAlert;
     use SimpleDatatableComponentTrait;
 
     public $quantity_carton = "";

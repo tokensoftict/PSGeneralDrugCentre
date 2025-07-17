@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\PermitTask;
 use Illuminate\Support\Facades\Route;
 
 
@@ -28,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-    Route::middleware(['permit.task'])->group(function () {
+    Route::middleware([PermitTask::class])->group(function () {
         Route::prefix('accesscontrol')->namespace('AccessControl')->group(function () {
             Route::prefix('user-group')->as('user.group.')->group(function () {
                 Route::get('', ['as' => 'index', 'uses' => 'GroupController@index', 'visible' => true]);

@@ -5,6 +5,7 @@ namespace App\Livewire\InvoiceAndSales\Discount;
 use App\Jobs\AddLogToCustomerLedger;
 use App\Models\Invoice;
 use App\Models\Invoiceitem;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Arr;
 use Livewire\Component;
 
@@ -12,6 +13,7 @@ class ApplyProductDiscountComponent extends Component
 {
 
     public Invoice $invoice;
+    use LivewireAlert;
 
     public String $_discounts;
 

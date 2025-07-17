@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -49,12 +51,12 @@ class Brand extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'brands','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_BRAND, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'new','table'=>'brands','data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'brands','data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::UPDATE_BRAND, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'update','table'=>'brands','data'=>$this->getBulkPushData()]));
     }
 
 }

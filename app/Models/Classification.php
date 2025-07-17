@@ -6,6 +6,8 @@
 
 namespace App\Models;
 
+use App\Enums\KafkaAction;
+use App\Enums\KafkaTopics;
 use App\Jobs\PushDataServer;
 use App\Traits\ModelFilterTraits;
 use Carbon\Carbon;
@@ -55,12 +57,12 @@ class Classification extends Model
 
     public function newonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'new','table'=>'classifications', 'endpoint' => 'classifications', 'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::CREATE_CLASSIFICATION, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'new','table'=>'classifications', 'endpoint' => 'classifications', 'data'=>$this->getBulkPushData()]));
     }
 
     public function updateonlinePush()
     {
-        dispatch(new PushDataServer(['action'=>'update','table'=>'classifications', 'endpoint' => 'classifications' ,'data'=>$this->getBulkPushData()]));
+        dispatch(new PushDataServer(['KAFKA_ACTION'=> KafkaAction::UPDATE_CLASSIFICATION, 'KAFKA_TOPICS'=>KafkaTopics::GENERAL, 'action'=>'update','table'=>'classifications', 'endpoint' => 'classifications' ,'data'=>$this->getBulkPushData()]));
     }
 
 

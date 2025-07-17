@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 trait SimpleDatatableComponentTrait
 {
-
+    use LivewireAlert;
     public array $_columns;
 
     public array $iconsLink;

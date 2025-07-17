@@ -4,6 +4,7 @@ namespace App\Livewire\Promotion;
 
 use App\Imports\PromotionStocksImport;
 use App\Models\Promotion;
+use App\Traits\LivewireAlert;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -13,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class NewPromotion extends Component
 {
     use  WithFileUploads;
+    use LivewireAlert;
 
     public $name;
     public $from;

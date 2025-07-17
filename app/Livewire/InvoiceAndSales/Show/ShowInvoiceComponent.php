@@ -4,11 +4,12 @@ namespace App\Livewire\InvoiceAndSales\Show;
 
 use App\Jobs\AddLogToCustomerLedger;
 use App\Models\Invoice;
+use App\Traits\LivewireAlert;
 use Livewire\Component;
 
 class ShowInvoiceComponent extends Component
 {
-
+    use LivewireAlert;
     public Invoice $invoice;
 
     public String $discount_type = "Fixed";
@@ -34,6 +35,7 @@ class ShowInvoiceComponent extends Component
 
         if($this->invoice->online_order_status == "1" && ($this->invoice->status_id === status('Complete'))){
 
+            /**
             $order = _GET('view_order/'. $this->invoice->onliner_order_id);
 
             if($order){
@@ -43,7 +45,7 @@ class ShowInvoiceComponent extends Component
                $this->onlineinvoice = $order['invoiceurl'];
 
             }
-
+        **/
         }
 
     }

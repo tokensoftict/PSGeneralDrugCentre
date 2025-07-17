@@ -5,11 +5,13 @@ namespace App\Livewire\Expenses;
 use App\Models\Expense;
 use App\Models\ExpensesType;
 use App\Repositories\ExpenseRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Arr;
 use Livewire\Component;
 
 class ExpenseComponent extends Component
 {
+    use LivewireAlert;
 
     public Expense $expense;
 

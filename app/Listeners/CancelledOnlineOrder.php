@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UpdateOnlineOrderStatusEvent;
+use App\Services\Online\ProcessOrderService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -30,7 +31,7 @@ class CancelledOnlineOrder
 
         if($event->invoice->online_order_status == "1") {
             if($event->invoice->status_id == status('Deleted')) {
-                _GET('processorder/' . $event->invoice->onliner_order_id . "/5");
+                ProcessOrderService::sendBackCancelOrderMessage($event->invoice->onliner_order_id);
             }
         }
     }

@@ -4,11 +4,13 @@ namespace App\Livewire\PurchaseOrder\Supplier\Payment;
 
 use App\Models\SupplierCreditPaymentHistory;
 use App\Repositories\PurchaseOrderRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Arr;
 use Livewire\Component;
 
 class SupplierPaymentComponent extends Component
 {
+    use LivewireAlert;
     public SupplierCreditPaymentHistory $supplierCreditPaymentHistory;
 
     public $paymentMethods;

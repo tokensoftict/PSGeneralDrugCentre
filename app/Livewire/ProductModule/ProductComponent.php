@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Stock;
 use App\Models\Stockbarcode;
 use App\Repositories\ProductRepository;
+use App\Traits\LivewireAlert;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -14,7 +15,7 @@ use Livewire\WithFileUploads;
 
 class ProductComponent extends Component
 {
-
+    use LivewireAlert;
     use  WithFileUploads;
 
     public $categories;

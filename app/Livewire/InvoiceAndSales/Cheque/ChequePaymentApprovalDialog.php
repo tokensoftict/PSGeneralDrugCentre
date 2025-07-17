@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\InvoicePaymentApprovalStatus;
 use App\Repositories\InvoicePaymentApprovalStatusRepository;
 use App\Repositories\PaymentRepository;
+use App\Traits\LivewireAlert;
 use App\Traits\PaymentComponentTrait;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -17,6 +18,7 @@ use Livewire\Component;
 class ChequePaymentApprovalDialog extends Component
 {
     use PaymentComponentTrait;
+    use LivewireAlert;
 
     public int $customer_id = 0;
 

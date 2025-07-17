@@ -175,7 +175,7 @@ class ProductReportController extends Controller
                 'to'=>monthlyDateRange()[1],
                 'stock_id' => Stock::where('status', 1)->first()->id,
                 'filters' => [
-                    'between.change_date' => monthlyDateRange(),
+                    'between.pricechangehistories.change_date' => monthlyDateRange(),
                     'stock_id' => Stock::where('status', 1)->first(),
                     'department'=> 'wholesales',
                 ]
@@ -186,7 +186,7 @@ class ProductReportController extends Controller
         {
             $data['filters'] = $request->get('filter');
             $data['filters']['stock'] = Stock::find($data['filters']['stock_id']);
-            $data['filters']['filters']['between.change_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
+            $data['filters']['filters']['between.pricechangehistories.change_date'] = Arr::only(array_values( $request->get('filter')), [0,1]);
             $data['filters']['filters']['stock_id'] = $data['filters']['stock_id'];
             $data['filters']['filters']['department'] = $data['filters']['department'];
         }
