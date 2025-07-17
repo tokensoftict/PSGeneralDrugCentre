@@ -290,4 +290,9 @@ class Stock extends Model
         return $this->hasMany(Stockbarcode::class);
     }
 
+
+    public function stockquantityprices()
+    {
+        return $this->hasMany(ProductCustomPrice::class);
+    }
 }

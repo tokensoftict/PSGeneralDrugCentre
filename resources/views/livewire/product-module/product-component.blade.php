@@ -193,6 +193,15 @@
                                     @error('product_data.retail_price') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
+
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="mb-3">
+                                    <label>Bundle Price</label>
+                                    <div  class="form-control">
+                                        <button id="otherproductsettings" type="button" class="btn btn-sm btn-primary">Bundle Price Settings</button>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -278,12 +287,70 @@
         </div>
     </div>
 
+    <div  class="modal fade" wire:ignore.self id="orderPriceSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-2" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bundle Price Based On Quantity</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="modal-title mb-3">Bundle Price and Quantity List</h5>
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody id="priceTableBody">
+                                @if(isset($this->product->id))
+                                    @foreach($this->productPriceBasedOnQuantity as $price)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td><input type="number" value="{{ $price['min_qty'] }}" min="2" class="form-control form-control-sm min_qty" placeholder="Quantity"></td>
+                                            <td><input type="number" value="{{ $price['price'] }}" step="0.0000001" min="2" class="form-control form-control-sm min_qty" placeholder="Price"></td>
+                                            <td><button type="button" class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <button type="button" id="addPriceBtn" class="float-end btn btn-success btn-sm">
+                                            + Add Price
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="saveProductPrice" wire:target="saveProductPrice" wire:loading.attr="disabled" class="btn btn-primary">
+                        <span wire:loading wire:target="saveProductPrice" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let barCodeOpen = false;
+        let otherproductsettingsModal = "";
         window.onload = function (){
             $(document).ready(function(){
                 let myModal = "";
                 myModal = new bootstrap.Modal(document.getElementById("simpleBarcodeModal"), {});
+                otherproductsettingsModal = new bootstrap.Modal(document.getElementById("orderPriceSettings"), {});
 
                 document.getElementById("simpleBarcodeModal").addEventListener('shown.bs.modal', function () {
                     barCodeOpen = true
@@ -295,6 +362,10 @@
 
                 $('#barcode').on('click', function (){
                     myModal.show();
+                });
+
+                $('#otherproductsettings').on('click', function (){
+                    otherproductsettingsModal.show();
                 });
             });
 
@@ -328,11 +399,9 @@
 
         function deleteBarcode(code){
             @this.barcodes = @this.barcodes.filter(item => item !== code)
-            console.log(@this.barcodes);
         }
 
-        function captureBarcode(barcode)
-        {
+        function captureBarcode(barcode) {
             if(barCodeOpen === false)
             {
                 alert('Click on capture barcode scanner to capture barcode');
@@ -350,6 +419,116 @@
         }
 
 
+    </script>
+
+    <script>
+        function getPriceRangeData() {
+            const rows = document.querySelectorAll('#priceTableBody tr');
+            const data = [];
+            const seenQuantities = new Set();
+            let hasInvalid = false;
+
+            rows.forEach(row => {
+                const quantityInput = row.querySelector('input[placeholder="Quantity"]');
+                const priceInput = row.querySelector('input[placeholder="Price"]');
+
+                const quantity = parseFloat(quantityInput.value);
+                const price = parseFloat(priceInput.value);
+
+                let inputIsValid = true;
+
+                // Validate quantity
+                if (isNaN(quantity) || quantity < 2) {
+                    inputIsValid = false;
+                    quantityInput.classList.add('is-invalid');
+                } else if (seenQuantities.has(quantity)) {
+                    inputIsValid = false;
+                    quantityInput.classList.add('is-invalid');
+                } else {
+                    seenQuantities.add(quantity);
+                    quantityInput.classList.remove('is-invalid');
+                }
+
+                if (!inputIsValid) {
+                    hasInvalid = true;
+                }
+
+                // Add to data if valid
+                if (inputIsValid && !isNaN(price)) {
+                    data.push({
+                        quantity,
+                        price
+                    });
+                }
+            });
+
+            if (hasInvalid) {
+                alert("Each Quantity must be unique and ≥ 2.");
+                return [];
+            }
+
+            // Sort and generate min-max quantity ranges
+            data.sort((a, b) => a.quantity - b.quantity);
+
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                const current = data[i];
+                const next = data[i + 1];
+
+                result.push({
+                    min_qty: current.quantity,
+                    max_qty: next ? next.quantity : 10000,
+                    price: current.price
+                });
+            }
+
+            return result;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const addBtn = document.getElementById('addPriceBtn');
+            const saveProductPrice = document.getElementById('saveProductPrice');
+            const tableBody = document.getElementById('priceTableBody');
+
+            addBtn.addEventListener('click', function () {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+            <td></td>
+            <td><input type="number" value="" min="2" class="form-control form-control-sm min_qty" placeholder="Quantity"></td>
+            <td><input type="number" value="" step="0.0000001" min="2" class="form-control form-control-sm min_qty" placeholder="Price"></td>
+            <td><button type="button" class="btn btn-danger btn-sm delete-row">Delete</button></td>
+        `;
+
+                tableBody.appendChild(row);
+                updateRowNumbers();
+            });
+
+            tableBody.addEventListener('click', function (e) {
+                if (e.target.classList.contains('delete-row')) {
+                    e.target.closest('tr').remove();
+                    updateRowNumbers();
+                }
+            });
+
+            function updateRowNumbers() {
+                [...tableBody.rows].forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+                });
+            }
+
+            saveProductPrice.addEventListener("click", function (e) {
+                const data = getPriceRangeData();
+                if(data.length > 0) {
+                    @this.saveProductPrice(data).then((response) => {
+                        if (response === true) {
+                            otherproductsettingsModal.hide();
+                        }
+                    })
+                }
+            });
+        });
     </script>
 
 </div>

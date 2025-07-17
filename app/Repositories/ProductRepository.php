@@ -79,7 +79,11 @@ class ProductRepository
         };
 
 
-        $stock =  DB::table('stocks')->select('stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
+        $stock = DB::table('stocks')->select(
+            'stocks.id',
+            "stocks.".request()->column.' as quantity',
+            "stocks.".$cost_price." as cost_price",
+            "stocks.".$selling_price." as selling_price",
             'stocks.name',
             'stocks.box',
             'stocks.location',
@@ -90,16 +94,29 @@ class ProductRepository
             'promotion_items.end_date',
             'promotion_items.'.$selling_price." as promo_selling_price"
         )
-            ->leftJoin('promotion_items', function($join){
+            ->leftJoin('promotion_items', function($join) {
                 $join->on('stocks.id', '=', 'promotion_items.stock_id')
                     ->on('promotion_items.status_id', '=', DB::raw(status('Approved')));
-            })->join('stockbarcodes', function($join){
+            })
+            ->join('stockbarcodes', function($join) {
                 $join->on('stocks.id', '=', 'stockbarcodes.stock_id');
             })
-            ->where('stockbarcodes.barcode', $barcode)->first();
+            ->where('stockbarcodes.barcode', $barcode)
+            ->first();
 
-        if($stock) return $stock;
-        return collect([])->toJson();
+        if ($stock) {
+            // Fetch product_custom_prices for this stock
+            $customPrices = DB::table('product_custom_prices')
+                ->where('stock_id', $stock->id)
+                ->get();
+
+            // Attach to the stock object
+            $stock->custom_prices = $customPrices;
+
+            return response()->json($stock);
+        }
+
+        return response()->json([]);
     }
 
     public function findProduct(mixed $name)
@@ -119,27 +136,50 @@ class ProductRepository
         };
 //->where(request()->column ,'>',0)
 
-        return DB::table('stocks')->select('stocks.retail_store as retail_store','stocks.id', "stocks.".request()->column.' as quantity', "stocks.".$cost_price." as cost_price", "stocks.".$selling_price." as selling_price",
-            'stocks.name',
-            'stocks.box',
-            'stocks.location',
-            'stocks.name as text',
-            'stocks.carton',
-            'promotion_items.promotion_id',
-            'promotion_items.from_date',
-            'promotion_items.end_date',
-            'promotion_items.'.$selling_price." as promo_selling_price"
-        )
-            ->leftJoin('promotion_items', function($join) use ($selling_price){
+        $stocks = DB::table('stocks')
+            ->select(
+                'stocks.retail_store as retail_store',
+                'stocks.id',
+                "stocks.".request()->column." as quantity",
+                "stocks.".$cost_price." as cost_price",
+                "stocks.".$selling_price." as selling_price",
+                'stocks.name',
+                'stocks.box',
+                'stocks.location',
+                'stocks.name as text',
+                'stocks.carton',
+                'promotion_items.promotion_id',
+                'promotion_items.from_date',
+                'promotion_items.end_date',
+                'promotion_items.'.$selling_price." as promo_selling_price"
+            )
+            ->leftJoin('promotion_items', function($join) use ($selling_price) {
                 $join->on('stocks.id', '=', 'promotion_items.stock_id')
                     ->where('promotion_items.status_id', '=', DB::raw(status('Approved')))
                     ->where('promotion_items.'.$selling_price, '>', 0);
             })
-            ->where(function($query) use(&$name){
-            foreach ($name as $char) {
-                $query->where('stocks.name', 'LIKE', "%$char%");
-            }
-        })->get()->toJson();
+            ->where(function($query) use (&$name) {
+                foreach ($name as $char) {
+                    $query->where('stocks.name', 'LIKE', "%$char%");
+                }
+            })
+            ->get();
+
+// Get all custom prices for the stock IDs
+        $stockIds = $stocks->pluck('id');
+
+        $customPrices = DB::table('product_custom_prices')
+            ->whereIn('stock_id', $stockIds)
+            ->get()
+            ->groupBy('stock_id');
+
+// Attach custom prices to each stock
+        $stocks->transform(function ($stock) use ($customPrices) {
+            $stock->custom_prices = $customPrices->get($stock->id, collect())->values();
+            return $stock;
+        });
+
+        return $stocks->toJson();
 
     }
 
@@ -161,12 +201,12 @@ class ProductRepository
 
         return DB::table('stocks')
             ->select('id', $cost_price, $selling_price, 'name', 'box', 'location', 'name as text',
-            DB::raw('ROUND((((retail/box) + wholesales + quantity + bulksales)),0) as allqty')
+                DB::raw('ROUND((((retail/box) + wholesales + quantity + bulksales)),0) as allqty')
             )->where(function($query) use(&$name){
-            foreach ($name as $char) {
-                $query->where('stocks.name', 'LIKE', "%$char%");
-            }
-        })->get()->toJson();
+                foreach ($name as $char) {
+                    $query->where('stocks.name', 'LIKE', "%$char%");
+                }
+            })->get()->toJson();
 
     }
 

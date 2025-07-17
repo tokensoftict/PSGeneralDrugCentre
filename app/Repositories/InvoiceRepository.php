@@ -139,6 +139,20 @@ class InvoiceRepository
     }
 
 
+    public function resolvePriceByQuantity(int $quantity, float $defaultSellingPrice, array $customPrices): float
+    {
+        foreach ($customPrices as $priceRule) {
+            $min = (int) $priceRule['min_qty'];
+            $max = (int) $priceRule['max_qty'];
+
+            if ($quantity >= $min && $quantity < $max) {
+                return (float) $priceRule['price'];
+            }
+        }
+
+        return $defaultSellingPrice;
+    }
+
     public function validateInvoiceItems(array $items, string $from)
     {
         $items = collect($items);
@@ -151,7 +165,7 @@ class InvoiceRepository
             $stocks[$item['stock_id']]['item'] = $item;
         });
 
-        $products = Stock::with(['activeBatches'])->whereIn('id', array_keys($stocks))->get();
+        $products = Stock::with(['activeBatches', 'stockquantityprices'])->whereIn('id', array_keys($stocks))->get();
 
         $products->each(function($product, $key) use(&$stocks, &$errors, &$from) {
             //$stocks[$product->id]['product'] = $product;
@@ -165,10 +179,18 @@ class InvoiceRepository
             $total_cost_batch = collect($batch)->sum('cost_price');
 
             if($batch === false) {
-                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", available quantity is ". $product->{$from};
+                $errors[$product->id] = "Not enough available quantity to process ".$product->name.", quantity is ". $product->{$from};
             } else {
                 if($from == "retail") {
-                    $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column(4)};
+                    if($product->stockquantityprices->count() > 0) {
+                        $stocks[$product->id]['item']['selling_price'] = $this->resolvePriceByQuantity(
+                            quantity:$stocks[$product->id]['item']['quantity'],
+                            defaultSellingPrice:$product->{selling_price_column(4)},
+                            customPrices: $product->stockquantityprices->toArray()
+                        );
+                    } else {
+                        $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column(4)};
+                    }
                 }else{
                     $stocks[$product->id]['item']['selling_price'] = $product->{selling_price_column()};
                 }

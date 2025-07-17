@@ -4,6 +4,7 @@ namespace App\Http\Livewire\ProductModule;
 
 use App\Classes\Settings;
 use App\Models\Category;
+use App\Models\ProductCustomPrice;
 use App\Models\Stock;
 use App\Models\Stockbarcode;
 use App\Repositories\ProductRepository;
@@ -35,13 +36,13 @@ class ProductComponent extends Component
 
     public array $barcodes = [];
 
+    public array $productPriceBasedOnQuantity = [];
+
     private ProductRepository $productRepository;
 
     public function boot(ProductRepository $productRepository)
     {
-
         $this->productRepository = $productRepository;
-
     }
 
     public function booted()
@@ -64,11 +65,18 @@ class ProductComponent extends Component
             $this->product_data = ProductRepository::$productFields;
         }
 
-
         $this->barcodes = $this->product->stockbarcodes->map(function($barcode){
-           return $barcode->barcode;
+            return $barcode->barcode;
         })->toArray();
 
+        $this->productPriceBasedOnQuantity = $this->product->stockquantityprices->map(function($price){
+            return [
+                'id' => $price->id,
+                'price' => $price->price,
+                'min_qty' => $price->min_qty,
+                'max_qty' => $price->max_qty,
+            ];
+        })->toArray();
     }
 
     public function render()
@@ -80,13 +88,13 @@ class ProductComponent extends Component
     public function saveStock()
     {
 
-       $data = [
-           "product_data.name"=>"bail|required|max:255",
-           "product_data.piece"=>"bail|required",
-           "product_data.carton"=>"bail|required",
-           "product_data.box"=>"bail|required",
-           "product_data.location"=>"required"
-       ];
+        $data = [
+            "product_data.name"=>"bail|required|max:255",
+            "product_data.piece"=>"bail|required",
+            "product_data.carton"=>"bail|required",
+            "product_data.box"=>"bail|required",
+            "product_data.location"=>"required"
+        ];
 
         if(config('app.sync_with_online') === 1 && $this->product_data['image_path'] === "logo/" . app(Settings::class)->store()->logo)
         {
@@ -158,7 +166,6 @@ class ProductComponent extends Component
 
     }
 
-
     public function validateBarcode($code)
     {
         $code = trim(preg_replace('/\s\s+/', ' ', $code));
@@ -204,6 +211,35 @@ class ProductComponent extends Component
             $this->barcodes[] = $code;
             return ['status' => false];
         }
+
+    }
+
+
+    public function saveProductPrice(array $prices)
+    {
+        $price = array_map(function($price) {
+            $price['stock_id'] = $this->product->id;
+            $price['user_id'] = auth()->id();
+            return new ProductCustomPrice($price);
+        }, $prices);
+
+        return DB::transaction(function() use($price) {
+            $this->product->stockquantityprices()->delete();
+            $this->product->stockquantityprices()->saveMany($price);
+
+            $this->alert(
+                "success",
+                "Product",
+                [
+                    'position' => 'center',
+                    'timer' => 2000,
+                    'toast' => false,
+                    'text' =>  "Quantity Based Price has been updated successfully!",
+                ]
+            );
+            return true;
+        });
+
 
     }
 

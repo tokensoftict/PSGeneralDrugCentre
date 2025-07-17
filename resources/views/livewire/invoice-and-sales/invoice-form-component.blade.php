@@ -27,6 +27,8 @@
                                                 @if($this->d == "retail")
                                                     &nbsp; &nbsp;
                                                     SuperMarket Store : <span x-text="product.retail_store"></span>
+                                                    &nbsp; &nbsp;
+                                                    <span x-show="(product.custom_prices.length > 0)" class="font-size-13" style="font-weight: bolder"  >Bundle Price : <span class="text-danger font-size-13"  x-html="money(product.custom_prices[0].price)+'&nbsp; ≥ '+product.custom_prices[0].min_qty+' Quantity'"></span></span>
                                                 @endif
                                             </div>
                                         </div>
@@ -365,9 +367,10 @@
                 if(this.selectedProduct['quantity'] === 0)
                 {
                     alert(this.selectedProduct.name+' is out of stock, quantity remain is 0');
-
-                    return
+                    return;
                 }
+
+                let selling_price = (this.selectedProduct.promo_selling_price && this.selectedProduct.promo_selling_price > 0) ? this.selectedProduct.promo_selling_price : this.selectedProduct.selling_price;
 
                 this.invoiceitems.push({
                     stock_id : this.selectedProduct.id,
@@ -380,20 +383,36 @@
                     added_by : {{ auth()->user()->id }},
                 discount_added_by : null,
                 cost_price : this.selectedProduct.cost_price,
-                selling_price : (this.selectedProduct.promo_selling_price && this.selectedProduct.promo_selling_price > 0) ? this.selectedProduct.promo_selling_price : this.selectedProduct.selling_price,
+                selling_price : selling_price,
                 profit : this.selectedProduct.selling_price - this.selectedProduct.cost_price,
                 discount_value : 0,
                 discount_amount : 0,
-                discount_type : 'Fixed'
+                discount_type : 'Fixed',
+                custom_price : this.selectedProduct.custom_prices ?? [],
+                default_selling_price : selling_price
             });
 
                 this.totalInvoice();
+            },
+            getPriceRange(quantity, defaultSellingPrice, customPrices) {
+                for (const priceRule of customPrices) {
+                    const min = parseInt(priceRule.min_qty);
+                    const max = parseInt(priceRule.max_qty);
+
+                    if (quantity >= min && quantity < max) {
+                        return parseFloat(priceRule.price);
+                    }
+                }
+
+                return parseFloat(defaultSellingPrice);
             },
             incrementQuantity(index)
             {
                 let qty =  parseInt(this.invoiceitems[index]['quantity']) + 1;
                 if(qty <= this.invoiceitems[index]['av_qty'])
                 {
+                    this.invoiceitems[index]['selling_price'] = this.getPriceRange(qty, this.invoiceitems[index]['default_selling_price'],  this.invoiceitems[index]['custom_price']);
+
                     this.invoiceitems[index]['quantity'] = qty;
                     this.invoiceitems[index]['total_cost_price'] = this.invoiceitems[index]['cost_price'] * this.invoiceitems[index]['quantity'];
                     this.invoiceitems[index]['total_selling_price'] = this.invoiceitems[index]['selling_price'] * this.invoiceitems[index]['quantity'];
@@ -409,6 +428,9 @@
                     alert("Total available quantity is "+this.invoiceitems[index]['av_qty']);
                     this.invoiceitems[index]['quantity'] = this.invoiceitems[index]['av_qty'];
                 }
+
+                this.invoiceitems[index]['selling_price'] = this.getPriceRange(this.invoiceitems[index]['quantity'], this.invoiceitems[index]['default_selling_price'],  this.invoiceitems[index]['custom_price']);
+
                 this.invoiceitems[index]['total_cost_price'] = this.invoiceitems[index]['cost_price'] * this.invoiceitems[index]['quantity'];
                 this.invoiceitems[index]['total_selling_price'] = this.invoiceitems[index]['selling_price'] * this.invoiceitems[index]['quantity'];
                 this.invoiceitems[index]['total_profit'] =  (this.invoiceitems[index]['selling_price'] - this.invoiceitems[index]['cost_price']) * this.invoiceitems[index]['quantity'];
@@ -419,6 +441,8 @@
                 let qty =  parseInt(this.invoiceitems[index]['quantity']) - 1;
                 if(qty > 0)
                 {
+                    this.invoiceitems[index]['selling_price'] = this.getPriceRange(qty, this.invoiceitems[index]['default_selling_price'],  this.invoiceitems[index]['custom_price']);
+
                     this.invoiceitems[index]['quantity'] = qty;
                     this.invoiceitems[index]['total_cost_price'] = this.invoiceitems[index]['cost_price'] * this.invoiceitems[index]['quantity'];
                     this.invoiceitems[index]['total_selling_price'] = this.invoiceitems[index]['selling_price'] * this.invoiceitems[index]['quantity'];
