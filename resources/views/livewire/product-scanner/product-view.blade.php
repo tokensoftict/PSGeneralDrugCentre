@@ -118,17 +118,17 @@
             }
 
             function resetTimer() {
-                clearTimeout(timeout);
-                hideScreensaver();
-                timeout = setTimeout(showScreensaver, 5000); // 60 seconds
+                //clearTimeout(timeout);
+                //hideScreensaver();
+                //timeout = setTimeout(showScreensaver, 5000); // 60 seconds
             }
 
-            window.onload = resetTimer;
-            document.onmousemove = resetTimer;
-            document.onkeypress = resetTimer;
-            document.ontouchstart = resetTimer;
-            document.onclick = resetTimer;
-            document.onscroll = resetTimer;
+           // window.onload = resetTimer;
+           // document.onmousemove = resetTimer;
+           // document.onkeypress = resetTimer;
+            //document.ontouchstart = resetTimer;
+            //document.onclick = resetTimer;
+            //document.onscroll = resetTimer;
         };
 
         inactivityTime();
